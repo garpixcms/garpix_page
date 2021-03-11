@@ -1,0 +1,16 @@
+<title>{{object.seo_title}}</title>
+
+<meta name="keywords" content="{{object.seo_keywords}}">
+<meta name="description" content="{{object.seo_description}}">
+<meta property="og:title" content="{{object.seo_title}}">
+<meta property="og:description" content="{{object.seo_description}}">
+<meta property="og:type" content="{{object.seo_og_type}}">
+<meta property="og:url" content="https://{{ request.get_host }}{{object.get_absolute_url}}">
+<meta property="og:site_name" content="{{object.title}}">
+<meta property="og:locale" content="ru_RU">
+
+{% if object.seo_image %}
+<meta property="og:image" content="https://{{ request.get_host }}{{ object.seo_image.url }}"/>
+{% endif %}
+
+<link rel="canonical" href="{{ object.get_absolute_url }}"/>

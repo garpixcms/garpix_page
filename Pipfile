@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+environs = "*"
+psycopg2-binary = "*"
+coverage = "*"
+twine = "*"
+m2r = "*"
+garpix-qa = "*"
+django-polymorphic-tree-for-garpix-page = "*"
+django-modeltranslation = "*"
+django-multiurl = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
