@@ -1,4 +1,8 @@
-<title>{{object.seo_title}}</title>
+{% if object.seo_title %}
+    <title>{{object.seo_title}}</title>
+{% else %}
+    <title>{{object.title}}</title>
+{% endif %}
 
 <meta name="keywords" content="{{object.seo_keywords}}">
 <meta name="description" content="{{object.seo_description}}">
