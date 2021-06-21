@@ -91,9 +91,7 @@ Now, you can create your models from `BasePage` and set template and context. Se
 
 **Page (Model Page)** - model, subclass from `BasePage`. You create it yourself. There must be at least 1 descendant from BasePage.
 
-**Page Type** - hardcoded type of page. Required for the ability to set a **Page Model** has different behavior and representation on different URLs.
-
-**Context** - includes `object` and `request`. It is a function that returns a dictionary. Values from the key dictionary can be used in the template.
+**Context** - includes `object` and `request`. It is a function that returns a dictionary from model instance. Values from the key dictionary can be used in the template.
 
 **Template** - standard Django template.
 
@@ -291,20 +289,6 @@ Templates:
 </main>
 </body>
 </html>
-
-
-
-# templates/pages/home.html
-
-{% extends 'base.html' %}
-
-{% block content %}
-<h1>{{object.title}}</h1>
-<div>
-    {{object.content|safe}}
-</div>
-{% endblock %}
-
 
 
 # templates/pages/default.html
