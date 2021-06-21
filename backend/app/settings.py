@@ -152,37 +152,3 @@ LANGUAGES = (
 MIGRATION_MODULES = {
     'garpix_page': 'app.migrations.garpix_page',
 }
-
-# garpix page
-
-COMMON_CONTEXT = 'garpix_page.contexts.default.context'
-
-PAGE_TYPE_HOME = 'HOME'
-PAGE_TYPE_DEFAULT = 'DEFAULT'
-PAGE_TYPE_CATEGORY = 'CATEGORY'
-PAGE_TYPE_POST = 'POST'
-
-PAGE_TYPES = {
-    PAGE_TYPE_HOME: {
-        'title': 'Home page',
-        'template': 'pages/home.html',
-        'context': 'garpix_page.contexts.default.context'  # empty context, contains only object and request
-    },
-    PAGE_TYPE_DEFAULT: {
-        'title': 'Default page',
-        'template': 'pages/default.html',
-        'context': 'garpix_page.contexts.default.context'  # empty context, contains only object and request
-    },
-    PAGE_TYPE_CATEGORY: {
-        'title': 'Category',
-        'template': 'pages/category.html',
-        'context': 'app.contexts.category.context'  # your custom context, see below
-    },
-    PAGE_TYPE_POST: {
-        'title': 'Post',
-        'template': 'pages/post.html',
-        'context': 'garpix_page.contexts.default.context'  # empty context, contains only object and request
-    },
-}
-
-CHOICES_PAGE_TYPES = [(k, v['title']) for k, v in PAGE_TYPES.items()]

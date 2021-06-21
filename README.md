@@ -99,44 +99,6 @@ Now, you can create your models from `BasePage` and set template and context. Se
 
 ### Example
 
-Set up your custom pages in `settings.py`, for example:
-
-```python
-# settings.py
-
-COMMON_CONTEXT = 'garpix_page.contexts.default.context'
-
-PAGE_TYPE_HOME = 'HOME'
-PAGE_TYPE_DEFAULT = 'DEFAULT'
-PAGE_TYPE_CATEGORY = 'CATEGORY'
-PAGE_TYPE_POST = 'POST'
-
-PAGE_TYPES = {
-    PAGE_TYPE_HOME: {
-            'title': 'Home page',
-            'template': 'pages/home.html',
-            'context': 'garpix_page.contexts.default.context'  # empty context, contains only object and request
-    },
-    PAGE_TYPE_DEFAULT: {
-            'title': 'Default page',
-            'template': 'pages/default.html',
-            'context': 'garpix_page.contexts.default.context'  # empty context, contains only object and request
-    },
-    PAGE_TYPE_CATEGORY: {
-            'title': 'Category',
-            'template': 'pages/category.html',
-            'context': 'app.contexts.category.context'  # your custom context, see below
-    },
-    PAGE_TYPE_POST: {
-            'title': 'Post',
-            'template': 'pages/post.html',
-            'context': 'garpix_page.contexts.default.context'  # empty context, contains only object and request
-    },
-}
-
-CHOICES_PAGE_TYPES = [(k, v['title']) for k, v in PAGE_TYPES.items()]
-```
-
 Urls:
 
 ```python
@@ -177,6 +139,8 @@ from garpix_page.models import BasePage
 
 class Page(BasePage):
     content = models.TextField(verbose_name='Content', blank=True, default='')
+    
+    template = 'pages/default.html'
 
     class Meta:
         verbose_name = "Page"
@@ -190,7 +154,15 @@ from garpix_page.models import BasePage
 
 
 class Category(BasePage):
-    pass
+    template = 'pages/category.html'
+
+    def get_context(self, request=None, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+        posts = Post.on_site.filter(is_active=True, parent=kwargs['object'])
+        context.update({
+            'posts': posts
+        })
+        return context
 
     class Meta:
         verbose_name = "Category"
@@ -206,6 +178,8 @@ from garpix_page.models import BasePage
 
 class Post(BasePage):
     content = models.TextField(verbose_name='Content', blank=True, default='')
+    
+    template = 'pages/post.html'
 
     class Meta:
         verbose_name = "Post"
@@ -297,22 +271,6 @@ from ..models import Post
 @register(Post)
 class PostTranslationOptions(TranslationOptions):
     fields = ('content',)
-
-```
-
-Contexts:
-
-```python
-# app/contexts/category.py
-
-from app.models.page import Post
-
-
-def context(request, *args, **kwargs):
-    posts = Post.on_site.filter(is_active=True, parent=kwargs['object'])
-    return {
-        'posts': posts
-    }
 
 ```
 

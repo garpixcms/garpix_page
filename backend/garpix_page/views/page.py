@@ -14,7 +14,7 @@ class PageView(DetailView):
         Структуру темплейтов можно посмотреть в модели page.models.Page.
         """
         if self.object is not None:
-            return [self.object.template]
+            return [self.object.get_template()]
         return []
 
     def get_context_data(self, **kwargs):

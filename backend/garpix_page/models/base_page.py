@@ -5,6 +5,7 @@ from django.conf import settings
 from django.utils.module_loading import import_string
 from django.contrib.sites.models import Site
 from django.contrib.sites.managers import CurrentSiteManager
+from django.utils.functional import lazy
 from garpix_page.utils.get_file_path import get_file_path
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey, PolymorphicMPTTModelManager
 
@@ -34,12 +35,29 @@ class BasePage(PolymorphicMPTTModel):
     parent = PolymorphicTreeForeignKey('self', null=True, blank=True, related_name='children',
                                        db_index=True, verbose_name='Родительская страница', on_delete=models.SET_NULL,
                                        limit_choices_to={})
-    page_type = models.CharField(default='DEFAULT', max_length=25, verbose_name='Тип страницы',
-                                 choices=settings.CHOICES_PAGE_TYPES)
 
     # objects = models.Manager()
     objects = PolymorphicMPTTModelManager()
     on_site = GCurrentSiteManager()
+
+    template = 'garpix_page/default.html'
+
+    @classmethod
+    def get_page_types(cls):
+        return cls.page_types
+
+    @classmethod
+    def get_choices_page_types(cls):
+        new_dict = {k: settings.PAGE_TYPES[k] for k in cls.get_page_types()}
+        print('new_dict', new_dict)
+        choices = [(k, v['title']) for k, v in new_dict.items()]
+        return choices
+
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     self._meta.get_field('page_type').choices = lazy(self._get_choices_page_types(), list)()
+
+    # end available page types
 
     class Meta(PolymorphicMPTTModel.Meta):
         verbose_name = 'Структура страниц'
@@ -96,13 +114,15 @@ class BasePage(PolymorphicMPTTModel):
 
     get_sites.short_description = 'Sites'
 
-    @cached_property
-    def template(self):
-        return settings.PAGE_TYPES[self.page_type]['template']
+    def get_template(self):
+        return self.template
 
     def get_context(self, request=None, *args, **kwargs):
-        context_function = import_string(settings.PAGE_TYPES[self.page_type]['context'])
-        return context_function(request, *args, **kwargs)
+        context = {
+            'request': request,
+            'object': self,
+        }
+        return context
 
     @classmethod
     def is_for_page_view(cls):

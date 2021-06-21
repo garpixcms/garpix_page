@@ -69,7 +69,7 @@ class PageApiView(views.APIView):
         common_context.update(page_context)
 
         data = {
-            'type': page.page_type,
+            'type': None,
             'init_state': common_context,
         }
         return Response(data)

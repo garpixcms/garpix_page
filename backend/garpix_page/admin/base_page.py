@@ -1,7 +1,8 @@
 from django.contrib import admin
+from django import forms
 from ..models.base_page import BasePage
 from modeltranslation.admin import TabbedTranslationAdmin
-from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, PolymorphicMPTTChildModelAdmin
+from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, PolymorphicMPTTChildModelAdmin, PolymorpicMPTTAdminForm
 from ..utils.get_garpix_page_models import get_garpix_page_models
 
 
@@ -24,6 +25,11 @@ class BasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
 
     readonly_fields = ('created_at', 'updated_at')
 
+    def get_form(self, request, *args, **kwargs):
+        form = super().get_form(request, *args, **kwargs)
+        # form.current_user = request.user
+        return form
+
 
 @admin.register(BasePage)
 class RealBasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin):
@@ -32,7 +38,6 @@ class RealBasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin)
     """
     base_model = BasePage
     child_models = get_garpix_page_models()
-    # child_models = []
 
     empty_value_display = '- нет -'
     save_on_top = True
@@ -55,7 +60,6 @@ class RealBasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin)
         if 'initial' in kwargs:
             self.fields['parent'].queryset = self.model.get_available_page_parents()
             self.fields['parent'].default = self.model.get_default_parent()
-            self.fields['page_type'].default = self.model.get_default_page_type()
 
     def clone_object(self, request, queryset):
         """Копирование(клонирование) выбранных объектов - action"""
@@ -67,6 +71,7 @@ class RealBasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin)
             clone.id = None
             clone.is_active = False
             clone.save()
+
     clone_object.short_description = 'Клонировать объект'
 
     def _rebuild(self):
@@ -78,6 +83,7 @@ class RealBasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin)
     def rebuild(self, request, queryset):
         """Пересорбать МПТТ модель. Иногда требуется для перезагрузки дерева."""
         self._rebuild()
+
     rebuild.short_description = 'Пересобрать пункты раздела'
 
     def save_model(self, request, obj, form, change):
