@@ -284,6 +284,7 @@ Templates:
     {% include 'garpix_page/seo.html' %}
 </head>
 <body>
+{% include 'garpix_page/admin_toolbar.html' %}
 <main>
     {% block content %}404{% endblock %}
 </main>

@@ -2,6 +2,7 @@ from django.utils.functional import cached_property
 from django.db import models
 from django.utils import translation
 from django.conf import settings
+from django.urls import reverse
 from django.utils.module_loading import import_string
 from django.contrib.sites.models import Site
 from django.contrib.sites.managers import CurrentSiteManager
@@ -136,3 +137,7 @@ class BasePage(PolymorphicMPTTModel):
             result.insert(0, obj.parent)
             obj = obj.parent
         return result
+
+    def url_to_edit_object(self):
+        url = reverse('admin:%s_%s_change' % (self._meta.app_label,  self._meta.model_name),  args=[self.id] )
+        return url
