@@ -42,23 +42,6 @@ class BasePage(PolymorphicMPTTModel):
 
     template = 'garpix_page/default.html'
 
-    @classmethod
-    def get_page_types(cls):
-        return cls.page_types
-
-    @classmethod
-    def get_choices_page_types(cls):
-        new_dict = {k: settings.PAGE_TYPES[k] for k in cls.get_page_types()}
-        print('new_dict', new_dict)
-        choices = [(k, v['title']) for k, v in new_dict.items()]
-        return choices
-
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self._meta.get_field('page_type').choices = lazy(self._get_choices_page_types(), list)()
-
-    # end available page types
-
     class Meta(PolymorphicMPTTModel.Meta):
         verbose_name = 'Структура страниц'
         verbose_name_plural = 'Структура страниц'

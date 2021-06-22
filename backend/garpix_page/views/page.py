@@ -27,7 +27,7 @@ class PageView(DetailView):
         home_pages = []
         for Model in get_garpix_page_models():
             home_page = Model.on_site.filter(slug='', is_active=True).first()
-            if home_pages is not None:
+            if home_page is not None:
                 return home_page
         return Http404
 
