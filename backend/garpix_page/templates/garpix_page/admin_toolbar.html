@@ -1,0 +1,53 @@
+{% if user.is_authenticated and user.is_staff %}
+<style>
+body {
+    padding-top: 48px;
+    margin: 0;
+}
+.gx-admin-toolbar {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 15px 25px;
+    background-color: #000;
+    color: #fff;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.gx-admin-toolbar__start {
+    display: flex;
+}
+
+.gx-admin-toolbar * {
+    box-sizing: border-box;
+}
+
+.gx-admin-toolbar__user {
+    margin-right: 15px;
+}
+
+.gx-admin-toolbar a {
+    color: #fff;
+}
+
+.gx-admin-toolbar a:hover {
+    color: #dadada;
+}
+
+</style>
+<div class="gx-admin-toolbar">
+    <div class="gx-admin-toolbar__start">
+        <div class="gx-admin-toolbar__user">Hi, {{ user }}</div>
+        <div>
+            <a target="_blank" href="{{ object.get_admin_url_edit_object }}">Изменить страницу</a>
+        </div>
+    </div>
+    <div class="gx-admin-toolbar__end">
+        <a target="_blank" href="{% url 'admin:index' %}">Админ панель</a>
+    </div>
+</div>
+{% endif %}
