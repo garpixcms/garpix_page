@@ -43,7 +43,7 @@ body {
     <div class="gx-admin-toolbar__start">
         <div class="gx-admin-toolbar__user">Hi, {{ user }}</div>
         <div>
-            <a target="_blank" href="{{ object.url_to_edit_object }}">Изменить страницу</a>
+            <a target="_blank" href="{{ object.get_admin_url_edit_object }}">Изменить страницу</a>
         </div>
     </div>
     <div class="gx-admin-toolbar__end">
