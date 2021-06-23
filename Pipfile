@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
+django = "==3.1"
 environs = "*"
 psycopg2-binary = "*"
 coverage = "*"
@@ -14,6 +14,7 @@ garpix-qa = "*"
 django-polymorphic-tree-for-garpix-page = "*"
 django-modeltranslation = "*"
 django-multiurl = "*"
+djangorestframework = "*"
 
 [dev-packages]
 

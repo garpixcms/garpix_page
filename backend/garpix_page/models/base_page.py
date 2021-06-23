@@ -42,6 +42,7 @@ class BasePage(PolymorphicMPTTModel):
     on_site = GCurrentSiteManager()
 
     template = 'garpix_page/default.html'
+    serializer = None  # default is generator of serializers: garpix_page.serializers.serializer.get_serializer
 
     class Meta(PolymorphicMPTTModel.Meta):
         verbose_name = 'Структура страниц'

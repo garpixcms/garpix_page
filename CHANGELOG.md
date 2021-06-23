@@ -1,3 +1,7 @@
+### 2.2.0 (23.06.2021)
+
+- Added page_api urls for SPA sites.
+
 ### 2.1.0 (22.06.2021)
 
 - Added admin-toolbar for staffs, use `{% include 'garpix_page/admin_toolbar.html' %}` in templates.

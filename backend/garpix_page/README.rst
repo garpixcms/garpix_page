@@ -336,6 +336,66 @@ Templates:
 
 Now you can auth in admin panel and starting add pages.
 
+API
+===
+
+You can use garpix_page with SPA sites.
+
+Add to ``urls.py`` this:
+
+.. code-block:: python
+
+   urlpatterns += [
+       re_path(r'page_api/(?P<slugs>.*)$', PageApiView.as_view()),
+   ]
+
+And you can test it:
+
+``http://localhost:8000/page_api/`` - home page (empty slug)
+``http://localhost:8000/page_api/another_page`` - another page (slug)
+``http://localhost:8000/page_api/kategoriya/post-1`` - sub page (slug)
+
+Example answer:
+
+.. code-block:: json
+
+   {
+       "page_model": "Post",
+       "init_state": {
+           "object": {
+               "id": 4,
+               "title": "post 1",
+               "title_en": "post 1",
+               "is_active": true,
+               "display_on_sitemap": true,
+               "slug": "post-1",
+               "created_at": "2021-06-21T19:39:49.749460Z",
+               "updated_at": "2021-06-21T19:39:49.749488Z",
+               "seo_title": "",
+               "seo_title_en": null,
+               "seo_keywords": "",
+               "seo_keywords_en": null,
+               "seo_description": "",
+               "seo_description_en": "",
+               "seo_author": "",
+               "seo_author_en": null,
+               "seo_og_type": "website",
+               "seo_image": null,
+               "lft": 2,
+               "rght": 3,
+               "tree_id": 3,
+               "level": 1,
+               "content": "example",
+               "content_en": "example",
+               "polymorphic_ctype": 11,
+               "parent": 3,
+               "sites": [
+                   1
+               ]
+           }
+       }
+   }
+
 Changelog
 =========
 
