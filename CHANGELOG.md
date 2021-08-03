@@ -1,3 +1,7 @@
+### 2.4.0 (03.08.2021)
+
+- Set to page `title` BasePage `title`, if `seo_title` is not defined.
+
 ### 2.3.0 (03.08.2021)
 
 - Added list_per_page to BasePageAdmin.
