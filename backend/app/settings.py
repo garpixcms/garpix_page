@@ -153,3 +153,5 @@ LANGUAGES = (
 MIGRATION_MODULES = {
     'garpix_page': 'app.migrations.garpix_page',
 }
+
+GARPIX_PAGE_ADMIN_LIST_PER_PAGE = 25

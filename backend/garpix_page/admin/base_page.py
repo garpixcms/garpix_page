@@ -4,10 +4,13 @@ from ..models.base_page import BasePage
 from modeltranslation.admin import TabbedTranslationAdmin
 from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, PolymorphicMPTTChildModelAdmin, PolymorpicMPTTAdminForm
 from ..utils.get_garpix_page_models import get_garpix_page_models
+from django.conf import settings
 
 
 class BasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
     base_model = BasePage
+
+    list_per_page = settings.GARPIX_PAGE_ADMIN_LIST_PER_PAGE if hasattr(settings, 'GARPIX_PAGE_ADMIN_LIST_PER_PAGE') else 25
 
     empty_value_display = '- нет -'
     save_on_top = True
@@ -38,6 +41,8 @@ class RealBasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin)
     """
     base_model = BasePage
     child_models = get_garpix_page_models()
+
+    list_per_page = settings.GARPIX_PAGE_ADMIN_LIST_PER_PAGE if hasattr(settings, 'GARPIX_PAGE_ADMIN_LIST_PER_PAGE') else 25
 
     empty_value_display = '- нет -'
     save_on_top = True

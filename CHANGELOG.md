@@ -1,3 +1,7 @@
+### 2.3.0 (03.08.2021)
+
+- Added list_per_page to BasePageAdmin.
+
 ### 2.2.0 (23.06.2021)
 
 - Added page_api urls for SPA sites.
