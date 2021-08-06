@@ -336,6 +336,8 @@ Templates:
 
 Now you can auth in admin panel and starting add pages.
 
+If you need to use a serializer whose model is this page, use the get_serializer() method to avoid circular imports.
+
 API
 ===
 
