@@ -125,3 +125,6 @@ class BasePage(PolymorphicMPTTModel):
     def get_admin_url_edit_object(self):
         url = reverse('admin:%s_%s_change' % (self._meta.app_label,  self._meta.model_name),  args=[self.id] )
         return url
+
+    def get_serializer(self):
+        return self.serializer
