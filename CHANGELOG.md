@@ -1,3 +1,7 @@
+### 2.5.0 (06.08.2021)
+
+- Added method get_serializer() in BasePage. 
+
 ### 2.4.0 (03.08.2021)
 
 - Set to page `title` BasePage `title`, if `seo_title` is not defined.
