@@ -1,3 +1,8 @@
+(31.08.2021)
+
+- Added abstract model CustomBasePage
+- Added to utilities FIELD_BASE_PAGE 
+
 ### 2.5.0 (06.08.2021)
 
 - Added method get_serializer() in BasePage. 
