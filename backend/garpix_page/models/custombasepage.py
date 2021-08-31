@@ -14,7 +14,7 @@ class CustomBasePage(BasePage):
         super(CustomBasePage, self).clean()
 
     def _clean_slug(self):
-        if self.__class__.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+        if self.__class__.on_site.filter(slug=self.slug).exclude(pk=self.pk).exists():
             self.slug = f'{self.slug}{get_random_string(size=4)}'
-            message = f'Обнаружен дубль УРЛ для {self.title}. Добавлен символы для уникальности.'
+            message = f'Обнаружен дубль УРЛ для {self.title}. Добавлены символы для уникальности.'
             logging.warning(message)
