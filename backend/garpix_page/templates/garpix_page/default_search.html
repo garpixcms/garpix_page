@@ -1,0 +1,28 @@
+{% extends 'garpix_page/base.html' %}
+
+{% block content %}
+<h1>{{ object.title }}</h1>
+
+<form method="get">
+  <div class="form-row align-items-center">
+    <div class="col-auto">
+      <label class="sr-only" for="q">Поиск</label>
+      <input type="text" class="form-control mb-2" name="q" id="q" value="{{ q }}" placeholder="Введите поисковый запрос...">
+    </div>
+    <div class="col-auto">
+      <button type="submit" class="btn btn-primary mb-2">Найти</button>
+    </div>
+  </div>
+</form>
+
+{% for obj in paginated_object_list %}
+    <div>
+        <p><a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a></p>
+    </div>
+{% empty %}
+    <div>Ничего не найдено.</div>
+{% endfor %}
+
+{% include 'garpix_page/pagination.html' %}
+
+{% endblock %}

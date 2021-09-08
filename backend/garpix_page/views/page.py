@@ -24,12 +24,11 @@ class PageView(DetailView):
         return context
 
     def _get_home_page(self):
-        home_pages = []
         for Model in get_garpix_page_models():
             home_page = Model.on_site.filter(slug='', is_active=True).first()
             if home_page is not None:
                 return home_page
-        return Http404
+        raise Http404
 
     def _get_current_language_code_url_prefix(self):
         current_language_code_url_prefix = translation.get_language()

@@ -109,6 +109,7 @@ from garpix_page.views.page import PageView
 from multiurl import ContinueResolving, multiurl
 from django.http import Http404
 from django.conf import settings
+from garpix_page.views.index import IndexView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -119,6 +120,7 @@ urlpatterns += i18n_patterns(
         path('', PageView.as_view()),
         re_path(r'^(?P<url>.*?)$', PageView.as_view(), name='page'),
         re_path(r'^(?P<url>.*?)/$', PageView.as_view(), name='page'),
+        path('', IndexView.as_view()),
         catch=(Http404, ContinueResolving),
     ),
     prefix_default_language=settings.USE_DEFAULT_LANGUAGE_PREFIX,
@@ -394,6 +396,10 @@ Example answer:
     }
 }
 ```
+
+## Important!
+
+Also, see this project for additional features (`BaseListPage`, `BaseSearchPage`, `sitemap.xml`, etc).
 
 # Changelog
 

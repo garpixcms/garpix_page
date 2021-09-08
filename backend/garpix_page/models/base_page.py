@@ -3,16 +3,18 @@ from django.db import models
 from django.utils import translation
 from django.conf import settings
 from django.urls import reverse
-from django.utils.module_loading import import_string
 from django.contrib.sites.models import Site
 from django.contrib.sites.managers import CurrentSiteManager
-from django.utils.functional import lazy
 from garpix_page.utils.get_file_path import get_file_path
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey, PolymorphicMPTTModelManager
 
 
 class GCurrentSiteManager(CurrentSiteManager):
     use_in_migrations = False
+
+
+def get_all_sites():
+    return Site.objects.all()
 
 
 class BasePage(PolymorphicMPTTModel):
@@ -23,7 +25,7 @@ class BasePage(PolymorphicMPTTModel):
     is_active = models.BooleanField(default=True, verbose_name='Включено')
     display_on_sitemap = models.BooleanField(default=True, verbose_name='Отображать в карте сайта')
     slug = models.SlugField(max_length=150, verbose_name='ЧПУ', blank=True, default='')
-    sites = models.ManyToManyField(Site, verbose_name='Сайты для отображения')
+    sites = models.ManyToManyField(Site, default=get_all_sites, verbose_name='Сайты для отображения')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
     seo_title = models.CharField(max_length=250, verbose_name='SEO заголовок страницы (title)', blank=True, default='')
@@ -42,6 +44,7 @@ class BasePage(PolymorphicMPTTModel):
     on_site = GCurrentSiteManager()
 
     template = 'garpix_page/default.html'
+    searchable_fields = ('title',)
     serializer = None  # default is generator of serializers: garpix_page.serializers.serializer.get_serializer
 
     class Meta(PolymorphicMPTTModel.Meta):
@@ -59,8 +62,12 @@ class BasePage(PolymorphicMPTTModel):
 
     def get_absolute_url(self):
         return self.absolute_url
-
     get_absolute_url.short_description = 'URL'
+
+    def get_absolute_url_html(self):
+        return f'<a href="{self.absolute_url}" target="_blank">{self.absolute_url}</a>'
+    get_absolute_url_html.short_description = 'URL'
+    get_absolute_url_html.allow_tags = True
 
     @cached_property
     def absolute_url(self):
@@ -123,7 +130,7 @@ class BasePage(PolymorphicMPTTModel):
         return result
 
     def get_admin_url_edit_object(self):
-        url = reverse('admin:%s_%s_change' % (self._meta.app_label,  self._meta.model_name),  args=[self.id] )
+        url = reverse(f'admin:{self._meta.app_label}_{self._meta.model_name}_change', args=[self.id])
         return url
 
     def get_serializer(self):

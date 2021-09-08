@@ -4,9 +4,6 @@ from rest_framework import views
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 import django.apps
-from django.conf import settings
-from django.utils.module_loading import import_string
-from ..models.base_page import BasePage
 from ..serializers.serializer import get_serializer
 
 

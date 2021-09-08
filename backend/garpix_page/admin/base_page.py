@@ -1,8 +1,7 @@
 from django.contrib import admin
-from django import forms
 from ..models.base_page import BasePage
 from modeltranslation.admin import TabbedTranslationAdmin
-from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, PolymorphicMPTTChildModelAdmin, PolymorpicMPTTAdminForm
+from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, PolymorphicMPTTChildModelAdmin
 from ..utils.get_garpix_page_models import get_garpix_page_models
 from django.conf import settings
 
@@ -55,7 +54,7 @@ class RealBasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin)
     list_filter = ('is_active', 'created_at', 'updated_at')
     actions = ('clone_object', 'rebuild')
 
-    list_display = ('title', 'created_at', 'is_active', 'get_absolute_url',)
+    list_display = ('title', 'created_at', 'is_active', 'get_absolute_url_html',)
     list_editable = ('is_active',)
 
     readonly_fields = ('created_at', 'updated_at')
