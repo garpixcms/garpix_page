@@ -1,3 +1,8 @@
+(31.08.2021)
+
+- Added abstract model CustomBasePage
+- Added to utilities FIELD_BASE_PAGE 
+
 ### 2.6.0 (08.09.2021)
 
 - Теперь нет ошибки при развертывании свежего проекта, т.к. добавлена индексная страница со ссылками 
