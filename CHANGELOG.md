@@ -1,3 +1,18 @@
+### 2.7.0 (09.09.2021)
+
+- Добавлен пакет `garpix_package`.
+- Добавлена кодогенерация:
+```bash
+# Для обычных страниц
+python3 backend/manage.py startpage --app=myapp --page=my --base=page
+
+# Для списочных страниц
+python3 backend/manage.py startpage --app=myapp --page=my_list --base=list
+
+# Для поисковой страницы
+python3 backend/manage.py startpage --app=myapp --page=search --base=search
+```
+
 ### 2.6.0 (08.09.2021)
 
 - Теперь нет ошибки при развертывании свежего проекта, т.к. добавлена индексная страница со ссылками 

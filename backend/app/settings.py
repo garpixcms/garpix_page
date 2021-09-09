@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.sitemaps',
     'rest_framework',
+    'garpix_package',
     'garpix_utils',
     'garpix_page',
     'app',
