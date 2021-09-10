@@ -21,6 +21,10 @@ def create_or_append_file(directory, file_name, file_content):
     if not os.path.isfile(path):
         create_file(directory, file_name, file_content)
     else:
+        with open(path, 'r') as f:
+            lines = f.readlines()
+            if file_content in lines:
+                return
         with open(path, 'a') as f:
             f.write(file_content)
 
@@ -74,7 +78,7 @@ def generate_page(app, page, base):
     create_file(directory, base_name, content)
     # translation init
     base_name = os.path.basename(FILE_NAME_TRANSLATION_INIT.format(app=app, page=page))
-    content = FILE_CONTENT_TRANSLATION.format(page=page, page_capitalize=snake_to_camel_case(page))
+    content = FILE_CONTENT_TRANSLATION_INIT.format(page=page, page_capitalize=snake_to_camel_case(page))
     create_or_append_file(directory, base_name, content)
 
     # create template
@@ -83,9 +87,9 @@ def generate_page(app, page, base):
         directory,
         exist_ok=True
     )
-    # translation page
+    # template page
     base_name = os.path.basename(FILE_NAME_TEMPLATE.format(page=page))
-    content = FILE_CONTENT_TEMPLATE
+    content = FILE_CONTENT_TEMPLATE_DICT[base]
     create_file(directory, base_name, content)
 
     # create app init
