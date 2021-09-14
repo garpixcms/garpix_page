@@ -1,6 +1,6 @@
 from .base_page import BasePage
 from django.db.models import Q
-from django.core.paginator import Paginator
+from garpix_utils.paginator import GarpixPaginator
 
 
 class BaseSearchPage(BasePage):
@@ -30,7 +30,7 @@ class BaseSearchPage(BasePage):
                 ids += list(Model.on_site.filter(is_active=True).filter(q).values_list('id', flat=True))
             object_list = BasePage.objects.filter(id__in=ids)
 
-        paginator = Paginator(object_list, self.paginate_by)
+        paginator = GarpixPaginator(object_list, self.paginate_by)
         paginated_object_list = paginator.get_page(page)
         context.update({
             'paginator': paginator,

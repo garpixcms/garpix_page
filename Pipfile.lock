@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "e82b0710c8d66de8e8a45a126018f88f2088688d935cd28ef40cc5d048636dfa"
+            "sha256": "78cb7851fd4f960677654203a628f38072cc5761f0c6efa1b87559b58f2afecd"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -48,11 +48,11 @@
         },
         "charset-normalizer": {
             "hashes": [
-                "sha256:0c8911edd15d19223366a194a513099a302055a962bca2cec0f54b8b63175d8b",
-                "sha256:f23667ebe1084be45f6ae0538e4a5a865206544097e4e8bbcacf42cd02a348f3"
+                "sha256:7098e7e862f6370a2a8d1a6398cd359815c45d12626267652c3f13dec58e2367",
+                "sha256:fa471a601dfea0f492e4f4fca035cd82155e65dc45c9b83bf4322dfab63755dd"
             ],
             "markers": "python_version >= '3'",
-            "version": "==2.0.4"
+            "version": "==2.0.5"
         },
         "colorama": {
             "hashes": [
@@ -249,11 +249,11 @@
         },
         "garpix-utils": {
             "hashes": [
-                "sha256:f597f820baf1dceea6a2a375e2fd52fd79c24411a624354b4e6b441b038392ba",
-                "sha256:ffb4cf32425e8ef86d2589131de687bebaebf0d5f500f41aeb5109b6d04d8a43"
+                "sha256:f0e93e19b7b4a9e5a9445f6aaf31f7c4d622c041906dc696095abf0bbc44c82c",
+                "sha256:fc95103232a9442da31394330ce01691d6ccdb30c5384c050cd0f7c6dd20e366"
             ],
             "index": "pypi",
-            "version": "==1.3.0"
+            "version": "==1.4.0"
         },
         "gitdb": {
             "hashes": [
@@ -289,11 +289,11 @@
         },
         "keyring": {
             "hashes": [
-                "sha256:b32397fd7e7063f8dd74a26db910c9862fc2109285fa16e3b5208bcb42a3e579",
-                "sha256:b7e0156667f5dcc73c1f63a518005cd18a4eb23fe77321194fefcc03748b21a4"
+                "sha256:6334aee6073db2fb1f30892697b1730105b5e9a77ce7e61fca6b435225493efe",
+                "sha256:bd2145a237ed70c8ce72978b497619ddfcae640b6dcf494402d5143e37755c6e"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==23.1.0"
+            "version": "==23.2.1"
         },
         "m2r": {
             "hashes": [
@@ -533,11 +533,11 @@
         },
         "sqlparse": {
             "hashes": [
-                "sha256:017cde379adbd6a1f15a61873f43e8274179378e95ef3fede90b5aa64d304ed0",
-                "sha256:0f91fd2e829c44362cbcfab3e9ae12e22badaa8a29ad5ff599f9ec109f0454e8"
+                "sha256:0c00730c74263a94e5a9919ade150dfc3b19c574389985446148402998287dae",
+                "sha256:48719e356bb8b42991bdbb1e8b83223757b93789c00910a616a071910ca4a64d"
             ],
             "markers": "python_version >= '3.5'",
-            "version": "==0.4.1"
+            "version": "==0.4.2"
         },
         "stevedore": {
             "hashes": [

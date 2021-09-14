@@ -15,7 +15,7 @@ django-polymorphic-tree-for-garpix-page = "*"
 django-modeltranslation = "*"
 django-multiurl = "*"
 djangorestframework = "*"
-garpix-utils = ">=1.2.0"
+garpix-utils = ">=1.4.0"
 garpix-package = "*"
 
 [dev-packages]

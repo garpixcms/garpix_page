@@ -1,5 +1,5 @@
 from .base_page import BasePage
-from django.core.paginator import Paginator
+from garpix_utils.paginator import GarpixPaginator
 
 
 class BaseListPage(BasePage):
@@ -10,7 +10,7 @@ class BaseListPage(BasePage):
         context = super().get_context(request, *args, **kwargs)
 
         object_list = self.children.filter(is_active=True)
-        paginator = Paginator(object_list, self.paginate_by)
+        paginator = GarpixPaginator(object_list, self.paginate_by)
 
         try:
             page = int(request.GET.get('page', 1))
