@@ -4,6 +4,7 @@ from modeltranslation.admin import TabbedTranslationAdmin
 from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, PolymorphicMPTTChildModelAdmin
 from ..utils.get_garpix_page_models import get_garpix_page_models
 from django.conf import settings
+from django.utils.translation import gettext as _
 
 
 class BasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
@@ -31,6 +32,20 @@ class BasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
         form = super().get_form(request, *args, **kwargs)
         # form.current_user = request.user
         return form
+
+    def delete_queryset(self, request, queryset):
+        self.model.objects.delete(id__in=queryset.values_list('id', flat=True))
+        self.model.objects.rebuild()
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if actions is not None and "delete_selected" in actions:
+            actions["delete_selected"] = (
+                self.delete_queryset,
+                "delete_selected",
+                _("Delete selected %(verbose_name_plural)s"),
+            )
+        return actions
 
 
 @admin.register(BasePage)

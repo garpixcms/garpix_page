@@ -1,3 +1,11 @@
+### 2.10.0 (19.09.2021)
+
+- Добавлен глобальный контекст для Page Api, задается так `GARPIX_PAGE_GLOBAL_CONTEXT = 'garpix_page.contexts.global_context.global_context'` и сама функция:
+```python
+def global_context(request, page):
+    return {}
+```
+
 ### 2.9.0 (14.09.2021)
 
 - Использован `GarpixPaginator` из `garpix_utils` - позволяет выводить более красивую пагинацию. Изменен также шаблон для пагинации.

@@ -4,6 +4,8 @@ from rest_framework import views
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 import django.apps
+from django.utils.module_loading import import_string
+from django.conf import settings
 from ..serializers.serializer import get_serializer
 
 
@@ -58,6 +60,8 @@ class PageApiView(views.APIView):
             if hasattr(v, 'is_for_page_view'):
                 model_serializer_class = get_serializer(v.__class__)
                 page_context[k] = model_serializer_class(v).data
+
+        page_context['global'] = import_string(settings.GARPIX_PAGE_GLOBAL_CONTEXT)(request, page)
         data = {
             'page_model': page.__class__.__name__,
             'init_state': page_context,
