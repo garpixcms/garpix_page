@@ -5,6 +5,7 @@ from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, PolymorphicM
 from ..utils.get_garpix_page_models import get_garpix_page_models
 from django.conf import settings
 from django.utils.translation import gettext as _
+from polymorphic.admin import PolymorphicChildModelFilter
 
 
 class BasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
@@ -47,6 +48,9 @@ class BasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
             )
         return actions
 
+    def has_module_permission(self, request):
+        return False
+
 
 @admin.register(BasePage)
 class RealBasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin):
@@ -66,13 +70,13 @@ class RealBasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin)
     prepopulated_fields = {'slug': ('title',)}
 
     search_fields = ('title',)
-    list_filter = ('is_active', 'created_at', 'updated_at')
+    list_filter = (PolymorphicChildModelFilter, 'is_active', 'created_at', 'updated_at', 'sites')
     actions = ('clone_object', 'rebuild')
 
-    list_display = ('title', 'created_at', 'is_active', 'get_absolute_url_html',)
+    list_display = ('title', 'created_at', 'is_active', 'get_absolute_url_html', 'model_name')
     list_editable = ('is_active',)
 
-    readonly_fields = ('created_at', 'updated_at')
+    readonly_fields = ('created_at', 'updated_at', 'model_name')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -135,3 +135,7 @@ class BasePage(PolymorphicMPTTModel):
 
     def get_serializer(self):
         return self.serializer
+
+    def model_name(self):
+        return self.get_real_instance_class()._meta.verbose_name  # noqa
+    model_name.short_description = 'Тип'
