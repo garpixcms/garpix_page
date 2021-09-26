@@ -18,6 +18,9 @@ for model in django.apps.apps.get_models():
         pass
 
 
+languages_list = [x[0] for x in settings.LANGUAGES]
+
+
 class PageApiView(views.APIView):
 
     @staticmethod
@@ -33,8 +36,8 @@ class PageApiView(views.APIView):
         return obj
 
     def get(self, request, slugs):
-        language = "ru"
-        if 'HTTP_ACCEPT_LANGUAGE' in request.META:
+        language = languages_list[0]
+        if 'HTTP_ACCEPT_LANGUAGE' in request.META and request.META['HTTP_ACCEPT_LANGUAGE'] in languages_list:
             language = request.META['HTTP_ACCEPT_LANGUAGE']
         activate(language)
 
@@ -60,6 +63,12 @@ class PageApiView(views.APIView):
             if hasattr(v, 'is_for_page_view'):
                 model_serializer_class = get_serializer(v.__class__)
                 page_context[k] = model_serializer_class(v).data
+        if 'paginated_object_list' in page_context:
+            page_context['paginated_object_list'] = list({'id': x.id, 'title': x.title, 'get_absolute_url': x.get_absolute_url()} for x in page_context['paginated_object_list'])
+        if 'paginator' in page_context:
+            page_context['num_pages'] = page_context['paginator'].num_pages
+            page_context['per_page'] = page_context['paginator'].per_page
+            page_context.pop('paginator')
 
         page_context['global'] = import_string(settings.GARPIX_PAGE_GLOBAL_CONTEXT)(request, page)
         data = {
