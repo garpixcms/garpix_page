@@ -1,8 +1,7 @@
 # Garpix Page
 
-Convenient page structure with any context and template.
-It is suitable not only for a blog, but also for large sites with a complex presentation.
-Supports SEO.
+Convenient page structure with any context and template. It is suitable not only for a blog, but also for large sites
+with a complex presentation. Supports SEO.
 
 ## Quickstart
 
@@ -28,7 +27,7 @@ INSTALLED_APPS = [
     # third-party and your apps
 ]
 
-SITE_ID=1
+SITE_ID = 1
 
 LANGUAGE_CODE = 'en'
 USE_DEFAULT_LANGUAGE_PREFIX = False
@@ -55,7 +54,8 @@ TEMPLATES = [
 
 ```
 
-Package not included migrations, set path to migration directory. Don't forget create this directory (`app/migrations/garpix_page/`) and place empty `__init__.py`:
+Package not included migrations, set path to migration directory. Don't forget create this
+directory (`app/migrations/garpix_page/`) and place empty `__init__.py`:
 
 ```
 app/migrations/
@@ -89,9 +89,11 @@ Now, you can create your models from `BasePage` and set template and context. Se
 
 ### Important
 
-**Page (Model Page)** - model, subclass from `BasePage`. You create it yourself. There must be at least 1 descendant from BasePage.
+**Page (Model Page)** - model, subclass from `BasePage`. You create it yourself. There must be at least 1 descendant
+from BasePage.
 
-**Context** - includes `object` and `request`. It is a function that returns a dictionary from model instance. Values from the key dictionary can be used in the template.
+**Context** - includes `object` and `request`. It is a function that returns a dictionary from model instance. Values
+from the key dictionary can be used in the template.
 
 **Template** - standard Django template.
 
@@ -139,7 +141,7 @@ from garpix_page.models import BasePage
 
 class Page(BasePage):
     content = models.TextField(verbose_name='Content', blank=True, default='')
-    
+
     template = 'pages/default.html'
 
     class Meta:
@@ -169,7 +171,7 @@ class Category(BasePage):
         verbose_name_plural = "Categories"
         ordering = ('-created_at',)
 
-        
+
 # app/models/post.py
 
 from django.db import models
@@ -178,7 +180,7 @@ from garpix_page.models import BasePage
 
 class Post(BasePage):
     content = models.TextField(verbose_name='Content', blank=True, default='')
-    
+
     template = 'pages/post.html'
 
     class Meta:
@@ -196,7 +198,6 @@ from .page import PageAdmin
 from .category import CategoryAdmin
 from .post import PostAdmin
 
-
 # app/admin/page.py
 
 from ..models.page import Page
@@ -208,6 +209,7 @@ from garpix_page.admin import BasePageAdmin
 class PageAdmin(BasePageAdmin):
     pass
 
+
 # app/admin/category.py
 
 from ..models.category import Category
@@ -218,6 +220,7 @@ from garpix_page.admin import BasePageAdmin
 @admin.register(Category)
 class CategoryAdmin(BasePageAdmin):
     pass
+
 
 # app/admin/post.py
 
@@ -261,6 +264,7 @@ from ..models import Category
 @register(Category)
 class CategoryTranslationOptions(TranslationOptions):
     fields = []
+
 
 # app/translation/post.py
 
@@ -306,7 +310,6 @@ Templates:
 {% endblock %}
 
 
-
 # templates/pages/category.html
 
 {% extends 'base.html' %}
@@ -314,13 +317,12 @@ Templates:
 {% block content %}
 <h1>{{object.title}}</h1>
 {% for post in posts %}
-    <div>
-        <h3><a href="{{post.get_absolute_url}}">{{post.title}}</a></h3>
-    </div>
+<div>
+    <h3><a href="{{post.get_absolute_url}}">{{post.title}}</a></h3>
+</div>
 {% endfor %}
 
 {% endblock %}
-
 
 
 # templates/pages/post.html
@@ -360,41 +362,66 @@ Example answer:
 
 ```json
 {
-    "page_model": "Post",
-    "init_state": {
-        "object": {
-            "id": 4,
-            "title": "post 1",
-            "title_en": "post 1",
-            "is_active": true,
-            "display_on_sitemap": true,
-            "slug": "post-1",
-            "created_at": "2021-06-21T19:39:49.749460Z",
-            "updated_at": "2021-06-21T19:39:49.749488Z",
-            "seo_title": "",
-            "seo_title_en": null,
-            "seo_keywords": "",
-            "seo_keywords_en": null,
-            "seo_description": "",
-            "seo_description_en": "",
-            "seo_author": "",
-            "seo_author_en": null,
-            "seo_og_type": "website",
-            "seo_image": null,
-            "lft": 2,
-            "rght": 3,
-            "tree_id": 3,
-            "level": 1,
-            "content": "example",
-            "content_en": "example",
-            "polymorphic_ctype": 11,
-            "parent": 3,
-            "sites": [
-                1
-            ]
-        }
+  "page_model": "Post",
+  "init_state": {
+    "object": {
+      "id": 4,
+      "title": "post 1",
+      "title_en": "post 1",
+      "is_active": true,
+      "display_on_sitemap": true,
+      "slug": "post-1",
+      "created_at": "2021-06-21T19:39:49.749460Z",
+      "updated_at": "2021-06-21T19:39:49.749488Z",
+      "seo_title": "",
+      "seo_title_en": null,
+      "seo_keywords": "",
+      "seo_keywords_en": null,
+      "seo_description": "",
+      "seo_description_en": "",
+      "seo_author": "",
+      "seo_author_en": null,
+      "seo_og_type": "website",
+      "seo_image": null,
+      "lft": 2,
+      "rght": 3,
+      "tree_id": 3,
+      "level": 1,
+      "content": "example",
+      "content_en": "example",
+      "polymorphic_ctype": 11,
+      "parent": 3,
+      "sites": [
+        1
+      ]
     }
+  }
 }
+```
+
+To add paginated list of non-page objects to your page use GarpixCommonPagination:
+
+```python
+    # example
+...
+# your imports
+...
+
+from garpix_page.pagination import GarpixCommonPagination
+
+
+def get_context(self, request=None, *args, **kwargs):
+    ...
+    # get your_objects_list
+    ...
+
+    paginator = GarpixCommonPagination()
+
+    paginated_list = paginator.get_paginated_data(queryset=your_objects_list, serializer=YourObjectsSerializer,
+                                                  equest=request)
+    context = {
+        'paginated_list': paginated_list
+    }
 ```
 
 ## Important!
