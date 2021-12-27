@@ -46,6 +46,7 @@ class BasePage(PolymorphicMPTTModel):
     template = 'garpix_page/default.html'
     searchable_fields = ('title',)
     serializer = None  # default is generator of serializers: garpix_page.serializers.serializer.get_serializer
+    permissions = None
 
     class Meta(PolymorphicMPTTModel.Meta):
         verbose_name = 'Структура страниц'
@@ -135,6 +136,9 @@ class BasePage(PolymorphicMPTTModel):
 
     def get_serializer(self):
         return self.serializer
+
+    def get_permissions(self):
+        return self.permissions
 
     def model_name(self):
         return self.get_real_instance_class()._meta.verbose_name  # noqa

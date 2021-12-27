@@ -31,9 +31,21 @@ class PageApiView(views.APIView):
                 return instance
         return None
 
-    def get_object(self, slug):
+    def get_object(self, slugs):
+        print('slugs1', slugs)
+        slug_list = slugs.split('/')
+        slug = slug_list.pop(-1)
         obj = self.get_instance_by_slug(slug)
         return obj
+
+    def get_permissions(self):
+        permissions = [permission() for permission in self.permission_classes]
+        page = self.get_object(self.kwargs.get('slugs'))
+        if page:
+            page_permissions = page.get_permissions()
+            if page_permissions:
+                permissions = [permission() for permission in page_permissions]
+        return permissions
 
     def get(self, request, slugs):
         language = languages_list[0]
@@ -41,9 +53,7 @@ class PageApiView(views.APIView):
             language = request.META['HTTP_ACCEPT_LANGUAGE']
         activate(language)
 
-        slug_list = slugs.split('/')
-        slug = slug_list.pop(-1)
-        page = self.get_object(slug)
+        page = self.get_object(slugs)
 
         if request.user.is_authenticated:
             user = get_user_model().objects.get(pk=request.user.pk)
