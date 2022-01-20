@@ -53,7 +53,10 @@ class PageApiView(views.APIView):
         if page is None:
             data = {
                 'page_model': None,
-                'init_state': {}
+                'init_state': {
+                    "global": import_string(settings.GARPIX_PAGE_GLOBAL_CONTEXT)(request, page),
+                    "object": None
+                }
             }
             return Response(data, status=status.HTTP_404_NOT_FOUND)
 
