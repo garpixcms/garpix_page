@@ -6,9 +6,10 @@ from ..utils.get_garpix_page_models import get_garpix_page_models
 from django.conf import settings
 from django.utils.translation import gettext as _
 from polymorphic.admin import PolymorphicChildModelFilter
+from tabbed_admin import TabbedModelAdmin
 
 
-class BasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
+class BasePageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
     base_model = BasePage
 
     list_per_page = settings.GARPIX_PAGE_ADMIN_LIST_PER_PAGE if hasattr(settings, 'GARPIX_PAGE_ADMIN_LIST_PER_PAGE') else 25
@@ -50,6 +51,40 @@ class BasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
 
     def has_module_permission(self, request):
         return False
+
+    def get_fieldsets(self, request, obj=None):
+
+        if self.fieldsets:
+            return self.fieldsets
+        fields = self.get_fields(request, obj)
+        tab_seo_fields = []
+        tab_main_fields = []
+        for field in fields:
+            if field[:4] == 'seo_':
+                tab_seo_fields.append(field)
+            else:
+                tab_main_fields.append(field)
+        tab_seo = (
+            (None, {
+                'fields': tab_seo_fields
+            }),
+        )
+
+        tab_main = (
+            (None, {
+                'fields': tab_main_fields
+            }),
+        )
+
+        self.tabs = [
+            ('Основное', tab_main),
+            ('SEO', tab_seo)
+        ]
+        tabs_fieldsets = self.get_formatted_tabs(request, obj)['fieldsets']
+        if self.tabs is not None:
+            self.fieldsets = ()
+        self.fieldsets = self.add_tabbed_item(tabs_fieldsets, self.fieldsets)
+        return super(TabbedModelAdmin, self).get_fieldsets(request, obj)
 
 
 @admin.register(BasePage)
