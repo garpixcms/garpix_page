@@ -53,33 +53,38 @@ class BasePageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChi
         return False
 
     def get_fieldsets(self, request, obj=None):
+        """
+        Если в модели страницы определены табы, будут отображаться они.
+        Если не определены - все доступные филдсеты/поля будут помещены в таб "Основное", сео теги - в таб "Сео"
+        """
+        if not self.tabs:
+            fields = self.get_fields(request, obj)
+            tab_seo_fields = []
+            tab_main_fields = []
+            for field in fields:
+                if field[:4] == 'seo_':
+                    tab_seo_fields.append(field)
+                else:
+                    tab_main_fields.append(field)
+            tab_seo = (
+                (None, {
+                    'fields': tab_seo_fields
+                }),
+            )
 
-        if self.fieldsets:
-            return self.fieldsets
-        fields = self.get_fields(request, obj)
-        tab_seo_fields = []
-        tab_main_fields = []
-        for field in fields:
-            if field[:4] == 'seo_':
-                tab_seo_fields.append(field)
+            if self.fieldsets:
+                tab_main = self.fieldsets
             else:
-                tab_main_fields.append(field)
-        tab_seo = (
-            (None, {
-                'fields': tab_seo_fields
-            }),
-        )
+                tab_main = (
+                    (None, {
+                        'fields': tab_main_fields
+                    }),
+                )
 
-        tab_main = (
-            (None, {
-                'fields': tab_main_fields
-            }),
-        )
-
-        self.tabs = [
-            ('Основное', tab_main),
-            ('SEO', tab_seo)
-        ]
+            self.tabs = [
+                ('Основное', tab_main),
+                ('SEO', tab_seo)
+            ]
         tabs_fieldsets = self.get_formatted_tabs(request, obj)['fieldsets']
         if self.tabs is not None:
             self.fieldsets = ()
