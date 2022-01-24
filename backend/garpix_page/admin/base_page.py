@@ -57,7 +57,7 @@ class BasePageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChi
         Если в модели страницы определены табы, будут отображаться они.
         Если не определены - все доступные филдсеты/поля будут помещены в таб "Основное", сео теги - в таб "Сео"
         """
-        if not self.tabs:
+        if self.tabs is None:
             fields = self.get_fields(request, obj)
             tab_seo_fields = []
             tab_main_fields = []
@@ -86,8 +86,7 @@ class BasePageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChi
                 ('SEO', tab_seo)
             ]
         tabs_fieldsets = self.get_formatted_tabs(request, obj)['fieldsets']
-        if self.tabs is not None:
-            self.fieldsets = ()
+        self.fieldsets = ()
         self.fieldsets = self.add_tabbed_item(tabs_fieldsets, self.fieldsets)
         return super(TabbedModelAdmin, self).get_fieldsets(request, obj)
 
