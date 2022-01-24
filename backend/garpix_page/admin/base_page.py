@@ -88,7 +88,7 @@ class BasePageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChi
         tabs_fieldsets = self.get_formatted_tabs(request, obj)['fieldsets']
         self.fieldsets = ()
         self.fieldsets = self.add_tabbed_item(tabs_fieldsets, self.fieldsets)
-        return super(TabbedModelAdmin, self).get_fieldsets(request, obj)
+        return super(BasePageAdmin, self).get_fieldsets(request, obj)
 
 
 @admin.register(BasePage)
