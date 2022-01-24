@@ -13,7 +13,7 @@ from garpix_page.views.sitemap import sitemap_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path(r'api/page/(?P<slugs>.*)$', PageApiView.as_view()),
+    re_path(r'{}(?P<slugs>.*)$'.format(settings.GARPIX_PAGE_API_URL), PageApiView.as_view()),
     path('sitemap.xml', sitemap, sitemap_view(), name='django.contrib.sitemaps.views.sitemap'),
 ]
 
