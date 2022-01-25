@@ -7,12 +7,7 @@ class Page(BasePage):
 
     template = 'pages/default.html'
 
-    login_required = True
-
     class Meta:
         verbose_name = "Страница"
         verbose_name_plural = "Страницы"
         ordering = ('-created_at',)
-
-    def user_has_permission_required(self, user):
-        return user.is_superuser
