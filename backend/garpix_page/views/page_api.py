@@ -47,7 +47,7 @@ class PageApiView(views.APIView):
         if page is None:
             return Response(self.get_error_page_response_data(page, request), status=status.HTTP_404_NOT_FOUND)
 
-        if page.login_required():
+        if getattr(page, 'login_required', False):
             if not request.user.is_authenticated:
                 return Response(self.get_error_page_response_data(page, request), status=status.HTTP_401_UNAUTHORIZED)
 

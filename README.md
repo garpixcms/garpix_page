@@ -338,16 +338,27 @@ Templates:
 
 Now you can auth in admin panel and starting add pages.
 
-If you need to add some user permissions to page, you can redefine two methods in your page model:
+If you need to add login access to your model pages, add login_required static field to your model.
+
+To add some user permissions to page, you can redefine user_has_permission_required method in your page model:
 
 ```python
-def login_required(self):
-    return True 
-
-def user_has_permission_required(self, user):
-    # check user permissions you need
-    # example:
-    return user.is_superuser
+class Post(BasePage):
+    content = models.TextField(verbose_name='Content', blank=True, default='')
+    
+    template = 'pages/post.html'
+    
+    login_required = True
+    
+    class Meta:
+        verbose_name = "Post"
+        verbose_name_plural = "Posts"
+        ordering = ('-created_at',)
+        
+    def user_has_permission_required(self, user):
+        # check user permissions you need
+        # example:
+        return user.is_superuser
 ```
 
 # API

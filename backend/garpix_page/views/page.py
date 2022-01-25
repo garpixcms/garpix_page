@@ -84,7 +84,7 @@ class PageView(DetailView):
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         user = request.user
-        if self.object.login_required():
+        if getattr(self.object, 'login_required', False):
             if not user.is_authenticated:
                 return redirect(settings.LOGIN_URL)
         if not self.object.user_has_permission_required(user):
@@ -98,7 +98,7 @@ class PageView(DetailView):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         user = request.user
-        if self.object.login_required():
+        if getattr(self.object, 'login_required', False):
             if not user.is_authenticated:
                 return redirect(settings.LOGIN_URL)
         if not self.object.user_has_permission_required(user):
