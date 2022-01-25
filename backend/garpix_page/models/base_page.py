@@ -139,3 +139,9 @@ class BasePage(PolymorphicMPTTModel):
     def model_name(self):
         return self.get_real_instance_class()._meta.verbose_name  # noqa
     model_name.short_description = 'Тип'
+
+    def login_required(self):
+        return False
+
+    def user_has_permission_required(self, user):
+        return True

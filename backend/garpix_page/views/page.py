@@ -83,9 +83,12 @@ class PageView(DetailView):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if getattr(self.object, 'login_required', None):
-            if not self.request.user.is_authenticated:
+        user = request.user
+        if self.object.login_required():
+            if not user.is_authenticated:
                 return redirect(settings.LOGIN_URL)
+        if not self.object.user_has_permission_required(user):
+            return redirect(settings.LOGIN_URL)
         context = self.get_context_data(object=self.object)
         redir = check_redirect(request, context)
         if redir:
@@ -94,9 +97,12 @@ class PageView(DetailView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if getattr(self.object, 'login_required', None):
-            if not self.request.user.is_authenticated:
+        user = request.user
+        if self.object.login_required():
+            if not user.is_authenticated:
                 return redirect(settings.LOGIN_URL)
+        if not self.object.user_has_permission_required(user):
+            return redirect(settings.LOGIN_URL)
         context = self.get_context_data(object=self.object)
         redir = check_redirect(request, context)
         if redir:
