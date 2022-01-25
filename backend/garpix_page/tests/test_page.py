@@ -37,19 +37,20 @@ class BasePageApiTest(APITestCase):
             self.client.logout()
 
     def test_page_api(self):
-        for page in self.pages:
-            response = self.client.get(f'/{settings.GARPIX_PAGE_API_URL}{page.slug}')
-            if page.login_required():
-                self.assertEqual(response.status_code, 401)
-                self.client.force_authenticate(user=self.test_user)
+        if hasattr(settings, 'GARPIX_PAGE_API_URL'):
+            for page in self.pages:
                 response = self.client.get(f'/{settings.GARPIX_PAGE_API_URL}{page.slug}')
-            if not page.user_has_permission_required(self.test_user):
-                self.client.force_authenticate(user=self.test_user)
-                response = self.client.get(f'/{settings.GARPIX_PAGE_API_URL}{page.slug}')
-                self.assertEqual(response.status_code, 403)
-            else:
-                self.assertEqual(response.status_code, 200)
-            self.client.logout()
+                if page.login_required():
+                    self.assertEqual(response.status_code, 401)
+                    self.client.force_authenticate(user=self.test_user)
+                    response = self.client.get(f'/{settings.GARPIX_PAGE_API_URL}{page.slug}')
+                if not page.user_has_permission_required(self.test_user):
+                    self.client.force_authenticate(user=self.test_user)
+                    response = self.client.get(f'/{settings.GARPIX_PAGE_API_URL}{page.slug}')
+                    self.assertEqual(response.status_code, 403)
+                else:
+                    self.assertEqual(response.status_code, 200)
+                self.client.logout()
 
     # def test_page_admin(self):
     #     self.client.force_authenticate(user=self.test_user)

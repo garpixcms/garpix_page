@@ -338,15 +338,33 @@ Templates:
 
 Now you can auth in admin panel and starting add pages.
 
+If you need to add some user permissions to page, you can redefine two methods in your page model:
+
+```python
+def login_required(self):
+    return True 
+
+def user_has_permission_required(self, user):
+    # check user permissions you need
+    # example:
+    return user.is_superuser
+```
+
 # API
 
 You can use garpix_page with SPA sites.
+
+Add to settings GARPIX_PAGE_API_URL parameter:
+
+```python
+GARPIX_PAGE_API_URL = 'page_api'
+```
 
 Add to `urls.py` this:
 
 ```python
 urlpatterns += [
-    re_path(r'page_api/(?P<slugs>.*)$', PageApiView.as_view()),
+    re_path(r'{}(?P<slugs>.*)$'.format(settings.GARPIX_PAGE_API_URL), PageApiView.as_view()),
 ]
 ```
 
