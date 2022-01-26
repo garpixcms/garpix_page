@@ -20,15 +20,18 @@ class BasePageApiTest(APITestCase):
             page = baker.make(page_model, slug=f'slug{i}', sites=sites)
             self.pages.append(page)
             i += 1
-
         self.test_user = baker.make(get_user_model())
+
+    def user_login(self):
+        self.client.force_login(self.test_user)
+        self.client.force_authenticate(self.test_user)
 
     def test_page(self):
         for page in self.pages:
             response = self.client.get(f'/{page.slug}')
             if getattr(page, 'login_required', False):
                 self.assertEqual(response.status_code, 302)
-                self.client.force_authenticate(user=self.test_user)
+                self.user_login()
                 response = self.client.get(f'/{page.slug}')
             if not page.user_has_permission_required(self.test_user):
                 self.assertEqual(response.status_code, 302)
@@ -42,26 +45,12 @@ class BasePageApiTest(APITestCase):
                 response = self.client.get(f'/{settings.GARPIX_PAGE_API_URL}{page.slug}')
                 if getattr(page, 'login_required', False):
                     self.assertEqual(response.status_code, 401)
-                    self.client.force_authenticate(user=self.test_user)
+                    self.user_login()
                     response = self.client.get(f'/{settings.GARPIX_PAGE_API_URL}{page.slug}')
                 if not page.user_has_permission_required(self.test_user):
-                    self.client.force_authenticate(user=self.test_user)
+                    self.user_login()
                     response = self.client.get(f'/{settings.GARPIX_PAGE_API_URL}{page.slug}')
                     self.assertEqual(response.status_code, 403)
                 else:
                     self.assertEqual(response.status_code, 200)
                 self.client.logout()
-
-    # def test_page_admin(self):
-    #     self.client.force_authenticate(user=self.test_user)
-    #     response = self.client.get('/admin/garpix_page/basepage/')
-    #     print(response.request)
-    #     self.assertEqual(response.status_code, 200)
-    #
-    #     response = self.client.get('/admin/garpix_page/basepage/add/')
-    #     self.assertEqual(response.status_code, 200)
-    #
-    #     for page in self.pages:
-    #         page_ct = ContentType.objects.get_for_model(page)
-    #         response = self.client.get(f'/admin/garpix_page/basepage/add/?ct_id={page_ct}')
-    #         self.assertEqual(response.status_code, 200)
