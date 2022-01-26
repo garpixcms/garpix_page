@@ -365,25 +365,25 @@ class Post(BasePage):
 
 You can use garpix_page with SPA sites.
 
-Add to settings GARPIX_PAGE_API_URL parameter:
+Add to settings API_URL parameter:
 
 ```python
-GARPIX_PAGE_API_URL = 'page_api'
+API_URL = 'api'
 ```
 
 Add to `urls.py` this:
 
 ```python
 urlpatterns += [
-    re_path(r'{}(?P<slugs>.*)$'.format(settings.GARPIX_PAGE_API_URL), PageApiView.as_view()),
+    re_path(r'{}/page/(?P<slugs>.*)$'.format(settings.API_URL), PageApiView.as_view()),
 ]
 ```
 
 And you can test it:
 
-`http://localhost:8000/page_api/` - home page (empty slug)
-`http://localhost:8000/page_api/another_page` - another page (slug)
-`http://localhost:8000/page_api/kategoriya/post-1` - sub page (slug)
+`http://localhost:8000/api/page/` - home page (empty slug)
+`http://localhost:8000/api/page/another_page` - another page (slug)
+`http://localhost:8000/api/page/kategoriya/post-1` - sub page (slug)
 
 Example answer:
 

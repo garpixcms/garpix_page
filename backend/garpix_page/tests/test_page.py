@@ -40,16 +40,16 @@ class BasePageApiTest(APITestCase):
             self.client.logout()
 
     def test_page_api(self):
-        if hasattr(settings, 'GARPIX_PAGE_API_URL'):
+        if hasattr(settings, 'API_URL'):
             for page in self.pages:
-                response = self.client.get(f'/{settings.GARPIX_PAGE_API_URL}{page.slug}')
+                response = self.client.get(f'/{settings.API_URL}/page/{page.slug}')
                 if getattr(page, 'login_required', False):
                     self.assertEqual(response.status_code, 401)
                     self.user_login()
-                    response = self.client.get(f'/{settings.GARPIX_PAGE_API_URL}{page.slug}')
+                    response = self.client.get(f'/{settings.API_URL}/page/{page.slug}')
                 if not page.user_has_permission_required(self.test_user):
                     self.user_login()
-                    response = self.client.get(f'/{settings.GARPIX_PAGE_API_URL}{page.slug}')
+                    response = self.client.get(f'/{settings.API_URL}/page/{page.slug}')
                     self.assertEqual(response.status_code, 403)
                 else:
                     self.assertEqual(response.status_code, 200)

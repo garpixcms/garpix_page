@@ -160,4 +160,4 @@ MIGRATION_MODULES = {
 GARPIX_PAGE_ADMIN_LIST_PER_PAGE = 25
 GARPIX_PAGE_GLOBAL_CONTEXT = 'garpix_page.contexts.global_context.global_context'
 
-GARPIX_PAGE_API_URL = 'api/page/'
+API_URL = 'api'
