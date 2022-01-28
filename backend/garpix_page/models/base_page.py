@@ -5,6 +5,8 @@ from django.conf import settings
 from django.urls import reverse
 from django.contrib.sites.models import Site
 from django.contrib.sites.managers import CurrentSiteManager
+from rest_framework.views import APIView
+
 from garpix_page.utils.get_file_path import get_file_path
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey, PolymorphicMPTTModelManager
 
@@ -46,6 +48,7 @@ class BasePage(PolymorphicMPTTModel):
     template = 'garpix_page/default.html'
     searchable_fields = ('title',)
     serializer = None  # default is generator of serializers: garpix_page.serializers.serializer.get_serializer
+    permissions = None
 
     class Meta(PolymorphicMPTTModel.Meta):
         verbose_name = 'Структура страниц'
@@ -62,10 +65,12 @@ class BasePage(PolymorphicMPTTModel):
 
     def get_absolute_url(self):
         return self.absolute_url
+
     get_absolute_url.short_description = 'URL'
 
     def get_absolute_url_html(self):
         return f'<a href="{self.absolute_url}" target="_blank">{self.absolute_url}</a>'
+
     get_absolute_url_html.short_description = 'URL'
     get_absolute_url_html.allow_tags = True
 
@@ -138,7 +143,16 @@ class BasePage(PolymorphicMPTTModel):
 
     def model_name(self):
         return self.get_real_instance_class()._meta.verbose_name  # noqa
+
     model_name.short_description = 'Тип'
 
-    def user_has_permission_required(self, user):
+    def has_permission_required(self, request):
+
+        view = APIView()
+        view.queryset = type(self).objects.filter(id=self.id)
+        if self.permissions is not None:
+            for permission in [permission() for permission in self.permissions]:
+                if not permission.has_object_permission(request, view, self) or not permission.has_permission(request,
+                                                                                                              view):
+                    return False
         return True

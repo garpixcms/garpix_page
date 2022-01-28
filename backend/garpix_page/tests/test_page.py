@@ -33,7 +33,7 @@ class BasePageApiTest(APITestCase):
                 self.assertEqual(response.status_code, 302)
                 self.user_login()
                 response = self.client.get(f'/{page.slug}')
-            if not page.user_has_permission_required(self.test_user):
+            if not page.has_permission_required(response.wsgi_request):
                 self.assertEqual(response.status_code, 302)
             else:
                 self.assertEqual(response.status_code, 200)
@@ -47,7 +47,7 @@ class BasePageApiTest(APITestCase):
                     self.assertEqual(response.status_code, 401)
                     self.user_login()
                     response = self.client.get(f'/{settings.API_URL}/page/{page.slug}')
-                if not page.user_has_permission_required(self.test_user):
+                if not page.has_permission_required(response.wsgi_request):
                     self.user_login()
                     response = self.client.get(f'/{settings.API_URL}/page/{page.slug}')
                     self.assertEqual(response.status_code, 403)
