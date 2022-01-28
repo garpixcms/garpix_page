@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "10cb248a032b09664399ba0d99faa2fa2dde1edc80b26992bbb310bda4b661b6"
+            "sha256": "afc3836f3029cae8c8887d80960b8425706bbacd6f848d2e6fb165309a347955"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -249,13 +249,6 @@
             "index": "pypi",
             "version": "==2.0.1"
         },
-        "django-tabbed-admin": {
-            "hashes": [
-                "sha256:416044c8ba1ad5359a947482005dcc7b4c5b809af8add97c398895a48baec334"
-            ],
-            "index": "pypi",
-            "version": "==1.0.4"
-        },
         "django-tag-parser": {
             "hashes": [
                 "sha256:903cd4bf3692c8c060770ca2b9d6e74e4ee52d6078308852acffe1ef4a49e0f7",
@@ -422,6 +415,14 @@
                 "sha256:88a1051873018da288eee8538d476dffe1262495144b33ecb586c4ab266bb8d4"
             ],
             "version": "==0.8.4"
+        },
+        "model-bakery": {
+            "hashes": [
+                "sha256:a89befaae667380f5e2352981d45fed36747941f5c3e9dffa962fc6ba8d661d1",
+                "sha256:c29fb821c81cda2c37dfbdcb1dd2218cda179ecb96c6edb6cd9cdaa146706d92"
+            ],
+            "index": "pypi",
+            "version": "==1.4.0"
         },
         "packaging": {
             "hashes": [

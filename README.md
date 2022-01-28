@@ -338,23 +338,52 @@ Templates:
 
 Now you can auth in admin panel and starting add pages.
 
+If you need to add login access to your model pages, add login_required static field to your model.
+
+To add some user permissions to page, you can redefine user_has_permission_required method in your page model:
+
+```python
+class Post(BasePage):
+    content = models.TextField(verbose_name='Content', blank=True, default='')
+    
+    template = 'pages/post.html'
+    
+    login_required = True
+    
+    class Meta:
+        verbose_name = "Post"
+        verbose_name_plural = "Posts"
+        ordering = ('-created_at',)
+        
+    def user_has_permission_required(self, user):
+        # check user permissions you need
+        # example:
+        return user.is_superuser
+```
+
 # API
 
 You can use garpix_page with SPA sites.
+
+Add to settings API_URL parameter:
+
+```python
+API_URL = 'api'
+```
 
 Add to `urls.py` this:
 
 ```python
 urlpatterns += [
-    re_path(r'page_api/(?P<slugs>.*)$', PageApiView.as_view()),
+    re_path(r'{}/page/(?P<slugs>.*)$'.format(settings.API_URL), PageApiView.as_view()),
 ]
 ```
 
 And you can test it:
 
-`http://localhost:8000/page_api/` - home page (empty slug)
-`http://localhost:8000/page_api/another_page` - another page (slug)
-`http://localhost:8000/page_api/kategoriya/post-1` - sub page (slug)
+`http://localhost:8000/api/page/` - home page (empty slug)
+`http://localhost:8000/api/page/another_page` - another page (slug)
+`http://localhost:8000/api/page/kategoriya/post-1` - sub page (slug)
 
 Example answer:
 
