@@ -17,6 +17,7 @@ django-multiurl = "*"
 djangorestframework = "*"
 garpix-utils = ">=1.4.0"
 garpix-package = "*"
+model-bakery = "*"
 
 [dev-packages]
 
