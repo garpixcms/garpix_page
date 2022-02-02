@@ -1,5 +1,6 @@
 from django.contrib import admin, messages
 from django.core.exceptions import ValidationError
+from mptt.admin import DraggableMPTTAdmin
 from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, PolymorphicMPTTChildModelAdmin, PolymorpicMPTTAdminForm
 from ...utils.get_garpix_page_models import get_garpix_page_component_models
 from django.conf import settings
@@ -45,7 +46,7 @@ class BasePageComponentAdmin(PolymorphicMPTTChildModelAdmin):
 
 
 @admin.register(BasePageComponent)
-class RealBasePageComponentAdmin(PolymorphicMPTTParentModelAdmin):
+class RealBasePageComponentAdmin(DraggableMPTTAdmin, PolymorphicMPTTParentModelAdmin):
 
     base_model = BasePageComponent
     child_models = get_garpix_page_component_models()
@@ -59,7 +60,12 @@ class RealBasePageComponentAdmin(PolymorphicMPTTParentModelAdmin):
     search_fields = ('title',)
     list_filter = (PolymorphicChildModelFilter, 'created_at', 'updated_at')
 
-    list_display = ('title', 'created_at', 'model_name')
+    list_display = ('tree_actions', 'indented_title', 'created_at', 'model_name')
+
+    def indented_title(self, item):
+        return super(RealBasePageComponentAdmin, self).indented_title(item)
+
+    indented_title.short_description = "Название"
 
     readonly_fields = ('created_at', 'updated_at', 'model_name')
 

@@ -1,6 +1,7 @@
 from django.db import models
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey, PolymorphicMPTTModelManager
-
+from django.urls import reverse
+from django.utils.html import format_html
 from ...models import BasePage
 
 
@@ -18,7 +19,8 @@ class BasePageComponent(PolymorphicMPTTModel):
     parent = PolymorphicTreeForeignKey('self', null=True, blank=True, related_name='children',
                                        db_index=True, verbose_name='Родительский компонент', on_delete=models.SET_NULL,
                                        limit_choices_to={})
-    pages = models.ManyToManyField(BasePage, blank=True, verbose_name='Страницы для отображения')
+    pages = models.ManyToManyField(BasePage, blank=True, related_name='components',
+                                   verbose_name='Страницы для отображения')
 
     front_info = models.ForeignKey('FrontInfo', on_delete=models.SET_NULL, verbose_name='Информация для фронта',
                                    blank=True, null=True)
@@ -40,8 +42,20 @@ class BasePageComponent(PolymorphicMPTTModel):
 
     def model_name(self):
         return self.get_real_instance_class()._meta.verbose_name  # noqa
+
     model_name.short_description = 'Тип'
 
     @classmethod
     def is_for_component_view(cls):
         return True
+
+    @property
+    def admin_link_to_change(self):
+        link = reverse(f"admin:garpix_page_{(self._meta.model.__name__).lower()}_change",
+                       args=[self.id])
+        return format_html('<a class="inlinechangelink" href="{0}">{1}</a>', link, self.title)
+
+    @classmethod
+    def admin_link_to_add(cls):
+        link = reverse(f"admin:garpix_page_basepagecomponent_add")
+        return format_html('<a class="addlink" href="{0}">Добавить компонент</a>', link)

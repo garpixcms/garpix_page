@@ -142,3 +142,11 @@ class BasePage(PolymorphicMPTTModel):
 
     def user_has_permission_required(self, user):
         return True
+
+    def get_compoennts(self):
+        return self.compoentns
+
+    @property
+    def components_tree(self):
+        from .components import BasePageComponent
+        return BasePageComponent.objects.get_queryset_descendants(self.components, include_self=True)

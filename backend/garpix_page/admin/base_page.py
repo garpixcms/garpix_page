@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.utils.html import format_html
+
 from ..models.base_page import BasePage
 from modeltranslation.admin import TabbedTranslationAdmin
 from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, PolymorphicMPTTChildModelAdmin
@@ -6,13 +8,14 @@ from ..utils.get_garpix_page_models import get_garpix_page_models
 from django.conf import settings
 from django.utils.translation import gettext as _
 from polymorphic.admin import PolymorphicChildModelFilter
+from mptt.admin import DraggableMPTTAdmin
 
 
 class BasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
     base_model = BasePage
 
     list_per_page = settings.GARPIX_PAGE_ADMIN_LIST_PER_PAGE if hasattr(settings, 'GARPIX_PAGE_ADMIN_LIST_PER_PAGE') else 25
-
+    change_form_template = 'garpix_page/admin/page_change_form.html'
     empty_value_display = '- нет -'
     save_on_top = True
     view_on_site = True
@@ -53,13 +56,12 @@ class BasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
 
 
 @admin.register(BasePage)
-class RealBasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin):
+class RealBasePageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin):
     """
     Стандартные настройки для базовых страниц.
     """
     base_model = BasePage
     child_models = get_garpix_page_models()
-
     list_per_page = settings.GARPIX_PAGE_ADMIN_LIST_PER_PAGE if hasattr(settings, 'GARPIX_PAGE_ADMIN_LIST_PER_PAGE') else 25
 
     empty_value_display = '- нет -'
@@ -73,10 +75,20 @@ class RealBasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin)
     list_filter = (PolymorphicChildModelFilter, 'is_active', 'created_at', 'updated_at', 'sites')
     actions = ('clone_object', 'rebuild')
 
-    list_display = ('title', 'created_at', 'is_active', 'get_absolute_url_html', 'model_name')
+    list_display = ('tree_actions', 'indented_title', 'created_at', 'is_active', 'get_absolute_url_html_admin')
     list_editable = ('is_active',)
 
     readonly_fields = ('created_at', 'updated_at', 'model_name')
+
+    def indented_title(self, item):
+        return super(RealBasePageAdmin, self).indented_title(item)
+
+    indented_title.short_description = "Название"
+
+    def get_absolute_url_html_admin(self, obj):
+        return format_html('<a href="{0}" target="_blank">{0}</a>', obj.absolute_url)
+
+    get_absolute_url_html_admin.short_description = 'URL'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -112,3 +124,4 @@ class RealBasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin)
     def save_model(self, request, obj, form, change):
         self._rebuild()
         super().save_model(request, obj, form, change)
+
