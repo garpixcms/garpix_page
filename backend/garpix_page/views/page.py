@@ -87,7 +87,7 @@ class PageView(DetailView):
         if getattr(self.object, 'login_required', False):
             if not user.is_authenticated:
                 return redirect(settings.LOGIN_URL)
-        if not self.object.user_has_permission_required(user):
+        if not self.object.has_permission_required(request):
             return redirect(settings.LOGIN_URL)
         context = self.get_context_data(object=self.object)
         redir = check_redirect(request, context)
@@ -101,7 +101,7 @@ class PageView(DetailView):
         if getattr(self.object, 'login_required', False):
             if not user.is_authenticated:
                 return redirect(settings.LOGIN_URL)
-        if not self.object.user_has_permission_required(user):
+        if not self.object.has_permission_required(request):
             return redirect(settings.LOGIN_URL)
         context = self.get_context_data(object=self.object)
         redir = check_redirect(request, context)

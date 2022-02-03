@@ -8,10 +8,11 @@ from ..utils.get_garpix_page_models import get_garpix_page_models
 from django.conf import settings
 from django.utils.translation import gettext as _
 from polymorphic.admin import PolymorphicChildModelFilter
+from tabbed_admin import TabbedModelAdmin
 from mptt.admin import DraggableMPTTAdmin
 
 
-class BasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
+class BasePageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
     base_model = BasePage
 
     list_per_page = settings.GARPIX_PAGE_ADMIN_LIST_PER_PAGE if hasattr(settings, 'GARPIX_PAGE_ADMIN_LIST_PER_PAGE') else 25
@@ -54,6 +55,44 @@ class BasePageAdmin(TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
     def has_module_permission(self, request):
         return False
 
+    def get_fieldsets(self, request, obj=None):
+        """
+        Если в модели страницы определены табы, будут отображаться они.
+        Если не определены - все доступные филдсеты/поля будут помещены в таб "Основное", сео теги - в таб "Сео"
+        """
+        if self.tabs is None:
+            fields = self.get_fields(request, obj)
+            tab_seo_fields = []
+            tab_main_fields = []
+            for field in fields:
+                if field[:4] == 'seo_':
+                    tab_seo_fields.append(field)
+                else:
+                    tab_main_fields.append(field)
+            tab_seo = (
+                (None, {
+                    'fields': tab_seo_fields
+                }),
+            )
+
+            if self.fieldsets:
+                tab_main = self.fieldsets
+            else:
+                tab_main = (
+                    (None, {
+                        'fields': tab_main_fields
+                    }),
+                )
+
+            self.tabs = [
+                ('Основное', tab_main),
+                ('SEO', tab_seo)
+            ]
+        tabs_fieldsets = self.get_formatted_tabs(request, obj)['fieldsets']
+        self.fieldsets = ()
+        self.fieldsets = self.add_tabbed_item(tabs_fieldsets, self.fieldsets)
+        return super(BasePageAdmin, self).get_fieldsets(request, obj)
+
 
 @admin.register(BasePage)
 class RealBasePageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin):
@@ -62,6 +101,7 @@ class RealBasePageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicM
     """
     base_model = BasePage
     child_models = get_garpix_page_models()
+
     list_per_page = settings.GARPIX_PAGE_ADMIN_LIST_PER_PAGE if hasattr(settings, 'GARPIX_PAGE_ADMIN_LIST_PER_PAGE') else 25
 
     empty_value_display = '- нет -'
@@ -124,4 +164,3 @@ class RealBasePageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicM
     def save_model(self, request, obj, form, change):
         self._rebuild()
         super().save_model(request, obj, form, change)
-

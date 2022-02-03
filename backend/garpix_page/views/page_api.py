@@ -51,7 +51,7 @@ class PageApiView(views.APIView):
             if not request.user.is_authenticated:
                 return Response(self.get_error_page_response_data(page, request), status=status.HTTP_401_UNAUTHORIZED)
 
-        if not page.user_has_permission_required(request.user):
+        if not page.has_permission_required(request):
             return Response(self.get_error_page_response_data(page, request), status=status.HTTP_403_FORBIDDEN)
 
         return None

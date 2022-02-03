@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'mptt',
     # ... django.contrib.*
     'django.contrib.sites',
+    'tabbed_admin',
     'garpix_page',
     # third-party and your apps
 ]
@@ -340,7 +341,7 @@ Now you can auth in admin panel and starting add pages.
 
 If you need to add login access to your model pages, add login_required static field to your model.
 
-To add some user permissions to page, you can redefine user_has_permission_required method in your page model:
+To add some user permissions to page, add permissions  static field to your page model:
 
 ```python
 class Post(BasePage):
@@ -349,16 +350,13 @@ class Post(BasePage):
     template = 'pages/post.html'
     
     login_required = True
+    permissions = [IsAdminUser,]
     
     class Meta:
         verbose_name = "Post"
         verbose_name_plural = "Posts"
         ordering = ('-created_at',)
-        
-    def user_has_permission_required(self, user):
-        # check user permissions you need
-        # example:
-        return user.is_superuser
+
 ```
 
 # API
