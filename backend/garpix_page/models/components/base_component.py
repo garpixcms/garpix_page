@@ -3,6 +3,7 @@ from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeign
 from django.urls import reverse
 from django.utils.html import format_html
 from ...models import BasePage
+from django.core.exceptions import ValidationError
 
 
 class BasePageComponent(PolymorphicMPTTModel):

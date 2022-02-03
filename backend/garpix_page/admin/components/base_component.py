@@ -1,6 +1,6 @@
 from django.contrib import admin, messages
 from django.core.exceptions import ValidationError
-from mptt.admin import DraggableMPTTAdmin
+from mptt.admin import DraggableMPTTAdmin, MPTTModelAdmin
 from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, PolymorphicMPTTChildModelAdmin, PolymorpicMPTTAdminForm
 from ...utils.get_garpix_page_models import get_garpix_page_component_models
 from django.conf import settings
@@ -18,6 +18,12 @@ class BasePageComponentAdminForm(PolymorpicMPTTAdminForm):
         if self.cleaned_data["parent"] is not None:
             self.cleaned_data["pages"] = []
 
+            if self.cleaned_data["parent"]._meta.model.__name__ == 'SliderPageComponent':
+                children = self.cleaned_data["parent"].children.all()
+                for child in children:
+                    if self._meta.model.__name__ != child._meta.model.__name__:
+                        raise ValidationError("Слайдер может состоять из слайдов только одного типа")
+
 
 class BasePageComponentAdmin(PolymorphicMPTTChildModelAdmin):
     base_model = BasePageComponent
@@ -34,7 +40,7 @@ class BasePageComponentAdmin(PolymorphicMPTTChildModelAdmin):
 
     readonly_fields = ('created_at', 'updated_at')
 
-    filter_vertical = (
+    filter_horizontal = (
         'pages',
     )
 
