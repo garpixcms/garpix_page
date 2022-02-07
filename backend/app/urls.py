@@ -9,6 +9,7 @@ from garpix_page.views.page import PageView
 from garpix_page.views.page_api import PageApiView
 from garpix_page.views.index import IndexView
 from garpix_page.views.sitemap import sitemap_view
+from django.conf.urls.static import static
 
 
 urlpatterns = [
@@ -16,6 +17,10 @@ urlpatterns = [
     re_path(r'{}/page/(?P<slugs>.*)$'.format(settings.API_URL), PageApiView.as_view()),
     path('sitemap.xml', sitemap, sitemap_view(), name='django.contrib.sitemaps.views.sitemap'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(
+        settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += i18n_patterns(
     multiurl(

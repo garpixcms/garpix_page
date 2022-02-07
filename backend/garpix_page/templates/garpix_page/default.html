@@ -1,9 +1,19 @@
 {% extends 'garpix_page/base.html' %}
+{% load mptt_tags %}
 
 {% block content %}
     <h1>{{ object.title }}</h1>
 
-    {% for component in object.components_tree %}
-        {{ component.title }}
-    {% endfor %}
+<ul class="components">
+    {% recursetree object.components_tree  %}
+            {% include node.template %}
+            {% if not node.is_leaf_node %}
+                <ul class="children">
+                    {{ children }}
+                </ul>
+            {% endif %}
+        </li>
+    {% endrecursetree %}
+</ul>
+
 {% endblock %}
