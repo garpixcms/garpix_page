@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.contrib.sites.models import Site
 from django.contrib.sites.managers import CurrentSiteManager
 from rest_framework.views import APIView
-
+from django.utils.html import format_html
 from garpix_page.utils.get_file_path import get_file_path
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey, PolymorphicMPTTModelManager
 
@@ -164,3 +164,8 @@ class BasePage(PolymorphicMPTTModel):
     def components_tree(self):
         from .components import BasePageComponent
         return BasePageComponent.objects.get_queryset_descendants(self.components, include_self=True)
+
+    @classmethod
+    def admin_link_to_add_component(cls):
+        link = reverse(f"admin:garpix_page_basepagecomponent_add")
+        return format_html('<a class="addlink" href="{0}">Добавить компонент</a>', link)

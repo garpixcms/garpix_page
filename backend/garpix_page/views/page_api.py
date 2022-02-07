@@ -7,6 +7,7 @@ import django.apps
 from django.utils.module_loading import import_string
 from django.conf import settings
 from ..serializers.serializer import get_serializer
+from ..serializers.components_serializer import get_components_tree
 
 model_list = []
 for model in django.apps.apps.get_models():
@@ -82,15 +83,21 @@ class PageApiView(views.APIView):
                 model_serializer_class = get_serializer(v.__class__)
                 page_context[k] = model_serializer_class(v).data
         if 'paginated_object_list' in page_context:
-            page_context['paginated_object_list'] = list(
-                {'id': x.id, 'title': x.title, 'get_absolute_url': x.get_absolute_url()} for x in
-                page_context['paginated_object_list'])
+            if page_context['paginated_object_list'][0].serializer is not None:
+                page_context['paginated_object_list'] = page_context['paginated_object_list'][0].serializer(page_context['paginated_object_list'], many=True).data
+            else:
+                page_context['paginated_object_list'] = list(
+                    {'id': x.id, 'title': x.title, 'get_absolute_url': x.get_absolute_url()} for x in
+                    page_context['paginated_object_list'])
         if 'paginator' in page_context:
             page_context['num_pages'] = page_context['paginator'].num_pages
             page_context['per_page'] = page_context['paginator'].per_page
             page_context.pop('paginator')
 
         page_context['global'] = import_string(settings.GARPIX_PAGE_GLOBAL_CONTEXT)(request, page)
+        page_context['object'].update({
+            'components': get_components_tree(page.components_tree, request)
+        })
         data = {
             'page_model': page.__class__.__name__,
             'init_state': page_context,

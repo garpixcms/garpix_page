@@ -1,7 +1,7 @@
 from .front_info import FrontInfo, FrontInfoScreenshots
 from .base_component import BasePageComponent
-from .text_component import TextPageComponent # noqa
-from .text_image_component import TextImagePageComponent # noqa
-from .image_component import ImagePageComponent # noqa
-from .text_description_component import TextDescriptionPageComponent # noqa
-from .slider_component import SliderPageComponent # noqa
+from .base_text_component import BaseTextPageComponent # noqa
+from .base_text_image_component import BaseTextImagePageComponent # noqa
+from .base_image_component import BaseImagePageComponent # noqa
+from .base_text_description_component import BaseTextDescriptionPageComponent # noqa
+from .base_slider_component import BaseSliderPageComponent # noqa

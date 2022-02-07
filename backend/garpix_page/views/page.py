@@ -65,6 +65,7 @@ class PageView(DetailView):
         """
         current_language_code_url_prefix = self._get_current_language_code_url_prefix()
         url = self.kwargs.get('url', None)
+        print(url)
         # home pages
         if url is None or url == '':
             return self._get_home_page()

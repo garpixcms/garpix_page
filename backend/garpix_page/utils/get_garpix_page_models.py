@@ -1,9 +1,8 @@
 import django.apps
-from ..models import BasePage, BasePageComponent, SliderPageComponent
+from ..models import BasePage, BasePageComponent
 
 model_list = []
 components_list = []
-components_admin_list = []
 
 for model in django.apps.apps.get_models():
     try:
@@ -20,25 +19,9 @@ for model in django.apps.apps.get_models():
         pass
 
 
-from django.contrib import admin
-
-models_list = []
-
-for model, model_admin in admin.site._registry.items():
-    try:
-        if model.is_for_component_view() and model not in [BasePageComponent, SliderPageComponent]:
-            components_admin_list.append(model_admin)
-    except:  # noqa
-        pass
-
-
 def get_garpix_page_models():
     return model_list
 
 
 def get_garpix_page_component_models():
     return components_list
-
-
-def get_garpix_page_component_admin_models():
-    return components_admin_list

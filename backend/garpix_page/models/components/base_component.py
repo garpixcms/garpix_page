@@ -3,7 +3,6 @@ from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeign
 from django.urls import reverse
 from django.utils.html import format_html
 from ...models import BasePage
-from django.core.exceptions import ValidationError
 
 
 class BasePageComponent(PolymorphicMPTTModel):
@@ -52,11 +51,9 @@ class BasePageComponent(PolymorphicMPTTModel):
 
     @property
     def admin_link_to_change(self):
-        link = reverse(f"admin:garpix_page_{(self._meta.model.__name__).lower()}_change",
+        link = reverse(f"admin:garpix_page_basepagecomponent_change",
                        args=[self.id])
         return format_html('<a class="inlinechangelink" href="{0}">{1}</a>', link, self.title)
 
-    @classmethod
-    def admin_link_to_add(cls):
-        link = reverse(f"admin:garpix_page_basepagecomponent_add")
-        return format_html('<a class="addlink" href="{0}">Добавить компонент</a>', link)
+    def get_serializer(self):
+        return None

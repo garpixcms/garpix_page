@@ -20,6 +20,7 @@ garpix-package = "*"
 django-tabbed-admin = "*"
 model-bakery = "*"
 pillow = "*"
+django-rest-polymorphic = "*"
 
 [dev-packages]
 
