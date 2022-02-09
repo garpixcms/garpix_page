@@ -1,7 +1,7 @@
-from garpix_page.models.components import BaseImagePageComponent
+from garpix_page.models.components import BaseImageComponent
 
 
-class ImagePageComponent(BaseImagePageComponent):
+class ImageComponent(BaseImageComponent):
 
     class Meta:
         verbose_name = "Изображение"

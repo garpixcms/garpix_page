@@ -157,15 +157,14 @@ class BasePage(PolymorphicMPTTModel):
                     return False
         return True
 
-    def get_compoennts(self):
-        return self.compoentns
+    def get_components(self):
+        return self.components
 
     @property
     def components_tree(self):
-        from .components import BasePageComponent
-        return BasePageComponent.objects.get_queryset_descendants(self.components, include_self=True)
+        from .components import BaseComponent
+        return BaseComponent.objects.get_queryset_descendants(self.components, include_self=True)
 
-    @classmethod
-    def admin_link_to_add_component(cls):
-        link = reverse(f"admin:garpix_page_basepagecomponent_add")
-        return format_html('<a class="addlink" href="{0}">Добавить компонент</a>', link)
+    def admin_link_to_add_component(self):
+        link = reverse(f"admin:garpix_page_basecomponent_add")
+        return format_html('<a class="addlink" href="{0}?pages={1}">Добавить компонент</a>', link, self.id)

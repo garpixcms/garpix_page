@@ -1,7 +1,7 @@
-from garpix_page.models import BaseSliderPageComponent
+from garpix_page.models import BaseSliderComponent
 
 
-class SliderPageComponent(BaseSliderPageComponent):
+class SliderComponent(BaseSliderComponent):
 
     class Meta:
         verbose_name = "Слайдер"

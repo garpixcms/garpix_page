@@ -1,5 +1,5 @@
 import django.apps
-from ..models import BasePage, BasePageComponent
+from ..models import BasePage, BaseComponent
 
 model_list = []
 components_list = []
@@ -13,7 +13,7 @@ for model in django.apps.apps.get_models():
 
 for model in django.apps.apps.get_models():
     try:
-        if model.is_for_component_view() and model is not BasePageComponent:
+        if model.is_for_component_view() and model is not BaseComponent:
             components_list.append(model)
     except:  # noqa
         pass

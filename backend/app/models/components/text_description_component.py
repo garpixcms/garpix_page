@@ -1,7 +1,7 @@
-from garpix_page.models import BaseTextDescriptionPageComponent
+from garpix_page.models import BaseTextDescriptionComponent
 
 
-class TextDescriptionPageComponent(BaseTextDescriptionPageComponent):
+class TextDescriptionComponent(BaseTextDescriptionComponent):
 
     class Meta:
         verbose_name = "Текст+описание"

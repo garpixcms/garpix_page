@@ -5,7 +5,17 @@ from django.utils.html import format_html
 from ...models import BasePage
 
 
-class BasePageComponent(PolymorphicMPTTModel):
+class PageComponent(models.Model):
+    component = models.ForeignKey("BaseComponent", on_delete=models.CASCADE)
+    page = models.ForeignKey("BasePage", on_delete=models.CASCADE)
+    view_order = models.IntegerField(default=1)
+
+    class Meta:
+        unique_together = (('component', 'page'),)
+        ordering = ('view_order', )
+
+
+class BaseComponent(PolymorphicMPTTModel):
     """
     Базовый компонент
     """
@@ -19,7 +29,7 @@ class BasePageComponent(PolymorphicMPTTModel):
     parent = PolymorphicTreeForeignKey('self', null=True, blank=True, related_name='children',
                                        db_index=True, verbose_name='Родительский компонент', on_delete=models.SET_NULL,
                                        limit_choices_to={})
-    pages = models.ManyToManyField(BasePage, blank=True, related_name='components',
+    pages = models.ManyToManyField(BasePage, blank=True, related_name='components', through='PageComponent',
                                    verbose_name='Страницы для отображения')
 
     front_info = models.ForeignKey('FrontInfo', on_delete=models.SET_NULL, verbose_name='Информация для фронта',
@@ -51,7 +61,7 @@ class BasePageComponent(PolymorphicMPTTModel):
 
     @property
     def admin_link_to_change(self):
-        link = reverse(f"admin:garpix_page_basepagecomponent_change",
+        link = reverse(f"admin:garpix_page_basecomponent_change",
                        args=[self.id])
         return format_html('<a class="inlinechangelink" href="{0}">{1}</a>', link, self.title)
 

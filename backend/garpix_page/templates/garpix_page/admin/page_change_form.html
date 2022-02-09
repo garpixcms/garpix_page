@@ -26,7 +26,8 @@
                     <li><a href="#tabs-{{ forloop.counter }}" id="for_tabs-{{ forloop.counter }}">{{ tab.name }}</a>
                     </li>
                     {% endfor %}
-                    <li><a href="#tabs-{{ tabs.fields|length|add:'1' }}" id="for_tabs-{{ tabs.fields|length|add:'1' }}">Компоненты</a></li>
+                    <li><a href="#tabs-{{ tabs.fields|length|add:'1' }}" id="for_tabs-{{ tabs.fields|length|add:'1' }}">Компоненты</a>
+                    </li>
                 </ul>
                 {% for tab in tabs.fields %}
                 <div id="tabs-{{ forloop.counter }}" class="{{ tab.name }}">
@@ -44,18 +45,19 @@
                             <tr tabindex="-1">
 
                                 <th scope="col" class="column-indented_title">
-
                                     <div class="text"><span>Название</span></div>
                                     <div class="clear"></div>
                                 </th>
                                 <th scope="col" class="sortable column-created_at">
-
                                     <div class="text"><span>Дата создания</span></div>
                                     <div class="clear"></div>
                                 </th>
                                 <th scope="col" class="column-model_name">
-
                                     <div class="text"><span>Тип</span></div>
+                                    <div class="clear"></div>
+                                </th>
+                                <th scope="col" class="column-model_name">
+                                    <div class="text"><span>Порядок отображения</span></div>
                                     <div class="clear"></div>
                                 </th>
                             </tr>
@@ -67,13 +69,14 @@
                             <tr tabindex="{{ component.id }}">
 
                                 <th class="field-indented_title"><a
-                                        href="/admin/garpix_page/basepagecomponent/1/change/">
+                                        href="/admin/garpix_page/baseComponent/1/change/">
                                     <div style="text-indent:calc({{ component.level }} * 20px)">
                                         {{ component.admin_link_to_change }}
                                     </div>
                                 </a></th>
                                 <td class="field-created_at nowrap">{{ component.created_at }}</td>
                                 <td class="field-model_name">{{ component.model_name }}</td>
+                                <td class="field-model_name">{{ component.view_order }}</td>
                             </tr>
 
                             {% endfor %}
@@ -139,6 +142,7 @@
 
 
 
+
             </script>
             <!-- end admin_tabs stuff -->
 
@@ -150,6 +154,7 @@
             {% if adminform and add and adminform.first_field and adminform.first_field.id_for_label %}
             <script type="text/javascript">
                 document.getElementById("{{ adminform.first_field.id_for_label }}").focus();
+
 
 
             </script>

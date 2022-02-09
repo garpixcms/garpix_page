@@ -1,9 +1,9 @@
 from django.contrib import admin
 
-from garpix_page.admin.components.base_component import BasePageComponentAdmin
-from ...models import TextPageComponent
+from garpix_page.admin.components.base_component import BaseComponentAdmin
+from ...models import TextComponent
 
 
-@admin.register(TextPageComponent)
-class TextPageComponentAdmin(BasePageComponentAdmin):
+@admin.register(TextComponent)
+class TextComponentAdmin(BaseComponentAdmin):
     pass
