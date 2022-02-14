@@ -363,6 +363,8 @@ To add some user permissions to page, add permissions  static field to your page
 API
 ===
 
+You can use garpix_page with SPA sites.
+
 Add to settings API_URL parameter:
 
 .. code-block:: python
