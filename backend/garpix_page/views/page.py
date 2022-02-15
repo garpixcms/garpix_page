@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.http import Http404
+
+from ..utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
 from ..utils.get_garpix_page_models import get_garpix_page_models
-from django.utils import translation
 from ..utils.check_redirect import check_redirect
 from django.shortcuts import redirect
 from django.views.generic import DetailView
@@ -30,20 +31,6 @@ class PageView(DetailView):
                 return home_page
         raise Http404
 
-    def _get_current_language_code_url_prefix(self):
-        current_language_code_url_prefix = translation.get_language()
-        try:
-            use_default_prefix = settings.USE_DEFAULT_LANGUAGE_PREFIX
-        except:  # noqa
-            use_default_prefix = True
-        if not use_default_prefix and current_language_code_url_prefix == settings.LANGUAGE_CODE:
-            current_language_code_url_prefix = ''
-        elif current_language_code_url_prefix is None:
-            current_language_code_url_prefix = ''
-        else:
-            current_language_code_url_prefix = '/' + current_language_code_url_prefix
-        return current_language_code_url_prefix
-
     def _get_object_list_by_url(self, url):
         obj_list = []
         slugs = url.rstrip('/').split('/')
@@ -63,7 +50,7 @@ class PageView(DetailView):
         Метод для получения объекта страницы.
         Сравнивает текущий урл со slug, которые мы получаем из родительских страниц нашей страницы.
         """
-        current_language_code_url_prefix = self._get_current_language_code_url_prefix()
+        current_language_code_url_prefix = get_current_language_code_url_prefix()
         url = self.kwargs.get('url', None)
         # home pages
         if url is None or url == '':

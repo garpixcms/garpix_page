@@ -1,12 +1,11 @@
 from django.utils.functional import cached_property
 from django.db import models
-from django.utils import translation
-from django.conf import settings
 from django.urls import reverse
 from django.contrib.sites.models import Site
 from django.contrib.sites.managers import CurrentSiteManager
 from rest_framework.views import APIView
 
+from garpix_page.utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
 from garpix_page.utils.get_file_path import get_file_path
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey, PolymorphicMPTTModelManager
 
@@ -76,17 +75,7 @@ class BasePage(PolymorphicMPTTModel):
 
     @cached_property
     def absolute_url(self):
-        current_language_code_url_prefix = translation.get_language()
-        try:
-            use_default_prefix = settings.USE_DEFAULT_LANGUAGE_PREFIX
-        except:  # noqa
-            use_default_prefix = True
-        if not use_default_prefix and current_language_code_url_prefix == settings.LANGUAGE_CODE:
-            current_language_code_url_prefix = ''
-        elif current_language_code_url_prefix is None:
-            current_language_code_url_prefix = ''
-        else:
-            current_language_code_url_prefix = '/' + current_language_code_url_prefix
+        current_language_code_url_prefix = get_current_language_code_url_prefix()
 
         if self.slug:
             obj = self

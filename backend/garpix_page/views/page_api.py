@@ -7,7 +7,8 @@ import django.apps
 from django.utils.module_loading import import_string
 from django.conf import settings
 from ..serializers.serializer import get_serializer
-from django.utils import translation
+
+from ..utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
 
 model_list = []
 for model in django.apps.apps.get_models():
@@ -22,19 +23,9 @@ languages_list = [x[0] for x in settings.LANGUAGES]
 
 class PageApiView(views.APIView):
 
-    def _get_absolute_url_from_request(self, slug_list, slug):
-        current_language_code_url_prefix = translation.get_language()
-        try:
-            use_default_prefix = settings.USE_DEFAULT_LANGUAGE_PREFIX
-        except:  # noqa
-            use_default_prefix = True
-        if not use_default_prefix and current_language_code_url_prefix == settings.LANGUAGE_CODE:
-            current_language_code_url_prefix = ''
-        elif current_language_code_url_prefix is None:
-            current_language_code_url_prefix = ''
-        else:
-            current_language_code_url_prefix = '/' + current_language_code_url_prefix
-
+    @staticmethod
+    def get_absolute_url_from_request(slug_list, slug):
+        current_language_code_url_prefix = get_current_language_code_url_prefix()
         if slug != '':
             return "{}/{}".format(current_language_code_url_prefix, '/'.join(slug_list))
         return "{}".format(current_language_code_url_prefix) if len(current_language_code_url_prefix) > 1 else '/'
@@ -96,7 +87,7 @@ class PageApiView(views.APIView):
         slug = slug_list[-1]
         page = self.get_object(slug)
 
-        if page and page.absolute_url != self._get_absolute_url_from_request(slug_list, slug):
+        if page and page.absolute_url != self.get_absolute_url_from_request(slug_list, slug):
             page = None
 
         errors = self.check_errors(page, request)
