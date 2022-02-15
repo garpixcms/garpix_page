@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.utils.functional import cached_property
 from django.db import models
 from django.urls import reverse
@@ -145,3 +147,10 @@ class BasePage(PolymorphicMPTTModel):
                                                                                                               view):
                     return False
         return True
+
+    def clean(self):
+        languages = [x[0] for x in settings.LANGUAGES]
+        if BasePage.on_site.filter(slug=self.slug).exclude(pk=self.pk).exists():
+            raise ValidationError('Страница с таким ЧПУ существует')
+        if self.slug in languages:
+            raise ValidationError(f'ЧПУ не должен совпадать с языковым кодом ({languages})')
