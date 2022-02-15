@@ -338,24 +338,52 @@ Now you can auth in admin panel and starting add pages.
 
 If you need to use a serializer whose model is this page, use the get_serializer() method to avoid circular imports.
 
+Page permissions
+----------------
+
+If you need to add login access to your model pages, add login_required static field to your model.
+
+To add some user permissions to page, add permissions  static field to your page model:
+
+.. code-block:: python
+
+    class Post(BasePage):
+        content = models.TextField(verbose_name='Content', blank=True, default='')
+
+        template = 'pages/post.html'
+
+        login_required = True
+        permissions = [IsAdminUser,]
+
+        class Meta:
+            verbose_name = "Post"
+            verbose_name_plural = "Posts"
+            ordering = ('-created_at',)
+
 API
 ===
 
 You can use garpix_page with SPA sites.
 
+Add to settings API_URL parameter:
+
+.. code-block:: python
+
+    API_URL = 'api'
+
 Add to ``urls.py`` this:
 
 .. code-block:: python
 
-   urlpatterns += [
-       re_path(r'page_api/(?P<slugs>.*)$', PageApiView.as_view()),
-   ]
+    urlpatterns += [
+        re_path(r'{}/page/(?P<slugs>.*)$'.format(settings.API_URL), PageApiView.as_view()),
+    ]
 
 And you can test it:
 
-``http://localhost:8000/page_api/`` - home page (empty slug)
-``http://localhost:8000/page_api/another_page`` - another page (slug)
-``http://localhost:8000/page_api/kategoriya/post-1`` - sub page (slug)
+``http://localhost:8000/api/page/`` - home page (empty slug)
+``http://localhost:8000/api/page/another_page`` - another page (slug)
+``http://localhost:8000/api/page/kategoriya/post-1`` - sub page (slug)
 
 Example answer:
 

@@ -339,6 +339,11 @@ Templates:
 
 Now you can auth in admin panel and starting add pages.
 
+If you need to use a serializer whose model is this page, use the get_serializer() method to avoid circular imports.
+
+## Page permissions
+
+
 If you need to add login access to your model pages, add login_required static field to your model.
 
 To add some user permissions to page, add permissions  static field to your page model:
