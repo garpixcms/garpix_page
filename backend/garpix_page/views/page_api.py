@@ -7,6 +7,7 @@ import django.apps
 from django.utils.module_loading import import_string
 from django.conf import settings
 from ..serializers.serializer import get_serializer
+from django.utils import translation
 
 model_list = []
 for model in django.apps.apps.get_models():
@@ -20,6 +21,23 @@ languages_list = [x[0] for x in settings.LANGUAGES]
 
 
 class PageApiView(views.APIView):
+
+    def _get_absolute_url_from_request(self, slug_list, slug):
+        current_language_code_url_prefix = translation.get_language()
+        try:
+            use_default_prefix = settings.USE_DEFAULT_LANGUAGE_PREFIX
+        except:  # noqa
+            use_default_prefix = True
+        if not use_default_prefix and current_language_code_url_prefix == settings.LANGUAGE_CODE:
+            current_language_code_url_prefix = ''
+        elif current_language_code_url_prefix is None:
+            current_language_code_url_prefix = ''
+        else:
+            current_language_code_url_prefix = '/' + current_language_code_url_prefix
+
+        if slug != '':
+            return "{}/{}".format(current_language_code_url_prefix, '/'.join(slug_list))
+        return "{}".format(current_language_code_url_prefix) if len(current_language_code_url_prefix) > 1 else '/'
 
     @staticmethod
     def get_instance_by_slug(slug):
@@ -57,14 +75,29 @@ class PageApiView(views.APIView):
         return None
 
     def get(self, request, slugs):
+
         language = languages_list[0]
         if 'HTTP_ACCEPT_LANGUAGE' in request.META and request.META['HTTP_ACCEPT_LANGUAGE'] in languages_list:
             language = request.META['HTTP_ACCEPT_LANGUAGE']
         activate(language)
 
         slug_list = slugs.split('/')
-        slug = slug_list.pop(-1)
+
+        if slug_list[0] in languages_list:
+            activate(slug_list[0])
+            slug_list.pop(0)
+
+        if len(slug_list) == 0:
+            slug_list.append('')
+
+        if len(slug_list) > 1 and slug_list[-1] == '':
+            slug_list.pop(-1)
+
+        slug = slug_list[-1]
         page = self.get_object(slug)
+
+        if page and page.absolute_url != self._get_absolute_url_from_request(slug_list, slug):
+            page = None
 
         errors = self.check_errors(page, request)
         if errors is not None:
