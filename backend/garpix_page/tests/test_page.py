@@ -20,6 +20,9 @@ class BasePageApiTest(APITestCase):
             page = baker.make(page_model, slug=f'slug{i}', sites=sites)
             self.pages.append(page)
             i += 1
+        if len(page_models) > 0:
+            page = baker.make(page_models[0], slug='', sites=sites)
+            self.pages.append(page)
         self.test_user = baker.make(get_user_model())
         self.languages_list = [x[0] for x in settings.LANGUAGES]
 
