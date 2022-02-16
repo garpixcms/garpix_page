@@ -151,6 +151,6 @@ class BasePage(PolymorphicMPTTModel):
     def clean(self):
         languages = [x[0] for x in settings.LANGUAGES]
         if BasePage.on_site.filter(slug=self.slug).exclude(pk=self.pk).exists():
-            raise ValidationError('Страница с таким ЧПУ существует')
+            raise ValidationError({'slug': 'Страница с таким ЧПУ существует'})
         if self.slug in languages:
-            raise ValidationError(f'ЧПУ не должен совпадать с языковым кодом ({languages})')
+            raise ValidationError({'slug': f'ЧПУ не должен совпадать с языковым кодом ({languages})'})
