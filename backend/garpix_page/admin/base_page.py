@@ -28,7 +28,7 @@ class BasePageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChi
     list_display = ('title', 'created_at', 'is_active', 'get_absolute_url',)
     list_editable = ('is_active',)
 
-    readonly_fields = ('created_at', 'updated_at')
+    readonly_fields = ('get_absolute_url', 'created_at', 'updated_at')
 
     def get_form(self, request, *args, **kwargs):
         form = super().get_form(request, *args, **kwargs)
