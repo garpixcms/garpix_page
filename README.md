@@ -54,6 +54,10 @@ TEMPLATES = [
     },
 ]
 
+MIDDLEWARE = [
+    'django.middleware.locale.LocaleMiddleware'
+]
+
 ```
 
 Package not included migrations, set path to migration directory. Don't forget create this directory (`app/migrations/garpix_page/`) and place empty `__init__.py`:

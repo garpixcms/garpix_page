@@ -9,6 +9,11 @@ from ..utils.get_garpix_page_models import get_garpix_page_models
 
 class BasePageApiTest(APITestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        cls.update_baker_default_mapping()
+        super().setUpClass()
+
     def setUp(self):
         self.client = APIClient()
         page_models = get_garpix_page_models()
@@ -25,24 +30,6 @@ class BasePageApiTest(APITestCase):
             self.pages.append(page)
         self.test_user = baker.make(get_user_model())
         self.languages_list = [x[0] for x in settings.LANGUAGES]
-
-    def user_login(self):
-        self.client.force_login(self.test_user)
-        self.client.force_authenticate(self.test_user)
-
-    def generate_responses_list(self, page):
-        responses = [
-            self.client.get(f'/{settings.API_URL}/page/{page.slug}'),
-            self.client.get(f'/{settings.API_URL}/page/{page.slug}/')
-        ]
-        for language in self.languages_list:
-            responses.append(self.client.get(f'/{settings.API_URL}/page/{language}/{page.slug}'))
-            responses.append(self.client.get(f'/{settings.API_URL}/page/{language}/{page.slug}/'))
-        return responses
-
-    def check_response_status(self, responses, status_code):
-        for response in responses:
-            self.assertEqual(response.status_code, status_code)
 
     def test_page(self):
         for page in self.pages:
@@ -72,3 +59,53 @@ class BasePageApiTest(APITestCase):
                 else:
                     self.check_response_status(responses, 200)
                 self.client.logout()
+
+    def user_login(self):
+        self.client.force_login(self.test_user)
+        self.client.force_authenticate(self.test_user)
+
+    def generate_responses_list(self, page):
+        responses = [
+            self.client.get(f'/{settings.API_URL}/page/{page.slug}'),
+            self.client.get(f'/{settings.API_URL}/page/{page.slug}/')
+        ]
+        for language in self.languages_list:
+            responses.append(self.client.get(f'/{settings.API_URL}/page/{language}/{page.slug}'))
+            responses.append(self.client.get(f'/{settings.API_URL}/page/{language}/{page.slug}/'))
+        return responses
+
+    def check_response_status(self, responses, status_code):
+        for response in responses:
+            self.assertEqual(response.status_code, status_code)
+
+    @staticmethod
+    def update_baker_default_mapping():
+
+        def gen_phone_number() -> str:
+            import random
+            import string
+            return f"+{''.join(random.SystemRandom().choice(string.digits) for _ in range(15))}"
+
+        from model_bakery import random_gen
+        from model_bakery.generators import default_mapping
+
+        try:
+            from ckeditor.fields import RichTextField
+        except ImportError:
+            RichTextField = None
+
+        try:
+            from ckeditor_uploader.fields import RichTextUploadingField
+        except ImportError:
+            RichTextUploadingField = None
+
+        try:
+            from phonenumber_field.modelfields import PhoneNumberField
+        except ImportError:
+            PhoneNumberField = None
+
+        default_mapping.update({
+            RichTextField: random_gen.gen_text,
+            RichTextUploadingField: random_gen.gen_text,
+            PhoneNumberField: gen_phone_number
+        })
