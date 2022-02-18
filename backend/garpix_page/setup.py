@@ -32,7 +32,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'Django >= 1.11',
-        'django-polymorphic-tree-for-garpix-page >= 2.0.1',
+        'django-polymorphic-tree-for-garpix-page >= 2.1.1',
         'django-modeltranslation >= 0.16.2',
         'django-multiurl >= 1.4.0',
         'djangorestframework >= 3.12.4',

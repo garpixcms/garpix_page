@@ -1,3 +1,7 @@
+### 2.16.0 (18.02.2022)
+
+- Обновлена зависимость `django-polymorphic-tree-for-garpix-page==2.1.1`.
+
 ### 2.15.0 (17.02.2022)
 
 - Добавлена поддержка RichTextField, RichTextUploadingField, PhoneNumberField при тестировании страниц.
