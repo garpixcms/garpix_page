@@ -76,6 +76,12 @@ class PageView(DetailView):
                 return redirect(settings.LOGIN_URL)
         if not self.object.has_permission_required(request):
             return redirect(settings.LOGIN_URL)
+
+        if getattr(self.object, 'query_parameters_required', None) is not None:
+            request_get = set(request.GET.keys())
+            parameters = set(self.object.query_parameters_required)
+            if request_get != parameters:
+                return redirect(settings.LOGIN_URL)
         context = self.get_context_data(object=self.object)
         redir = check_redirect(request, context)
         if redir:
