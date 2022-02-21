@@ -6,7 +6,7 @@ from garpix_page.models import BasePage
 class Page(BasePage):
     content = models.TextField(verbose_name='Содержание', blank=True, default='')
 
-    # query_parameters_required = ['id', 'something']
+    query_parameters_required = ['id', 'something']
 
     template = 'pages/default.html'
 

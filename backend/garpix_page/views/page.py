@@ -81,7 +81,7 @@ class PageView(DetailView):
             request_get = set(request.GET.keys())
             parameters = set(self.object.query_parameters_required)
             if request_get != parameters:
-                return redirect(settings.LOGIN_URL)
+                return self._get_home_page()
         context = self.get_context_data(object=self.object)
         redir = check_redirect(request, context)
         if redir:
