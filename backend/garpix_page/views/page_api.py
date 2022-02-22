@@ -63,6 +63,12 @@ class PageApiView(views.APIView):
         if not page.has_permission_required(request):
             return Response(self.get_error_page_response_data(page, request), status=status.HTTP_403_FORBIDDEN)
 
+        if getattr(page, 'query_parameters_required', None) is not None:
+            request_get = set(request.GET.keys())
+            parameters = set(page.query_parameters_required)
+            if request_get != parameters:
+                return Response(self.get_error_page_response_data(page, request), status=status.HTTP_404_NOT_FOUND)
+
         return None
 
     def get(self, request, slugs):
