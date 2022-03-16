@@ -16,7 +16,6 @@ class BasePageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChi
     base_model = BasePage
 
     list_per_page = settings.GARPIX_PAGE_ADMIN_LIST_PER_PAGE if hasattr(settings, 'GARPIX_PAGE_ADMIN_LIST_PER_PAGE') else 25
-    change_form_template = 'garpix_page/admin/page_change_form.html'
     empty_value_display = '- нет -'
     save_on_top = True
     view_on_site = True
@@ -31,7 +30,7 @@ class BasePageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChi
     list_display = ('title', 'created_at', 'is_active', 'get_absolute_url',)
     list_editable = ('is_active',)
 
-    readonly_fields = ('created_at', 'updated_at')
+    readonly_fields = ('get_absolute_url', 'created_at', 'updated_at')
 
     def get_form(self, request, *args, **kwargs):
         form = super().get_form(request, *args, **kwargs)
