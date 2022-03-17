@@ -119,8 +119,7 @@ class RealBasePageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicM
     list_filter = (PolymorphicChildModelFilter, 'is_active', 'created_at', 'updated_at', 'sites')
     actions = ('clone_object', 'rebuild')
 
-    list_display = (
-                    'tree_actions', 'indented_title', 'created_at', 'is_active',
+    list_display = ('tree_actions', 'indented_title', 'created_at', 'is_active',
                     'get_absolute_url_html_admin', 'model_name')
     list_editable = ('is_active',)
 
