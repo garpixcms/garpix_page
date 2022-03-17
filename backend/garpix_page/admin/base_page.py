@@ -15,7 +15,8 @@ from mptt.admin import DraggableMPTTAdmin
 class BasePageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
     base_model = BasePage
 
-    list_per_page = settings.GARPIX_PAGE_ADMIN_LIST_PER_PAGE if hasattr(settings, 'GARPIX_PAGE_ADMIN_LIST_PER_PAGE') else 25
+    list_per_page = settings.GARPIX_PAGE_ADMIN_LIST_PER_PAGE if hasattr(settings,
+                                                                        'GARPIX_PAGE_ADMIN_LIST_PER_PAGE') else 25
     empty_value_display = '- нет -'
     save_on_top = True
     view_on_site = True
@@ -104,7 +105,8 @@ class RealBasePageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicM
     base_model = BasePage
     child_models = get_garpix_page_models()
 
-    list_per_page = settings.GARPIX_PAGE_ADMIN_LIST_PER_PAGE if hasattr(settings, 'GARPIX_PAGE_ADMIN_LIST_PER_PAGE') else 25
+    list_per_page = settings.GARPIX_PAGE_ADMIN_LIST_PER_PAGE if hasattr(settings,
+                                                                        'GARPIX_PAGE_ADMIN_LIST_PER_PAGE') else 25
 
     empty_value_display = '- нет -'
     save_on_top = True
@@ -117,7 +119,9 @@ class RealBasePageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicM
     list_filter = (PolymorphicChildModelFilter, 'is_active', 'created_at', 'updated_at', 'sites')
     actions = ('clone_object', 'rebuild')
 
-    list_display = ('tree_actions', 'indented_title', 'created_at', 'is_active', 'get_absolute_url_html_admin')
+    list_display = (
+                    'tree_actions', 'indented_title', 'created_at', 'is_active',
+                    'get_absolute_url_html_admin', 'model_name')
     list_editable = ('is_active',)
 
     readonly_fields = ('created_at', 'updated_at', 'model_name')
