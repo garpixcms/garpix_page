@@ -71,7 +71,7 @@ class PageApiView(views.APIView):
 
         return None
 
-    def get(self, request, slugs):
+    def get(self, request, slugs):  # noqa
 
         language = languages_list[0]
         if 'HTTP_ACCEPT_LANGUAGE' in request.META and request.META['HTTP_ACCEPT_LANGUAGE'] in languages_list:
