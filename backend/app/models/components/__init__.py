@@ -1,1 +1,2 @@
 from .text_component import TextComponent
+from .text_description_component import TextDescriptionComponent

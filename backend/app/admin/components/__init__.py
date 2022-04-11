@@ -1,1 +1,2 @@
 from .text_component import TextComponentAdmin
+from .text_description_component import TextDescriptionComponentAdmin

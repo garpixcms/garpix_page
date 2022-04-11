@@ -9,7 +9,6 @@ from garpix_page.utils.get_garpix_page_models import get_garpix_page_component_m
 
 class BaseComponentAdmin(PolymorphicChildModelAdmin):
     base_model = BaseComponent
-
     list_display = ('title', 'model_name')
 
     filter_horizontal = (

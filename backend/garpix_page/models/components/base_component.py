@@ -73,7 +73,7 @@ class BaseComponent(PolymorphicModel):
         for k, v in component_context.items():
             if hasattr(v, 'is_for_component_view'):
                 model_serializer_class = get_serializer(v.__class__)
-                context[k] = model_serializer_class(v).data
+                context[k] = model_serializer_class(v, context={"request": request}).data
         return context
 
     def get_serializer(self):

@@ -1,0 +1,167 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_modify admin_urls tabbed_admin_tags %}
+
+{% block content %}
+
+<div id="content-main">
+    {% block object-tools %}{{ block.super }}{% endblock %}
+    <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post"
+          id="{{ opts.model_name }}_form" novalidate>{% csrf_token %}{% block form_top %}{% endblock %}
+        <div>
+            {% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1"/>{% endif %}
+            {% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}"/>{% endif %}
+            {% if save_on_top %}{% block submit_buttons_top %}{% submit_row %}{% endblock %}{% endif %}
+            {% if errors %}
+            <p class="errornote">
+                {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please
+                correct the errors below." %}{% endif %}
+            </p>
+            {{ adminform.form.non_field_errors }}
+            {% endif %}
+
+            <!-- start admin_tabs stuff -->
+            <div id="tabs">
+                <ul>
+                    {% for tab in tabs.fields %}
+                    <li><a href="#tabs-{{ forloop.counter }}" id="for_tabs-{{ forloop.counter }}">{{ tab.name }}</a>
+                    </li>
+                    {% endfor %}
+                    <li><a href="#tabs-{{ tabs.fields|length|add:'1' }}" id="for_tabs-{{ tabs.fields|length|add:'1' }}">Компоненты</a>
+                    </li>
+                </ul>
+                {% for tab in tabs.fields %}
+                <div id="tabs-{{ forloop.counter }}" class="{{ tab.name }}">
+                    {% for entry in tab.entries %}
+                    {% render_tab_fieldsets_inlines entry %}
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                <div id="tabs-{{ tabs.fields|length|add:'1' }}" class="Компоненты">
+
+                    <div style="margin: 20px 0;">
+                        {% if original.components.all %}
+                        <table id="result_list" style="width: 100%; margin: 20px 0;">
+                            <thead>
+                            <tr tabindex="-1">
+
+                                <th scope="col" class="column-indented_title">
+                                    <div class="text"><span>Название</span></div>
+                                    <div class="clear"></div>
+                                </th>
+                                <th scope="col" class="sortable column-created_at">
+                                    <div class="text"><span>Дата создания</span></div>
+                                    <div class="clear"></div>
+                                </th>
+                                <th scope="col" class="column-model_name">
+                                    <div class="text"><span>Тип</span></div>
+                                    <div class="clear"></div>
+                                </th>
+                                <th scope="col" class="column-model_name">
+                                    <div class="text"><span>Порядок отображения</span></div>
+                                    <div class="clear"></div>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            {% for component in original.pagecomponent_set.all %}
+
+                            <tr tabindex="{{ component.id }}">
+
+                                <th class="field-indented_title"><a
+                                        href="/admin/garpix_page/basecomponent/1/change/">
+                                    <div style="text-indent:calc({{ component.level }} * 20px)">
+                                        {{ component.component.admin_link_to_change }}
+                                    </div>
+                                </a></th>
+                                <td class="field-created_at nowrap">{{ component.component.created_at }}</td>
+                                <td class="field-model_name">{{ component.component.model_name }}</td>
+                                <td class="field-model_name">{{ component.view_order }}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {% endif %}
+                        {{ original.admin_link_to_add_component }}
+                    </div>
+
+                </div>
+            </div>
+            <script type="text/javascript">
+                (function($) {
+                    $(window).scrollTop()
+                    $('#tabs').tabs({
+                        {% if add %}
+                        // when adding, don't select a tab by default, we'll do it ourselves
+                        // by finding the first available tab.
+                        selected: -1
+                        {% endif %}
+                    });
+
+                    // disable tabs marked as such in page_config
+                    var enabled_tabs = [];
+                    var disabled_tabs = [];
+
+                    {% for tab in page_config %}
+                        {% if tab.enabled %}
+                            enabled_tabs.push({{ forloop.counter0 }});
+                        {% else %}
+                            disabled_tabs.push({{ forloop.counter0 }});
+                        {% endif %}
+                    {% endfor %}
+
+                    for (var i = 0; i < disabled_tabs.length; i++) {
+                        $('#tabs').tabs("disable", disabled_tabs[i]);
+                    }
+                    // enable the first non-disabled tab in add view
+                    {% if add %}
+                        $('#tabs').tabs("option", "active", enabled_tabs[0]);
+                    {% endif %}
+
+                    // Hightlight tabs with errors inside
+                    $('#tabs > div').each(function() {
+                        if($(this).find('.errorlist').length) {
+                            $('#tabs #for_' +  this.id).addClass("errortab");
+                        }
+                    });
+
+                    $("#tabs").on('tabsactivate', function(event, ui) {
+                        var scrollPos = $(window).scrollTop();
+                        var hash = ui.newTab.children("li a").attr("href");
+                        window.location.hash = hash;
+                        $(window).scrollTop(scrollPos);
+                    });
+
+                    if ($('.errornote').length) {
+                        $('.errornote').addClass('tabbed-errornote');
+                    }
+
+
+                })(django.jQuery);
+
+
+
+
+            </script>
+            <!-- end admin_tabs stuff -->
+
+
+            {% block after_related_objects %}{% endblock %}
+
+            {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+
+            {% if adminform and add and adminform.first_field and adminform.first_field.id_for_label %}
+            <script type="text/javascript">
+                document.getElementById("{{ adminform.first_field.id_for_label }}").focus();
+
+
+
+            </script>
+            {% endif %}
+
+            {% prepopulated_fields_js %}
+
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -126,7 +126,7 @@ class PageApiView(views.APIView):
 
         page_context['global'] = import_string(settings.GARPIX_PAGE_GLOBAL_CONTEXT)(request, page)
         page_context['object'].update({
-            'components': page.get_components(request)
+            'components': page.get_components_context(request)
         })
         data = {
             'page_model': page.__class__.__name__,

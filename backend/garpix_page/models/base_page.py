@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from garpix_page.utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
 from garpix_page.utils.get_file_path import get_file_path
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey, PolymorphicMPTTModelManager
+from django.utils.html import format_html
 
 
 class GCurrentSiteManager(CurrentSiteManager):
@@ -155,9 +156,13 @@ class BasePage(PolymorphicMPTTModel):
         if self.slug in languages:
             raise ValidationError({'slug': f'ЧПУ не должен совпадать с языковым кодом ({languages})'})
 
-    def get_components(self, request):
+    def get_components_context(self, request):
         context = []
-        components = self.components.order_by('pages__view_order')
+        components = self.components.all()
         for component in components:
             context.append(component.get_context_data(request))
         return context
+
+    def admin_link_to_add_component(self):
+        link = reverse(f"admin:garpix_page_basecomponent_add")
+        return format_html('<a class="addlink" href="{0}?pages={1}">Добавить компонент</a>', link, self.id)
