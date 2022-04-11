@@ -154,3 +154,10 @@ class BasePage(PolymorphicMPTTModel):
             raise ValidationError({'slug': 'Страница с таким ЧПУ существует'})
         if self.slug in languages:
             raise ValidationError({'slug': f'ЧПУ не должен совпадать с языковым кодом ({languages})'})
+
+    def get_components(self, request):
+        context = []
+        components = self.components.order_by('pages__view_order')
+        for component in components:
+            context.append(component.get_context_data(request))
+        return context
