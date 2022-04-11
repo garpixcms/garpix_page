@@ -106,15 +106,19 @@ class PageApiView(views.APIView):
             user = None
 
         page_context = page.get_context(request, object=page, user=user)
-        page_context.pop('request')
+        request = page_context.pop('request')
         for k, v in page_context.items():
             if hasattr(v, 'is_for_page_view'):
                 model_serializer_class = get_serializer(v.__class__)
-                page_context[k] = model_serializer_class(v).data
+                page_context[k] = model_serializer_class(v, context={"request": request}).data
         if 'paginated_object_list' in page_context:
-            page_context['paginated_object_list'] = list(
-                {'id': x.id, 'title': x.title, 'get_absolute_url': x.get_absolute_url()} for x in
-                page_context['paginated_object_list'])
+            if page_context['paginated_object_list'][0].serializer is not None:
+                page_context['paginated_object_list'] = page_context['paginated_object_list'][0].serializer(
+                    page_context['paginated_object_list'], context={"request": request}, many=True).data
+            else:
+                page_context['paginated_object_list'] = list(
+                    {'id': x.id, 'title': x.title, 'get_absolute_url': x.get_absolute_url()} for x in
+                    page_context['paginated_object_list'])
         if 'paginator' in page_context:
             page_context['num_pages'] = page_context['paginator'].num_pages
             page_context['per_page'] = page_context['paginator'].per_page
