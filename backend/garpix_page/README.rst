@@ -434,11 +434,13 @@ Example answer:
 Components
 ----------
 
-It is possible to compose a page from components. You can do this in the same way as creating.
+It is possible to compose a page from components. You can do this in the same way as creating pages.
+
+Models
 
 .. code-block:: python
 
-    # app/models/component.py
+    # app/models/components.py
     from django.db import models
 
     from garpix_page.models import BaseComponent
@@ -454,7 +456,7 @@ Admin
 
 .. code-block:: python
 
-    # app/admin/component.py
+    # app/admin/components.py
     from django.contrib import admin
 
     from garpix_page.admin.components.base_component import BaseComponentAdmin
