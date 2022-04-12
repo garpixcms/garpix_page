@@ -450,8 +450,6 @@ It is possible to compose a page from components. You can do this in the same wa
             verbose_name = 'Текстовый компонент'
             verbose_name_plural = 'Текстовые компоненты'
 
-
-
 Admin
 
 .. code-block:: python
@@ -466,7 +464,6 @@ Admin
     @admin.register(TextComponent)
     class TextComponentAdmin(BaseComponentAdmin):
         pass
-
 
 BaseComponent has m2m field ``pages`` to specify on which pages the component should be displayed. Through table also has ``view_order`` field to specify the ordering of components at the page (ascending order).
 You can override ``get_context`` method to add some info to component context.

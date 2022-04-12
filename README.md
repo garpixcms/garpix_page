@@ -450,8 +450,6 @@ class TextComponent(BaseComponent):
         verbose_name = 'Текстовый компонент'
         verbose_name_plural = 'Текстовые компоненты'
 
-
-
 ```
 Admin
 
