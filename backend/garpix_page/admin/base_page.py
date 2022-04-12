@@ -4,6 +4,8 @@ from django.utils.html import format_html
 from ..models.base_page import BasePage
 from modeltranslation.admin import TabbedTranslationAdmin
 from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, PolymorphicMPTTChildModelAdmin
+
+from ..models.components.base_component import PageComponent
 from ..utils.get_garpix_page_models import get_garpix_page_models
 from django.conf import settings
 from django.utils.translation import gettext as _
@@ -12,14 +14,21 @@ from tabbed_admin import TabbedModelAdmin
 from mptt.admin import DraggableMPTTAdmin
 
 
+class ComponentsTabularInline(admin.TabularInline):
+    model = PageComponent
+    fields = ('component', 'view_order')
+    extra = 0
+
+
 class BasePageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
     base_model = BasePage
-
     list_per_page = settings.GARPIX_PAGE_ADMIN_LIST_PER_PAGE if hasattr(settings,
                                                                         'GARPIX_PAGE_ADMIN_LIST_PER_PAGE') else 25
     empty_value_display = '- нет -'
     save_on_top = True
     view_on_site = True
+
+    # change_form_template = 'garpix_page/admin/page_change_form.html'
 
     date_hierarchy = 'created_at'
     prepopulated_fields = {'slug': ('title',)}
@@ -89,7 +98,8 @@ class BasePageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChi
 
             self.tabs = [
                 ('Основное', tab_main),
-                ('SEO', tab_seo)
+                ('SEO', tab_seo),
+                ('Компоненты', (ComponentsTabularInline,))
             ]
         tabs_fieldsets = self.get_formatted_tabs(request, obj)['fieldsets']
         self.fieldsets = ()

@@ -433,6 +433,138 @@ Example answer:
 }
 ```
 
+# Components
+
+It is possible to compose a page from components. You can do this in the same way as creating pages.
+
+Model
+
+```python
+# app/models/components.py
+from django.db import models
+
+from garpix_page.models import BaseComponent
+
+class TextComponent(BaseComponent):
+    text = models.TextField(verbose_name='Текст')
+
+    class Meta:
+        verbose_name = 'Текстовый компонент'
+        verbose_name_plural = 'Текстовые компоненты'
+
+```
+Admin
+
+```python
+# app/admin/components.py
+from django.contrib import admin
+
+from garpix_page.admin.components.base_component import BaseComponentAdmin
+from app.models import TextComponent
+
+
+@admin.register(TextComponent)
+class TextComponentAdmin(BaseComponentAdmin):
+    pass
+
+```
+
+Translations:
+
+```python
+# app/translation/components.py
+
+from modeltranslation.translator import TranslationOptions, register
+from app.models import TextComponent
+
+
+@register(TextComponent)
+class TextComponentTranslationOptions(TranslationOptions):
+    fields = ('text',)
+
+
+```
+
+BaseComponent has m2m field `pages` to specify on which pages the component should be displayed. Through table also has `view_order` field to specify the ordering of components at the page (ascending order). 
+You can override `get_context` method to add some info to component context.
+
+Example answer with some components:
+
+```json
+{
+    "page_model": "Page",
+    "init_state": {
+        "object": {
+            "id": 1,
+            "title": "page",
+            "title_en": "page",
+            "is_active": true,
+            "display_on_sitemap": true,
+            "slug": "page",
+            "created_at": "2022-02-28T15:33:26.083166Z",
+            "updated_at": "2022-04-12T07:45:34.695803Z",
+            "seo_title": "",
+            "seo_title_en": null,
+            "seo_keywords": "",
+            "seo_keywords_en": null,
+            "seo_description": "",
+            "seo_description_en": "",
+            "seo_author": "",
+            "seo_author_en": null,
+            "seo_og_type": "website",
+            "seo_image": null,
+            "lft": 1,
+            "rght": 2,
+            "tree_id": 1,
+            "level": 0,
+            "content": "",
+            "content_en": "",
+            "polymorphic_ctype": 10,
+            "parent": null,
+            "sites": [
+                1
+            ],
+            "components": [
+                {
+                    "component_model": "TextComponent",
+                    "object": {
+                        "id": 1,
+                        "title": "Текстовый блок",
+                        "title_en": "Text block",
+                        "created_at": "2022-04-11T15:35:24.829579Z",
+                        "updated_at": "2022-04-11T15:37:09.898287Z",
+                        "text_title": "",
+                        "text": "Текст",
+                        "text_en": "Text",
+                        "polymorphic_ctype": 22,
+                        "pages": [
+                            1
+                        ]
+                    }
+                },
+                {
+                    "component_model": "TextDescriptionComponent",
+                    "object": {
+                        "id": 2,
+                        "title": "Описание рубрики",
+                        "created_at": "2022-04-12T07:45:15.341862Z",
+                        "updated_at": "2022-04-12T07:45:15.341886Z",
+                        "text_title": "",
+                        "text": "Текст",
+                        "description": "Описание",
+                        "polymorphic_ctype": 21,
+                        "pages": [
+                            1
+                        ]
+                    }
+                }
+            ]
+        },
+        "global": {}
+    }
+}
+```
+
 ## Important!
 
 Also, see this project for additional features (`BaseListPage`, `BaseSearchPage`, `sitemap.xml`, etc).
