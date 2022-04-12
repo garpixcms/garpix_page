@@ -1,2 +1,2 @@
-from .text_component import TextComponent
-from .text_description_component import TextDescriptionComponent
+from .text_component import TextComponent # noqa
+from .text_description_component import TextDescriptionComponent # noqa

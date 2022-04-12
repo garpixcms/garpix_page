@@ -67,7 +67,7 @@ class BaseComponent(PolymorphicModel):
 
     @property
     def admin_link_to_change(self):
-        link = reverse(f"admin:garpix_page_basecomponent_change",
+        link = reverse("admin:garpix_page_basecomponent_change",
                        args=[self.id])
         return format_html('<a class="inlinechangelink" href="{0}">{1}</a>', link, self.title)
 

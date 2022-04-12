@@ -1,2 +1,2 @@
-from .text_component import TextComponentAdmin
-from .text_description_component import TextDescriptionComponentAdmin
+from .text_component import TextComponentAdmin # noqa
+from .text_description_component import TextDescriptionComponentAdmin # noqa

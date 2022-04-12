@@ -1,5 +1,4 @@
 import django.apps
-from ..models import BasePage
 
 from ..models import BasePage, BaseComponent
 

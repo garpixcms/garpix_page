@@ -164,5 +164,5 @@ class BasePage(PolymorphicMPTTModel):
         return context
 
     def admin_link_to_add_component(self):
-        link = reverse(f"admin:garpix_page_basecomponent_add")
+        link = reverse("admin:garpix_page_basecomponent_add")
         return format_html('<a class="related-widget-wrapper-link add-related addlink" href="{0}?_to_field=id&_popup=1&pages={1}">Добавить компонент</a>', link, self.id)
