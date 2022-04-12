@@ -10,13 +10,18 @@ from ...serializers import get_serializer
 
 
 class PageComponent(models.Model):
-    component = models.ForeignKey("BaseComponent", on_delete=models.CASCADE)
-    page = models.ForeignKey("BasePage", on_delete=models.CASCADE)
-    view_order = models.IntegerField(default=1)
+    component = models.ForeignKey("BaseComponent", on_delete=models.CASCADE, verbose_name='Компонент')
+    page = models.ForeignKey("BasePage", on_delete=models.CASCADE, verbose_name='Страница')
+    view_order = models.IntegerField(default=1, verbose_name='Порядок отображения')
+
+    def __str__(self):
+        return ''
 
     class Meta:
         unique_together = (('component', 'page'),)
         ordering = ('view_order', )
+        verbose_name = 'Компонент страницы'
+        verbose_name_plural = 'Компоненты страницы'
 
 
 class BaseComponent(PolymorphicModel):

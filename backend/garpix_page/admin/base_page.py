@@ -14,7 +14,7 @@ from tabbed_admin import TabbedModelAdmin
 from mptt.admin import DraggableMPTTAdmin
 
 
-class UserForDeviceTabularInline(admin.TabularInline):
+class ComponentsTabularInline(admin.TabularInline):
     model = PageComponent
     fields = ('component', 'view_order')
     extra = 0
@@ -22,14 +22,13 @@ class UserForDeviceTabularInline(admin.TabularInline):
 
 class BasePageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
     base_model = BasePage
-    inlines = [UserForDeviceTabularInline, ]
     list_per_page = settings.GARPIX_PAGE_ADMIN_LIST_PER_PAGE if hasattr(settings,
                                                                         'GARPIX_PAGE_ADMIN_LIST_PER_PAGE') else 25
     empty_value_display = '- нет -'
     save_on_top = True
     view_on_site = True
 
-    change_form_template = 'garpix_page/admin/page_change_form.html'
+    # change_form_template = 'garpix_page/admin/page_change_form.html'
 
     date_hierarchy = 'created_at'
     prepopulated_fields = {'slug': ('title',)}
@@ -99,7 +98,8 @@ class BasePageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChi
 
             self.tabs = [
                 ('Основное', tab_main),
-                ('SEO', tab_seo)
+                ('SEO', tab_seo),
+                ('Компоненты', (ComponentsTabularInline,))
             ]
         tabs_fieldsets = self.get_formatted_tabs(request, obj)['fieldsets']
         self.fieldsets = ()
