@@ -465,6 +465,21 @@ Admin
     class TextComponentAdmin(BaseComponentAdmin):
         pass
 
+Translations:
+
+.. code-block:: python
+
+    # app/translation/components.py
+
+    from modeltranslation.translator import TranslationOptions, register
+    from app.models import TextComponent
+
+
+    @register(TextComponent)
+    class TextComponentTranslationOptions(TranslationOptions):
+        fields = ('text',)
+
+
 BaseComponent has m2m field ``pages`` to specify on which pages the component should be displayed. Through table also has ``view_order`` field to specify the ordering of components at the page (ascending order).
 You can override ``get_context`` method to add some info to component context.
 

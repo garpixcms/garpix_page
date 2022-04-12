@@ -466,6 +466,23 @@ class TextComponentAdmin(BaseComponentAdmin):
     pass
 
 ```
+
+Translations:
+
+```python
+# app/translation/components.py
+
+from modeltranslation.translator import TranslationOptions, register
+from app.models import TextComponent
+
+
+@register(TextComponent)
+class TextComponentTranslationOptions(TranslationOptions):
+    fields = ('text',)
+
+
+```
+
 BaseComponent has m2m field `pages` to specify on which pages the component should be displayed. Through table also has `view_order` field to specify the ordering of components at the page (ascending order). 
 You can override `get_context` method to add some info to component context.
 
@@ -510,11 +527,13 @@ Example answer with some components:
                     "component_model": "TextComponent",
                     "object": {
                         "id": 1,
-                        "title": "Название",
+                        "title": "Текстовый блок",
+                        "title_en": "Text block",
                         "created_at": "2022-04-11T15:35:24.829579Z",
                         "updated_at": "2022-04-11T15:37:09.898287Z",
                         "text_title": "",
                         "text": "Текст",
+                        "text_en": "Text",
                         "polymorphic_ctype": 22,
                         "pages": [
                             1
@@ -525,12 +544,12 @@ Example answer with some components:
                     "component_model": "TextDescriptionComponent",
                     "object": {
                         "id": 2,
-                        "title": "Назвние",
+                        "title": "Описание рубрики",
                         "created_at": "2022-04-12T07:45:15.341862Z",
                         "updated_at": "2022-04-12T07:45:15.341886Z",
                         "text_title": "",
-                        "text": "текст",
-                        "description": "описание",
+                        "text": "Текст",
+                        "description": "Описание",
                         "polymorphic_ctype": 21,
                         "pages": [
                             1

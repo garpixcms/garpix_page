@@ -1,13 +1,14 @@
 from django.contrib import admin
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.utils.text import format_lazy
+from modeltranslation.admin import TabbedTranslationAdmin
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelFilter, PolymorphicChildModelAdmin
 
 from garpix_page.models import BaseComponent, BasePage
 from garpix_page.utils.get_garpix_page_models import get_garpix_page_component_models
 
 
-class BaseComponentAdmin(PolymorphicChildModelAdmin):
+class BaseComponentAdmin(PolymorphicChildModelAdmin, TabbedTranslationAdmin):
     base_model = BaseComponent
     list_display = ('title', 'model_name')
 
@@ -37,7 +38,7 @@ class BaseComponentAdmin(PolymorphicChildModelAdmin):
 
 
 @admin.register(BaseComponent)
-class RealBaseComponentAdmin(PolymorphicParentModelAdmin):
+class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin):
 
     child_models = get_garpix_page_component_models()
     base_model = BaseComponent
