@@ -112,7 +112,8 @@ class PageApiView(views.APIView):
                 model_serializer_class = get_serializer(v.__class__)
                 page_context[k] = model_serializer_class(v, context={"request": request}).data
         if 'paginated_object_list' in page_context:
-            if page_context['paginated_object_list'][0].get_serializer() is not None:
+            if len(page_context['paginated_object_list']) > 0 and \
+                    page_context['paginated_object_list'][0].get_serializer() is not None:
                 page_context['paginated_object_list'] = page_context['paginated_object_list'][0].get_serializer(
                     page_context['paginated_object_list'], context={"request": request}, many=True).data
             else:
@@ -132,4 +133,14 @@ class PageApiView(views.APIView):
             'page_model': page.__class__.__name__,
             'init_state': page_context,
         }
+        return Response(data)
+
+
+class PageApiListView(views.APIView):
+    def get(self, request):  # noqa
+        from garpix_page.utils.get_garpix_page_models import get_garpix_page_models
+        models_list = get_garpix_page_models()
+        data = {}
+        for model in models_list:
+            data.update({model.__name__: model._meta.verbose_name})
         return Response(data)
