@@ -382,6 +382,7 @@ Add to `urls.py` this:
 
 ```python
 urlpatterns += [
+    re_path(r'{}/page_models_list/$'.format(settings.API_URL), PageApiListView.as_view()),
     re_path(r'{}/page/(?P<slugs>.*)$'.format(settings.API_URL), PageApiView.as_view()),
 ]
 ```
