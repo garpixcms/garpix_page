@@ -1,3 +1,7 @@
+## (20.04.2022)
+
+- Добавлен дополнительный менеджер GPolymorphicCurrentSiteManager (BasePage.polymorphic_on_site.all())
+
 ## 2.21.0 (15.04.2022)
 
 - В api добавлен эндпоинт на получение списка моделей страниц (по умолчанию `api/page_models_list/`)
