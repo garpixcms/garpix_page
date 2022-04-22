@@ -17,6 +17,16 @@ class GCurrentSiteManager(CurrentSiteManager):
     use_in_migrations = False
 
 
+class GPolymorphicCurrentSiteManager(CurrentSiteManager, PolymorphicMPTTModelManager):
+    use_in_migrations = False
+
+    def get_queryset(self):
+        qs = self.queryset_class(self.model, using=self._db, hints=self._hints)
+        if self.model._meta.proxy:
+            qs = qs.instance_of(self.model)
+        return qs.filter(**{self._get_field_name() + '__id': settings.SITE_ID})
+
+
 def get_all_sites():
     return Site.objects.all()
 
@@ -46,6 +56,7 @@ class BasePage(PolymorphicMPTTModel):
     # objects = models.Manager()
     objects = PolymorphicMPTTModelManager()
     on_site = GCurrentSiteManager()
+    polymorphic_on_site = GPolymorphicCurrentSiteManager()
 
     template = 'garpix_page/default.html'
     searchable_fields = ('title',)
