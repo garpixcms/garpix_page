@@ -1,6 +1,6 @@
-### (20.04.2022)
+### 2.22.0 (22.04.2022)
 
-- Добавлен дополнительный менеджер GPolymorphicCurrentSiteManager (BasePage.polymorphic_on_site.all())
+- Добавлен дополнительный менеджер `GPolymorphicCurrentSiteManager` (`BasePage.polymorphic_on_site.all()`)
 
 ### 2.21.0 (15.04.2022)
 
