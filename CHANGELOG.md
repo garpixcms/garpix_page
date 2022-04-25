@@ -1,3 +1,7 @@
+### (25.04.2022)
+
+- Исправлен action clone_object в админке
+
 ### 2.22.0 (22.04.2022)
 
 - Добавлен дополнительный менеджер `GPolymorphicCurrentSiteManager` (`BasePage.polymorphic_on_site.all()`)
