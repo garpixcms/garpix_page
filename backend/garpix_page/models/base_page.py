@@ -11,6 +11,7 @@ from garpix_page.utils.get_current_language_code_url_prefix import get_current_l
 from garpix_page.utils.get_file_path import get_file_path
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey, PolymorphicMPTTModelManager
 from django.utils.html import format_html
+from django.core.cache import cache
 
 
 class GCurrentSiteManager(CurrentSiteManager):
@@ -89,6 +90,11 @@ class BasePage(PolymorphicMPTTModel):
 
     @cached_property
     def absolute_url(self):
+        cache_key = f'url_page_{self.pk}'
+        url_cache = cache.get(cache_key)
+        if url_cache is not None:
+            return url_cache
+
         current_language_code_url_prefix = get_current_language_code_url_prefix()
 
         if self.slug:
@@ -98,8 +104,12 @@ class BasePage(PolymorphicMPTTModel):
                 obj = obj.parent
                 if obj.slug:
                     url_arr.insert(0, obj.slug)
-            return "{}/{}".format(current_language_code_url_prefix, '/'.join(url_arr))
-        return "{}".format(current_language_code_url_prefix) if len(current_language_code_url_prefix) > 1 else '/'
+            result = "{}/{}".format(current_language_code_url_prefix, '/'.join(url_arr))
+            cache.set(cache_key, result)
+            return result
+        result = "{}".format(current_language_code_url_prefix) if len(current_language_code_url_prefix) > 1 else '/'
+        cache.set(cache_key, result)
+        return result
 
     absolute_url.short_description = 'URL'
 
@@ -168,10 +178,15 @@ class BasePage(PolymorphicMPTTModel):
             raise ValidationError({'slug': f'ЧПУ не должен совпадать с языковым кодом ({languages})'})
 
     def get_components_context(self, request):
+        cache_key = f'components_context_{self.pk}'
+        components_context_cache = cache.get(cache_key)
+        if components_context_cache is not None:
+            return components_context_cache
         context = []
         components = self.components.all()
         for component in components:
             context.append(component.get_context_data(request))
+        cache.set(cache_key, context)
         return context
 
     def admin_link_to_add_component(self):

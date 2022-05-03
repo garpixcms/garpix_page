@@ -7,6 +7,7 @@ def get_serializer(model):
     return type(f'{model.__name__}Serializer', (ModelSerializer, ), {
         'Meta': type('Meta', (object,), {
             'model': model,
-            'fields': '__all__'
+            'exclude': ('sites', 'lft', 'rght', 'tree_id', 'level', 'polymorphic_ctype', 'parent',)
+            # 'fields': '__all__'
         })
     })
