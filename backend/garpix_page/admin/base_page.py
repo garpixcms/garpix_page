@@ -154,13 +154,17 @@ class RealBasePageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicM
     def clone_object(self, request, queryset):
         """Копирование(клонирование) выбранных объектов - action"""
         for obj in queryset:
-            prefix = '-CLONE'
-            clone = obj
-            clone.title += prefix
-            clone.slug += prefix
-            clone.id = None
-            clone.is_active = False
-            clone.save()
+            obj = obj.get_real_instance()
+            obj.pk = None
+            obj.id = None
+            len_old_title = obj.__class__.objects.filter(title__icontains=obj.title).count()
+            if len_old_title > 0:
+                title = f"{obj.title} ({len_old_title})"
+                slug = f"{obj.slug}-{len_old_title}"
+            obj.is_active = False
+            obj.title = title
+            obj.slug = slug
+            obj.save()
 
     clone_object.short_description = 'Клонировать объект'
 
