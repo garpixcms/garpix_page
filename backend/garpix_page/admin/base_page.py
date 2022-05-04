@@ -157,7 +157,7 @@ class RealBasePageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicM
             obj = obj.get_real_instance()
             obj.pk = None
             obj.id = None
-            len_old_title = obj.__class__.objects.filter(title__icontains=f"{obj.title}").count()
+            len_old_title = obj.__class__.objects.filter(title__icontains=obj.title).count()
             if len_old_title > 0:
                 title = f"{obj.title} ({len_old_title})"
                 slug = f"{obj.slug}-{len_old_title}"
