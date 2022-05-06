@@ -169,9 +169,13 @@ class BasePage(PolymorphicMPTTModel):
 
     def get_components_context(self, request):
         context = []
-        components = self.components.all()
+        components = self.pagecomponent_set.filter(component__is_active=True)
         for component in components:
-            context.append(component.get_context_data(request))
+            component_context = {
+                'view_order': component.view_order
+            }
+            component_context.update(component.component.get_context_data(request))
+            context.append(component_context)
         return context
 
     def admin_link_to_add_component(self):
