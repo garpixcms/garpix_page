@@ -29,6 +29,7 @@ class BaseComponent(PolymorphicModel):
     Базовый компонент
     """
     title = models.CharField(max_length=255, verbose_name='Название')
+    is_active = models.BooleanField(default=True, verbose_name='Включено')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
 
