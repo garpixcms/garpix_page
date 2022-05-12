@@ -43,9 +43,9 @@ class PageApiView(views.APIView):
         return obj
 
     @staticmethod
-    def get_error_page_response_data(page, request):
+    def get_error_page_response_data(page, request, page_name):
         return {
-            'page_model': page.__class__.__name__ if page is not None else None,
+            'page_model': page_name,
             'init_state': {
                 "object": None,
                 "global": import_string(settings.GARPIX_PAGE_GLOBAL_CONTEXT)(request, page)
@@ -54,20 +54,21 @@ class PageApiView(views.APIView):
 
     def check_errors(self, page, request):
         if page is None:
-            return Response(self.get_error_page_response_data(page, request), status=status.HTTP_404_NOT_FOUND)
+            return Response(self.get_error_page_response_data(page, request, 'Page404'),
+                            status=status.HTTP_404_NOT_FOUND)
 
         if getattr(page, 'login_required', False):
             if not request.user.is_authenticated:
-                return Response(self.get_error_page_response_data(page, request), status=status.HTTP_401_UNAUTHORIZED)
+                return Response(self.get_error_page_response_data(page, request, 'Page401'), status=status.HTTP_401_UNAUTHORIZED)
 
         if not page.has_permission_required(request):
-            return Response(self.get_error_page_response_data(page, request), status=status.HTTP_403_FORBIDDEN)
+            return Response(self.get_error_page_response_data(page, request, 'Page403'), status=status.HTTP_403_FORBIDDEN)
 
         if getattr(page, 'query_parameters_required', None) is not None:
             request_get = set(request.GET.keys())
             parameters = set(page.query_parameters_required)
             if request_get != parameters:
-                return Response(self.get_error_page_response_data(page, request), status=status.HTTP_404_NOT_FOUND)
+                return Response(self.get_error_page_response_data(page, request, 'Page404'), status=status.HTTP_404_NOT_FOUND)
 
         return None
 

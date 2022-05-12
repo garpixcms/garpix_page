@@ -432,6 +432,23 @@ Example answer:
        }
    }
 
+Error contexts
+==============
+
+Module consists of 3 reserved names for page models: ``Page404``, ``Page403`` and ``Page401``. These names are used for responses when corresponding error statuses are caught.
+Example answer on not found error:
+
+.. code-block:: json
+    {
+        "page_model": "Page404",
+        "init_state": {
+            "object": null,
+            "global": {}
+        }
+    }
+
+
+
 Components
 ----------
 

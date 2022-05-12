@@ -434,6 +434,21 @@ Example answer:
 }
 ```
 
+## Error contexts
+
+Module consists of 3 reserved names for page models: `Page404`, `Page403` and `Page401`. These names are used for responses when corresponding error statuses are caught.
+Example answer on not found error:
+
+```json
+{
+    "page_model": "Page404",
+    "init_state": {
+        "object": null,
+        "global": {}
+    }
+}
+```
+
 # Components
 
 It is possible to compose a page from components. You can do this in the same way as creating pages.
