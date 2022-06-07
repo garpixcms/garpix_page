@@ -115,8 +115,7 @@ class PageApiView(views.APIView):
         if 'paginated_object_list' in page_context:
             try:
                 serializer_class = page_context['paginated_object_list'][0].get_serializer()
-                if serializer_class is not None:
-                    page_context['paginated_object_list'] = serializer_class(page_context['paginated_object_list'], context={"request": request}, many=True).data
+                page_context['paginated_object_list'] = serializer_class(page_context['paginated_object_list'], context={"request": request}, many=True).data
             except Exception:
                 page_context['paginated_object_list'] = list(
                     {'id': x.id, 'title': x.title, 'get_absolute_url': x.get_absolute_url()} for x in
