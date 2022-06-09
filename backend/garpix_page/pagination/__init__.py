@@ -1,1 +1,1 @@
-from .page_common_pagination import GarpixPagePagination
+from .page_common_pagination import GarpixPagePagination  # noqa
