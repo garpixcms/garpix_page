@@ -114,7 +114,7 @@ class PageApiView(views.APIView):
                 page_context[k] = model_serializer_class(v, context={"request": request}).data
         if 'paginated_object_list' in page_context:
             try:
-                serializer_class = page_context['paginated_object_list'][0].get_serializer()
+                serializer_class = get_serializer(page_context['paginated_object_list'][0].__class__)
                 page_context['paginated_object_list'] = serializer_class(page_context['paginated_object_list'],
                                                                          context={"request": request}, many=True).data
             except Exception:
