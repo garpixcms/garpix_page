@@ -15,6 +15,7 @@ django-polymorphic-tree-for-garpix-page = "*"
 django-modeltranslation = "*"
 django-multiurl = "*"
 djangorestframework = "*"
+django-redis = "*"
 
 [dev-packages]
 
