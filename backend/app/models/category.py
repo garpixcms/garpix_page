@@ -1,4 +1,3 @@
-from django.conf import settings
 from garpix_page.models import BasePage
 from .post import Post
 

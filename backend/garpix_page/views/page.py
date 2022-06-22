@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.http import Http404
+
+from ..utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
 from ..utils.get_garpix_page_models import get_garpix_page_models
-from django.utils import translation
 from ..utils.check_redirect import check_redirect
 from django.shortcuts import redirect
 from django.views.generic import DetailView
@@ -24,26 +25,11 @@ class PageView(DetailView):
         return context
 
     def _get_home_page(self):
-        home_pages = []
         for Model in get_garpix_page_models():
             home_page = Model.on_site.filter(slug='', is_active=True).first()
             if home_page is not None:
                 return home_page
-        return Http404
-
-    def _get_current_language_code_url_prefix(self):
-        current_language_code_url_prefix = translation.get_language()
-        try:
-            use_default_prefix = settings.USE_DEFAULT_LANGUAGE_PREFIX
-        except:  # noqa
-            use_default_prefix = True
-        if not use_default_prefix and current_language_code_url_prefix == settings.LANGUAGE_CODE:
-            current_language_code_url_prefix = ''
-        elif current_language_code_url_prefix is None:
-            current_language_code_url_prefix = ''
-        else:
-            current_language_code_url_prefix = '/' + current_language_code_url_prefix
-        return current_language_code_url_prefix
+        raise Http404
 
     def _get_object_list_by_url(self, url):
         obj_list = []
@@ -64,7 +50,7 @@ class PageView(DetailView):
         Метод для получения объекта страницы.
         Сравнивает текущий урл со slug, которые мы получаем из родительских страниц нашей страницы.
         """
-        current_language_code_url_prefix = self._get_current_language_code_url_prefix()
+        current_language_code_url_prefix = get_current_language_code_url_prefix()
         url = self.kwargs.get('url', None)
         # home pages
         if url is None or url == '':
@@ -84,9 +70,18 @@ class PageView(DetailView):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if getattr(self.object, 'login_required', None):
-            if not self.request.user.is_authenticated:
+        user = request.user
+        if getattr(self.object, 'login_required', False):
+            if not user.is_authenticated:
                 return redirect(settings.LOGIN_URL)
+        if not self.object.has_permission_required(request):
+            return redirect(settings.LOGIN_URL)
+
+        if getattr(self.object, 'query_parameters_required', None) is not None:
+            request_get = set(request.GET.keys())
+            parameters = set(self.object.query_parameters_required)
+            if request_get != parameters:
+                return self._get_home_page()
         context = self.get_context_data(object=self.object)
         redir = check_redirect(request, context)
         if redir:
@@ -95,9 +90,12 @@ class PageView(DetailView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if getattr(self.object, 'login_required', None):
-            if not self.request.user.is_authenticated:
+        user = request.user
+        if getattr(self.object, 'login_required', False):
+            if not user.is_authenticated:
                 return redirect(settings.LOGIN_URL)
+        if not self.object.has_permission_required(request):
+            return redirect(settings.LOGIN_URL)
         context = self.get_context_data(object=self.object)
         redir = check_redirect(request, context)
         if redir:

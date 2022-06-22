@@ -1,1 +1,1 @@
-from .serializer import get_serializer
+from .serializer import get_serializer  # noqa

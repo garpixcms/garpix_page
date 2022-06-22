@@ -1,0 +1,13 @@
+{% load url_replace %}
+
+{% if paginator.page_range|length > 1 %}
+<nav>
+    <ul class="pagination">
+        {% for page_num in paginator.page_range_beauty %}
+            <li class="page-item {% if page_num.0 == page %}active{% endif %}">
+                <a class="page-link" href="?{% url_replace request 'page' page_num.0 %}">{{ page_num.1 }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</nav>
+{% endif %}

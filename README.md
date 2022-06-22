@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'mptt',
     # ... django.contrib.*
     'django.contrib.sites',
+    'tabbed_admin',
     'garpix_page',
     # third-party and your apps
 ]
@@ -51,6 +52,10 @@ TEMPLATES = [
             ],
         },
     },
+]
+
+MIDDLEWARE = [
+    'django.middleware.locale.LocaleMiddleware'
 ]
 
 ```
@@ -109,6 +114,7 @@ from garpix_page.views.page import PageView
 from multiurl import ContinueResolving, multiurl
 from django.http import Http404
 from django.conf import settings
+from garpix_page.views.index import IndexView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -119,6 +125,7 @@ urlpatterns += i18n_patterns(
         path('', PageView.as_view()),
         re_path(r'^(?P<url>.*?)$', PageView.as_view(), name='page'),
         re_path(r'^(?P<url>.*?)/$', PageView.as_view(), name='page'),
+        path('', IndexView.as_view()),
         catch=(Http404, ContinueResolving),
     ),
     prefix_default_language=settings.USE_DEFAULT_LANGUAGE_PREFIX,
@@ -336,23 +343,55 @@ Templates:
 
 Now you can auth in admin panel and starting add pages.
 
+If you need to use a serializer whose model is this page, use the get_serializer() method to avoid circular imports.
+
+## Page permissions
+
+
+If you need to add login access to your model pages, add login_required static field to your model.
+
+To add some user permissions to page, add permissions  static field to your page model:
+
+```python
+class Post(BasePage):
+    content = models.TextField(verbose_name='Content', blank=True, default='')
+    
+    template = 'pages/post.html'
+    
+    login_required = True
+    permissions = [IsAdminUser,]
+    
+    class Meta:
+        verbose_name = "Post"
+        verbose_name_plural = "Posts"
+        ordering = ('-created_at',)
+
+```
+
 # API
 
 You can use garpix_page with SPA sites.
+
+Add to settings API_URL parameter:
+
+```python
+API_URL = 'api'
+```
 
 Add to `urls.py` this:
 
 ```python
 urlpatterns += [
-    re_path(r'page_api/(?P<slugs>.*)$', PageApiView.as_view()),
+    re_path(r'{}/page_models_list/$'.format(settings.API_URL), PageApiListView.as_view()),
+    re_path(r'{}/page/(?P<slugs>.*)$'.format(settings.API_URL), PageApiView.as_view()),
 ]
 ```
 
 And you can test it:
 
-`http://localhost:8000/page_api/` - home page (empty slug)
-`http://localhost:8000/page_api/another_page` - another page (slug)
-`http://localhost:8000/page_api/kategoriya/post-1` - sub page (slug)
+`http://localhost:8000/api/page/` - home page (empty slug)
+`http://localhost:8000/api/page/another_page` - another page (slug)
+`http://localhost:8000/api/page/kategoriya/post-1` - sub page (slug)
 
 Example answer:
 
@@ -394,6 +433,142 @@ Example answer:
     }
 }
 ```
+
+# Components
+
+It is possible to compose a page from components. You can do this in the same way as creating pages.
+
+Model
+
+```python
+# app/models/components.py
+from django.db import models
+
+from garpix_page.models import BaseComponent
+
+class TextComponent(BaseComponent):
+    text = models.TextField(verbose_name='Текст')
+
+    class Meta:
+        verbose_name = 'Текстовый компонент'
+        verbose_name_plural = 'Текстовые компоненты'
+
+```
+Admin
+
+```python
+# app/admin/components.py
+from django.contrib import admin
+
+from garpix_page.admin.components.base_component import BaseComponentAdmin
+from app.models import TextComponent
+
+
+@admin.register(TextComponent)
+class TextComponentAdmin(BaseComponentAdmin):
+    pass
+
+```
+
+Translations:
+
+```python
+# app/translation/components.py
+
+from modeltranslation.translator import TranslationOptions, register
+from app.models import TextComponent
+
+
+@register(TextComponent)
+class TextComponentTranslationOptions(TranslationOptions):
+    fields = ('text',)
+
+
+```
+
+BaseComponent has m2m field `pages` to specify on which pages the component should be displayed. Through table also has `view_order` field to specify the ordering of components at the page (ascending order). 
+You can override `get_context` method to add some info to component context.
+
+Example answer with some components:
+
+```json
+{
+    "page_model": "Page",
+    "init_state": {
+        "object": {
+            "id": 1,
+            "title": "page",
+            "title_en": "page",
+            "is_active": true,
+            "display_on_sitemap": true,
+            "slug": "page",
+            "created_at": "2022-02-28T15:33:26.083166Z",
+            "updated_at": "2022-04-12T07:45:34.695803Z",
+            "seo_title": "",
+            "seo_title_en": null,
+            "seo_keywords": "",
+            "seo_keywords_en": null,
+            "seo_description": "",
+            "seo_description_en": "",
+            "seo_author": "",
+            "seo_author_en": null,
+            "seo_og_type": "website",
+            "seo_image": null,
+            "lft": 1,
+            "rght": 2,
+            "tree_id": 1,
+            "level": 0,
+            "content": "",
+            "content_en": "",
+            "polymorphic_ctype": 10,
+            "parent": null,
+            "sites": [
+                1
+            ],
+            "components": [
+                {
+                    "component_model": "TextComponent",
+                    "object": {
+                        "id": 1,
+                        "title": "Текстовый блок",
+                        "title_en": "Text block",
+                        "created_at": "2022-04-11T15:35:24.829579Z",
+                        "updated_at": "2022-04-11T15:37:09.898287Z",
+                        "text_title": "",
+                        "text": "Текст",
+                        "text_en": "Text",
+                        "polymorphic_ctype": 22,
+                        "pages": [
+                            1
+                        ]
+                    }
+                },
+                {
+                    "component_model": "TextDescriptionComponent",
+                    "object": {
+                        "id": 2,
+                        "title": "Описание рубрики",
+                        "created_at": "2022-04-12T07:45:15.341862Z",
+                        "updated_at": "2022-04-12T07:45:15.341886Z",
+                        "text_title": "",
+                        "text": "Текст",
+                        "description": "Описание",
+                        "polymorphic_ctype": 21,
+                        "pages": [
+                            1
+                        ]
+                    }
+                }
+            ]
+        },
+        "global": {}
+    }
+}
+```
+
+## Important!
+
+Also, see this project for additional features (`BaseListPage`, `BaseSearchPage`, `sitemap.xml`, etc).
 
 # Changelog
 
