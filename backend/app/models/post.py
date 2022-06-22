@@ -5,7 +5,7 @@ from garpix_page.models import BasePage
 class Post(BasePage):
     content = models.TextField(verbose_name='Содержание', blank=True, default='')
 
-    template = 'garpix_page/default.html'
+    template = 'pages/default.html'
 
     class Meta:
         verbose_name = "Пост"
