@@ -1,4 +1,4 @@
 [flake8]
 ignore = E501
-exclude = .git,__pycache__,old,build,dist,venv,*/migrations/*,*/settings/*
+exclude = .git,__pycache__,old,build,dist,venv,*/migrations/*,*/settings/*,garpix_page/codegenerator.py
 max-complexity = 10
