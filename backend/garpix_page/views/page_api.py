@@ -113,11 +113,11 @@ class PageApiView(views.APIView):
                 model_serializer_class = get_serializer(v.__class__)
                 page_context[k] = model_serializer_class(v, context={"request": request}).data
         if 'paginated_object_list' in page_context:
-            if len(page_context['paginated_object_list']) > 0 and \
-                    page_context['paginated_object_list'][0].get_serializer() is not None:
-                page_context['paginated_object_list'] = page_context['paginated_object_list'][0].get_serializer(
-                    page_context['paginated_object_list'], context={"request": request}, many=True).data
-            else:
+            try:
+                serializer_class = get_serializer(page_context['paginated_object_list'][0].__class__)
+                page_context['paginated_object_list'] = serializer_class(page_context['paginated_object_list'],
+                                                                         context={"request": request}, many=True).data
+            except Exception:
                 page_context['paginated_object_list'] = list(
                     {'id': x.id, 'title': x.title, 'get_absolute_url': x.get_absolute_url()} for x in
                     page_context['paginated_object_list'])

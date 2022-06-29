@@ -432,6 +432,32 @@ Example answer:
        }
    }
 
+To add drf paginated list of objects to your page context use ``GarpixPagePagination`` class:
+
+.. code-block:: python
+     # example
+    from garpix_page.models import BasePage
+    from garpix_page.pagination import GarpixPagePagination
+
+    class Post(BasePage):
+        ...
+
+        def get_context(self, request=None, *args, **kwargs):
+
+            ...
+            # get your_objects_list
+            # import objects serializer class YourObjectsSerializer
+            ...
+
+            paginator = GarpixPagePagination()
+
+            paginated_list = paginator.get_paginated_data(queryset=your_objects_list, serializer=YourObjectsSerializer,
+                                                           request=request)
+            context = {
+                'paginated_list': paginated_list
+            }
+
+
 Error contexts
 ==============
 
