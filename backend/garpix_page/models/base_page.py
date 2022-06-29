@@ -7,6 +7,7 @@ from django.contrib.sites.models import Site
 from django.contrib.sites.managers import CurrentSiteManager
 from rest_framework.views import APIView
 
+from garpix_page.utils.all_sites import get_all_sites
 from garpix_page.utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
 from garpix_page.utils.get_file_path import get_file_path
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey, PolymorphicMPTTModelManager
@@ -25,10 +26,6 @@ class GPolymorphicCurrentSiteManager(CurrentSiteManager, PolymorphicMPTTModelMan
         if self.model._meta.proxy:
             qs = qs.instance_of(self.model)
         return qs.filter(**{self._get_field_name() + '__id': settings.SITE_ID})
-
-
-def get_all_sites():
-    return Site.objects.all()
 
 
 class BasePage(PolymorphicMPTTModel):
