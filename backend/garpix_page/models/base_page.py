@@ -7,28 +7,12 @@ from django.contrib.sites.models import Site
 from django.contrib.sites.managers import CurrentSiteManager
 from rest_framework.views import APIView
 
+from garpix_page.utils.all_sites import get_all_sites
 from garpix_page.utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
 from garpix_page.utils.get_file_path import get_file_path
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey, PolymorphicMPTTModelManager
 from django.utils.html import format_html
-
-
-class GCurrentSiteManager(CurrentSiteManager):
-    use_in_migrations = False
-
-
-class GPolymorphicCurrentSiteManager(CurrentSiteManager, PolymorphicMPTTModelManager):
-    use_in_migrations = False
-
-    def get_queryset(self):
-        qs = self.queryset_class(self.model, using=self._db, hints=self._hints)
-        if self.model._meta.proxy:
-            qs = qs.instance_of(self.model)
-        return qs.filter(**{self._get_field_name() + '__id': settings.SITE_ID})
-
-
-def get_all_sites():
-    return Site.objects.all()
+from garpix_utils.managers import GCurrentSiteManager, GPolymorphicCurrentSiteManager
 
 
 class BasePage(PolymorphicMPTTModel):
@@ -176,6 +160,13 @@ class BasePage(PolymorphicMPTTModel):
             }
             component_context.update(component.component.get_context_data(request))
             context.append(component_context)
+        return context
+
+    def get_components(self):
+        context = []
+        components = self.pagecomponent_set.filter(component__is_active=True)
+        for component in components:
+            context.append(component.component)
         return context
 
     def admin_link_to_add_component(self):

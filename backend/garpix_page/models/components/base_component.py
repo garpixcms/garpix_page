@@ -37,6 +37,7 @@ class BaseComponent(PolymorphicModel):
                                    verbose_name='Страницы для отображения')
 
     text_title = models.CharField(blank=True, default='', max_length=128, verbose_name='Заголовок')
+    template = 'garpix_page/components/default.html'
 
     searchable_fields = ('title',)
     serializer = None

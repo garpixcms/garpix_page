@@ -605,6 +605,14 @@ Example answer with some components:
     }
 
 
+Templates:
+
+.. code-block:: html
+
+    # templates/pages/components/default.html
+
+    <h1>{{ component.title }}</h1>
+
 Changelog
 =========
 

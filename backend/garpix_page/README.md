@@ -581,6 +581,15 @@ Example answer with some components:
 }
 ```
 
+Templates:
+
+```html
+
+# templates/pages/components/default.html
+
+<h1>{{ component.title }}</h1>
+```
+
 ## Important!
 
 Also, see this project for additional features (`BaseListPage`, `BaseSearchPage`, `sitemap.xml`, etc).
