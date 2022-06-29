@@ -172,6 +172,7 @@ class BasePage(PolymorphicMPTTModel):
             }
             component_context.update(component.component.get_context_data(request))
             context.append(component_context)
+        cache.set(cache_key, context)
         return context
 
     def get_components(self):
