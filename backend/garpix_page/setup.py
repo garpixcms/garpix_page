@@ -37,7 +37,7 @@ setup(
         'django-modeltranslation >= 0.16.2',
         'django-multiurl >= 1.4.0',
         'djangorestframework >= 3.12.4',
-        'garpix_utils >= 1.4.0',
+        'garpix_utils >= 1.5.0',
         'django-tabbed-admin >= 1.0.4',
         'model-bakery >= 1.4.0'
     ],

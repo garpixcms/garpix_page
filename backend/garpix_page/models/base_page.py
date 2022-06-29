@@ -12,20 +12,7 @@ from garpix_page.utils.get_current_language_code_url_prefix import get_current_l
 from garpix_page.utils.get_file_path import get_file_path
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey, PolymorphicMPTTModelManager
 from django.utils.html import format_html
-
-
-class GCurrentSiteManager(CurrentSiteManager):
-    use_in_migrations = False
-
-
-class GPolymorphicCurrentSiteManager(CurrentSiteManager, PolymorphicMPTTModelManager):
-    use_in_migrations = False
-
-    def get_queryset(self):
-        qs = self.queryset_class(self.model, using=self._db, hints=self._hints)
-        if self.model._meta.proxy:
-            qs = qs.instance_of(self.model)
-        return qs.filter(**{self._get_field_name() + '__id': settings.SITE_ID})
+from garpix_utils.managers import GCurrentSiteManager, GPolymorphicCurrentSiteManager
 
 
 class BasePage(PolymorphicMPTTModel):
