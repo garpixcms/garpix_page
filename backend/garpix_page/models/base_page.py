@@ -4,9 +4,7 @@ from django.utils.functional import cached_property
 from django.db import models
 from django.urls import reverse
 from django.contrib.sites.models import Site
-from django.contrib.sites.managers import CurrentSiteManager
 from rest_framework.views import APIView
-
 from garpix_page.utils.all_sites import get_all_sites
 from garpix_page.utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
 from garpix_page.utils.get_file_path import get_file_path
