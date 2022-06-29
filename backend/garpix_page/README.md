@@ -449,32 +449,6 @@ Example answer on not found error:
 }
 ```
 
-To add drf paginated list of objects to your page context use `GarpixPagePagination` class:
-
-```python
-     # example
-from garpix_page.models import BasePage
-from garpix_page.pagination import GarpixPagePagination
-
-class Post(BasePage):
-    ...
-    
-    def get_context(self, request=None, *args, **kwargs):
-     
-        ...
-        # get your_objects_list
-        # import objects serializer class YourObjectsSerializer
-        ...
-         
-        paginator = GarpixPagePagination()
-        
-        paginated_list = paginator.get_paginated_data(queryset=your_objects_list, serializer=YourObjectsSerializer, 
-                                                       request=request)
-        context = {
-            'paginated_list': paginated_list
-        }
- ```
-
 # Components
 
 It is possible to compose a page from components. You can do this in the same way as creating pages.
@@ -605,6 +579,15 @@ Example answer with some components:
         "global": {}
     }
 }
+```
+
+Templates:
+
+```html
+
+# templates/pages/components/default.html
+
+<h1>{{ component.title }}</h1>
 ```
 
 ## Important!

@@ -13,6 +13,11 @@
 <main class="container">
     {% block content %}
     {% endblock %}
+    {% block components %}
+        {% for component in object.get_components %}
+        {% include component.template %}
+        {% endfor %}
+    {% endblock %}
 </main>
 
 </body>
