@@ -19,6 +19,7 @@ garpix-utils = "==1.5.0"
 garpix-package = "*"
 django-tabbed-admin = "*"
 model-bakery = "*"
+django-redis = "*"
 
 [dev-packages]
 

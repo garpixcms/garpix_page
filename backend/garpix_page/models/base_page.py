@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.functional import cached_property
 from django.db import models
 from django.urls import reverse
@@ -11,6 +13,7 @@ from garpix_page.utils.get_file_path import get_file_path
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey, PolymorphicMPTTModelManager
 from django.utils.html import format_html
 from garpix_utils.managers import GCurrentSiteManager, GPolymorphicCurrentSiteManager
+from django.core.cache import cache
 
 
 class BasePage(PolymorphicMPTTModel):
@@ -71,6 +74,11 @@ class BasePage(PolymorphicMPTTModel):
 
     @cached_property
     def absolute_url(self):
+        cache_key = f'url_page_{self.pk}'
+        url_cache = cache.get(cache_key)
+        if url_cache is not None:
+            return url_cache
+
         current_language_code_url_prefix = get_current_language_code_url_prefix()
 
         if self.slug:
@@ -80,8 +88,12 @@ class BasePage(PolymorphicMPTTModel):
                 obj = obj.parent
                 if obj.slug:
                     url_arr.insert(0, obj.slug)
-            return "{}/{}".format(current_language_code_url_prefix, '/'.join(url_arr))
-        return "{}".format(current_language_code_url_prefix) if len(current_language_code_url_prefix) > 1 else '/'
+            result = "{}/{}".format(current_language_code_url_prefix, '/'.join(url_arr))
+            cache.set(cache_key, result)
+            return result
+        result = "{}".format(current_language_code_url_prefix) if len(current_language_code_url_prefix) > 1 else '/'
+        cache.set(cache_key, result)
+        return result
 
     absolute_url.short_description = 'URL'
 
@@ -150,6 +162,10 @@ class BasePage(PolymorphicMPTTModel):
             raise ValidationError({'slug': f'ЧПУ не должен совпадать с языковым кодом ({languages})'})
 
     def get_components_context(self, request):
+        cache_key = f'components_context_{self.pk}'
+        components_context_cache = cache.get(cache_key)
+        if components_context_cache is not None:
+            return components_context_cache
         context = []
         components = self.pagecomponent_set.filter(component__is_active=True)
         for component in components:
@@ -158,6 +174,7 @@ class BasePage(PolymorphicMPTTModel):
             }
             component_context.update(component.component.get_context_data(request))
             context.append(component_context)
+        cache.set(cache_key, context)
         return context
 
     def get_components(self):
@@ -170,3 +187,8 @@ class BasePage(PolymorphicMPTTModel):
     def admin_link_to_add_component(self):
         link = reverse("admin:garpix_page_basecomponent_add")
         return format_html('<a class="related-widget-wrapper-link add-related addlink" href="{0}?_to_field=id&_popup=1&pages={1}">Добавить компонент</a>', link, self.id)
+
+    @receiver(post_save)
+    def uncache(sender, instance, **kwargs):
+        cache.delete(f'url_page_{instance.pk}')
+        cache.delete(f'components_context_{instance.pk}')

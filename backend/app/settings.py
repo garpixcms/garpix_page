@@ -163,3 +163,10 @@ GARPIX_PAGE_ADMIN_LIST_PER_PAGE = 25
 GARPIX_PAGE_GLOBAL_CONTEXT = 'garpix_page.contexts.global_context.global_context'
 
 API_URL = 'api'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379',
+    }
+}
