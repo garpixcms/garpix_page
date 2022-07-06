@@ -9,6 +9,8 @@ from polymorphic.managers import PolymorphicManager
 from ...models import BasePage
 from polymorphic.models import PolymorphicModel
 
+from ...serializers.serializer import get_components_serializer
+
 
 class PageComponent(models.Model):
     component = models.ForeignKey("BaseComponent", on_delete=models.CASCADE, verbose_name='Компонент')
@@ -75,7 +77,6 @@ class BaseComponent(PolymorphicModel):
         return format_html('<a class="inlinechangelink" href="{0}">{1}</a>', link, self.title)
 
     def get_context_data(self, request):
-        from ...serializers import get_components_serializer
         component_context = self.get_context(request)
         component_context.pop('request')
         context = {"component_model": self.__class__.__name__}
