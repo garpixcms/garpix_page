@@ -188,7 +188,9 @@ class BasePage(PolymorphicMPTTModel):
         link = reverse("admin:garpix_page_basecomponent_add")
         return format_html('<a class="related-widget-wrapper-link add-related addlink" href="{0}?_to_field=id&_popup=1&pages={1}">Добавить компонент</a>', link, self.id)
 
-    @receiver(post_save)
-    def uncache(sender, instance, **kwargs):
+
+@receiver(post_save)
+def uncache(sender, instance, **kwargs):
+    if type(sender) == type(BasePage):
         cache.delete(f'url_page_{instance.pk}')
         cache.delete(f'components_context_{instance.pk}')
