@@ -432,6 +432,49 @@ Example answer:
        }
    }
 
+To add drf paginated list of objects to your page context use ``GarpixPagePagination`` class:
+
+.. code-block:: python
+     # example
+    from garpix_page.models import BasePage
+    from garpix_page.pagination import GarpixPagePagination
+
+    class Post(BasePage):
+        ...
+
+        def get_context(self, request=None, *args, **kwargs):
+
+            ...
+            # get your_objects_list
+            # import objects serializer class YourObjectsSerializer
+            ...
+
+            paginator = GarpixPagePagination()
+
+            paginated_list = paginator.get_paginated_data(queryset=your_objects_list, serializer=YourObjectsSerializer,
+                                                           request=request)
+            context = {
+                'paginated_list': paginated_list
+            }
+
+
+Error contexts
+==============
+
+Module consists of 3 reserved names for page models: ``Page404``, ``Page403`` and ``Page401``. These names are used for responses when corresponding error statuses are caught.
+Example answer on not found error:
+
+.. code-block:: json
+    {
+        "page_model": "Page404",
+        "init_state": {
+            "object": null,
+            "global": {}
+        }
+    }
+
+
+
 Components
 ----------
 
@@ -561,6 +604,14 @@ Example answer with some components:
         }
     }
 
+
+Templates:
+
+.. code-block:: html
+
+    # templates/pages/components/default.html
+
+    <h1>{{ component.title }}</h1>
 
 Changelog
 =========

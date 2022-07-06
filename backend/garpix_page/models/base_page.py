@@ -6,32 +6,14 @@ from django.utils.functional import cached_property
 from django.db import models
 from django.urls import reverse
 from django.contrib.sites.models import Site
-from django.contrib.sites.managers import CurrentSiteManager
 from rest_framework.views import APIView
-
+from garpix_page.utils.all_sites import get_all_sites
 from garpix_page.utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
 from garpix_page.utils.get_file_path import get_file_path
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey, PolymorphicMPTTModelManager
 from django.utils.html import format_html
+from garpix_utils.managers import GCurrentSiteManager, GPolymorphicCurrentSiteManager
 from django.core.cache import cache
-
-
-class GCurrentSiteManager(CurrentSiteManager):
-    use_in_migrations = False
-
-
-class GPolymorphicCurrentSiteManager(CurrentSiteManager, PolymorphicMPTTModelManager):
-    use_in_migrations = False
-
-    def get_queryset(self):
-        qs = self.queryset_class(self.model, using=self._db, hints=self._hints)
-        if self.model._meta.proxy:
-            qs = qs.instance_of(self.model)
-        return qs.filter(**{self._get_field_name() + '__id': settings.SITE_ID})
-
-
-def get_all_sites():
-    return Site.objects.all()
 
 
 class BasePage(PolymorphicMPTTModel):
@@ -185,10 +167,21 @@ class BasePage(PolymorphicMPTTModel):
         if components_context_cache is not None:
             return components_context_cache
         context = []
-        components = self.components.all()
+        components = self.pagecomponent_set.filter(component__is_active=True)
         for component in components:
-            context.append(component.get_context_data(request))
+            component_context = {
+                'view_order': component.view_order
+            }
+            component_context.update(component.component.get_context_data(request))
+            context.append(component_context)
         cache.set(cache_key, context)
+        return context
+
+    def get_components(self):
+        context = []
+        components = self.pagecomponent_set.filter(component__is_active=True)
+        for component in components:
+            context.append(component.component)
         return context
 
     def admin_link_to_add_component(self):

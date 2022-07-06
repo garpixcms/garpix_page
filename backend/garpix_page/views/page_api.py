@@ -48,9 +48,9 @@ class PageApiView(views.APIView):
         return obj
 
     @staticmethod
-    def get_error_page_response_data(page, request):
+    def get_error_page_response_data(page, request, page_name):
         return {
-            'page_model': page.__class__.__name__ if page is not None else None,
+            'page_model': page_name,
             'init_state': {
                 "object": None,
                 "global": import_string(settings.GARPIX_PAGE_GLOBAL_CONTEXT)(request, page)
@@ -59,20 +59,21 @@ class PageApiView(views.APIView):
 
     def check_errors(self, page, request):
         if page is None:
-            return Response(self.get_error_page_response_data(page, request), status=status.HTTP_404_NOT_FOUND)
+            return Response(self.get_error_page_response_data(page, request, 'Page404'),
+                            status=status.HTTP_404_NOT_FOUND)
 
         if getattr(page, 'login_required', False):
             if not request.user.is_authenticated:
-                return Response(self.get_error_page_response_data(page, request), status=status.HTTP_401_UNAUTHORIZED)
+                return Response(self.get_error_page_response_data(page, request, 'Page401'), status=status.HTTP_401_UNAUTHORIZED)
 
         if not page.has_permission_required(request):
-            return Response(self.get_error_page_response_data(page, request), status=status.HTTP_403_FORBIDDEN)
+            return Response(self.get_error_page_response_data(page, request, 'Page403'), status=status.HTTP_403_FORBIDDEN)
 
         if getattr(page, 'query_parameters_required', None) is not None:
             request_get = set(request.GET.keys())
             parameters = set(page.query_parameters_required)
             if request_get != parameters:
-                return Response(self.get_error_page_response_data(page, request), status=status.HTTP_404_NOT_FOUND)
+                return Response(self.get_error_page_response_data(page, request, 'Page404'), status=status.HTTP_404_NOT_FOUND)
 
         return None
 
@@ -112,11 +113,11 @@ class PageApiView(views.APIView):
                 model_serializer_class = get_serializer(v.__class__)
                 page_context[k] = model_serializer_class(v, context={"request": request}).data
         if 'paginated_object_list' in page_context:
-            if len(page_context['paginated_object_list']) > 0 and \
-                    page_context['paginated_object_list'][0].get_serializer() is not None:
-                page_context['paginated_object_list'] = page_context['paginated_object_list'][0].get_serializer(
-                    page_context['paginated_object_list'], context={"request": request}, many=True).data
-            else:
+            try:
+                serializer_class = get_serializer(page_context['paginated_object_list'][0].__class__)
+                page_context['paginated_object_list'] = serializer_class(page_context['paginated_object_list'],
+                                                                         context={"request": request}, many=True).data
+            except Exception:
                 page_context['paginated_object_list'] = list(
                     {'id': x.id, 'title': x.title, 'get_absolute_url': x.get_absolute_url()} for x in
                     page_context['paginated_object_list'])
