@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.functional import cached_property
 from django.db import models
 from django.urls import reverse
@@ -185,3 +187,8 @@ class BasePage(PolymorphicMPTTModel):
     def admin_link_to_add_component(self):
         link = reverse("admin:garpix_page_basecomponent_add")
         return format_html('<a class="related-widget-wrapper-link add-related addlink" href="{0}?_to_field=id&_popup=1&pages={1}">Добавить компонент</a>', link, self.id)
+
+    @receiver(post_save)
+    def uncache(sender, instance, **kwargs):
+        cache.delete(f'url_page_{instance.pk}')
+        cache.delete(f'components_context_{instance.pk}')
