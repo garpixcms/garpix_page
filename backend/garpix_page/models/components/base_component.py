@@ -1,15 +1,14 @@
-from django.core.cache import cache
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.html import format_html
 from polymorphic.managers import PolymorphicManager
-
+from django.core.cache import cache
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from ...models import BasePage
 from polymorphic.models import PolymorphicModel
 
-from ...serializers.serializer import get_components_serializer
+from ...serializers import get_components_serializer
 
 
 class PageComponent(models.Model):
@@ -91,7 +90,7 @@ class BaseComponent(PolymorphicModel):
 
 
 @receiver(post_save)
-def uncache(sender, instance, *args, **kwargs):
+def uncache(sender, instance, created, *args, **kwargs):
     if type(sender) == type(BaseComponent):
         pages = BasePage.objects.filter(components=instance.pk)
         for page in pages:
