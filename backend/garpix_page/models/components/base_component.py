@@ -2,11 +2,13 @@ from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
 from polymorphic.managers import PolymorphicManager
-
+from django.core.cache import cache
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from ...models import BasePage
 from polymorphic.models import PolymorphicModel
 
-from ...serializers import get_serializer
+from ...serializers import get_components_serializer
 
 
 class PageComponent(models.Model):
@@ -79,9 +81,18 @@ class BaseComponent(PolymorphicModel):
         context = {"component_model": self.__class__.__name__}
         for k, v in component_context.items():
             if hasattr(v, 'is_for_component_view'):
-                model_serializer_class = get_serializer(v.__class__)
+                model_serializer_class = get_components_serializer(v.__class__)
                 context[k] = model_serializer_class(v, context={"request": request}).data
         return context
 
     def get_serializer(self):
         return None
+
+
+@receiver(post_save)
+def uncache(sender, instance, created, *args, **kwargs):
+    if type(sender) == type(BaseComponent):
+        pages = BasePage.objects.filter(components=instance.pk)
+        for page in pages:
+            cache.delete(f'url_page_{page.pk}')
+            cache.delete(f'components_context_{page.pk}')
