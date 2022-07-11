@@ -162,10 +162,6 @@ class BasePage(PolymorphicMPTTModel):
             raise ValidationError({'slug': f'ЧПУ не должен совпадать с языковым кодом ({languages})'})
 
     def get_components_context(self, request):
-        cache_key = f'components_context_{self.pk}'
-        components_context_cache = cache.get(cache_key)
-        if components_context_cache is not None:
-            return components_context_cache
         context = []
         components = self.pagecomponent_set.filter(component__is_active=True)
         for component in components:
@@ -174,7 +170,6 @@ class BasePage(PolymorphicMPTTModel):
             }
             component_context.update(component.component.get_context_data(request))
             context.append(component_context)
-        cache.set(cache_key, context)
         return context
 
     def get_components(self):
