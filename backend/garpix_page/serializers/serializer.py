@@ -17,7 +17,7 @@ def get_components_serializer(model):
     if model.get_serializer(model) is not None:
         return model.get_serializer(model)
 
-    return type(f'{model.name}Serializer', (ModelSerializer, ), {
+    return type(f'{model.__name__}Serializer', (ModelSerializer, ), {
         'Meta': type('Meta', (object,), {
             'model': model,
             'exclude': ('polymorphic_ctype', 'pages')
