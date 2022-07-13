@@ -27,9 +27,12 @@ class PageCacheService:
         cache_key = f'{self.cache_slug_prefix}{slug}'
         cache.set(cache_key, result)
 
-    def clear_all(self, pk, slug):
+    def clear_all_by_page(self, pk, slug):
         cache.delete(f'{self.cache_url_prefix}{pk}')
         cache.delete(f'{self.cache_slug_prefix}{slug}')
+
+    def clear_all(self):
+        cache.clear()
 
 
 cache_service = PageCacheService()
