@@ -13,7 +13,7 @@ from garpix_page.utils.get_file_path import get_file_path
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey, PolymorphicMPTTModelManager
 from django.utils.html import format_html
 from garpix_utils.managers import GCurrentSiteManager, GPolymorphicCurrentSiteManager
-from django.core.cache import cache
+from ..cache import cache_service
 
 
 class BasePage(PolymorphicMPTTModel):
@@ -74,8 +74,7 @@ class BasePage(PolymorphicMPTTModel):
 
     @cached_property
     def absolute_url(self):
-        cache_key = f'url_page_{self.pk}'
-        url_cache = cache.get(cache_key)
+        url_cache = cache_service.get_url(self.pk)
         if url_cache is not None:
             return url_cache
 
@@ -89,10 +88,10 @@ class BasePage(PolymorphicMPTTModel):
                 if obj.slug:
                     url_arr.insert(0, obj.slug)
             result = "{}/{}".format(current_language_code_url_prefix, '/'.join(url_arr))
-            cache.set(cache_key, result)
+            cache_service.set_url(self.pk, result)
             return result
         result = "{}".format(current_language_code_url_prefix) if len(current_language_code_url_prefix) > 1 else '/'
-        cache.set(cache_key, result)
+        cache_service.set_url(self.pk, result)
         return result
 
     absolute_url.short_description = 'URL'
@@ -185,7 +184,6 @@ class BasePage(PolymorphicMPTTModel):
 
 
 @receiver(post_save)
-def uncache(sender, instance, **kwargs):
+def uncache(sender, instance: BasePage, **kwargs):
     if type(sender) == type(BasePage):
-        cache.delete(f'url_page_{instance.pk}')
-        cache.delete(f'components_context_{instance.pk}')
+        cache_service.clear_all(instance.pk, instance.slug)

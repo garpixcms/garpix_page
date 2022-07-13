@@ -6,7 +6,7 @@ import django.apps
 from django.utils.module_loading import import_string
 from django.conf import settings
 from ..serializers.serializer import get_serializer
-from django.core.cache import cache
+from ..cache import cache_service
 
 from ..utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
 
@@ -32,14 +32,13 @@ class PageApiView(views.APIView):
 
     @staticmethod
     def get_instance_by_slug(slug):
-        cache_key = slug
-        instance_cache = cache.get(cache_key)
+        instance_cache = cache_service.get_instance_by_slug(slug)
         if instance_cache is not None:
             return instance_cache
         for m in model_list:
             instance = m.objects.filter(slug=slug).first()
             if instance:
-                cache.set(cache_key, instance)
+                cache_service.set_instance_by_slug(slug, instance)
                 return instance
         return None
 
