@@ -49,9 +49,8 @@ class BaseComponent(PolymorphicModel):
     def __str__(self):
         return self.title
 
-    def get_context(self, request=None, *args, **kwargs):
+    def get_context(self):
         context = {
-            'request': request,
             'object': self,
         }
         return context
@@ -73,7 +72,6 @@ class BaseComponent(PolymorphicModel):
 
     def get_context_data(self, request):
         component_context = self.get_context(request)
-        component_context.pop('request')
         context = {"component_model": self.__class__.__name__}
         for k, v in component_context.items():
             if hasattr(v, 'is_for_component_view'):

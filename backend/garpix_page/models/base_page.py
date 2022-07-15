@@ -112,7 +112,6 @@ class BasePage(PolymorphicMPTTModel):
 
     def get_context(self, request=None, *args, **kwargs):
         context = {
-            'request': request,
             'object': self,
         }
         return context
