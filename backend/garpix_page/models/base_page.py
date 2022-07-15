@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.functional import cached_property
 from django.db import models
 from django.urls import reverse
@@ -11,6 +13,7 @@ from garpix_page.utils.get_file_path import get_file_path
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey, PolymorphicMPTTModelManager
 from django.utils.html import format_html
 from garpix_utils.managers import GCurrentSiteManager, GPolymorphicCurrentSiteManager
+from ..cache import cache_service
 
 
 class BasePage(PolymorphicMPTTModel):
@@ -71,6 +74,10 @@ class BasePage(PolymorphicMPTTModel):
 
     @cached_property
     def absolute_url(self):
+        url_cache = cache_service.get_url(self.pk)
+        if url_cache is not None:
+            return url_cache
+
         current_language_code_url_prefix = get_current_language_code_url_prefix()
 
         if self.slug:
@@ -80,8 +87,12 @@ class BasePage(PolymorphicMPTTModel):
                 obj = obj.parent
                 if obj.slug:
                     url_arr.insert(0, obj.slug)
-            return "{}/{}".format(current_language_code_url_prefix, '/'.join(url_arr))
-        return "{}".format(current_language_code_url_prefix) if len(current_language_code_url_prefix) > 1 else '/'
+            result = "{}/{}".format(current_language_code_url_prefix, '/'.join(url_arr))
+            cache_service.set_url(self.pk, result)
+            return result
+        result = "{}".format(current_language_code_url_prefix) if len(current_language_code_url_prefix) > 1 else '/'
+        cache_service.set_url(self.pk, result)
+        return result
 
     absolute_url.short_description = 'URL'
 
@@ -101,7 +112,6 @@ class BasePage(PolymorphicMPTTModel):
 
     def get_context(self, request=None, *args, **kwargs):
         context = {
-            'request': request,
             'object': self,
         }
         return context
@@ -170,3 +180,11 @@ class BasePage(PolymorphicMPTTModel):
     def admin_link_to_add_component(self):
         link = reverse("admin:garpix_page_basecomponent_add")
         return format_html('<a class="related-widget-wrapper-link add-related addlink" href="{0}?_to_field=id&_popup=1&pages={1}">Добавить компонент</a>', link, self.id)
+
+
+@receiver(post_save)
+def uncache(sender, instance: BasePage, created, update_fields, **kwargs):
+    if type(sender) == type(BasePage) and created == False:
+        cache_service.clear_all_by_page(instance.pk, instance.slug)
+        if instance.is_root_node():
+            cache_service.clear_all()
