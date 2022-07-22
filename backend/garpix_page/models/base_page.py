@@ -184,7 +184,7 @@ class BasePage(PolymorphicMPTTModel):
 
 @receiver(post_save)
 def uncache(sender, instance: BasePage, created, update_fields, **kwargs):
-    if type(sender) == type(BasePage) and created == False:
+    if type(sender) == type(BasePage) and not created:
         cache_service.clear_all_by_page(instance.pk, instance.slug)
         if instance.is_root_node():
             cache_service.clear_all()
