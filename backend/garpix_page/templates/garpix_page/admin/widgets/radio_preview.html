@@ -1,0 +1,30 @@
+{% load static %}
+
+{% with id=widget.attrs.id %}
+<ul{% if id %} id="{{ id }}"{% endif %}{% if widget.attrs.class %} class="{{ widget.attrs.class }}"{% endif %}>
+    {% for group, options, index in widget.optgroups %}
+        {% if group %}
+            <li><label>{{ group }}</label>
+        {% endif %}
+        {% for option in options %}
+            <li>
+                <span style="display: block">
+                    {% if option.attrs.preview is None %}
+                        <span style="color: rgb(254, 191, 1)">Тут должно быть превью компонента. Если его нет, пожалуйста, обратитесь к разработчику.</span>
+                    {% else %}
+                        <img
+                            style="width: 300px; margin-bottom: 5px"
+                            class="swiper--img_circle"
+                            src="{% static option.attrs.preview %}"
+                        />
+                    {% endif %}
+                </span>
+                {% include option.template_name with widget=option %}
+            </li>
+        {% endfor %}
+        {% if group %}
+        </li>
+        {% endif %}
+    {% endfor %}
+</ul>
+{% endwith %}

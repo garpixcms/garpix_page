@@ -6,6 +6,7 @@ from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModel
 
 from garpix_page.models import BaseComponent, BasePage
 from garpix_page.utils.get_garpix_page_models import get_garpix_page_component_models
+from ..forms import PolymorphicModelPreviewChoiceForm
 
 
 class BaseComponentAdmin(PolymorphicChildModelAdmin, TabbedTranslationAdmin):
@@ -47,3 +48,4 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
     base_model = BaseComponent
     list_filter = (PolymorphicChildModelFilter, 'pages')
     list_display = ('title', 'model_name')
+    add_type_form = PolymorphicModelPreviewChoiceForm
