@@ -1,5 +1,5 @@
-from polymorphic.admin import PolymorphicModelChoiceForm
 from django import forms
+from polymorphic.admin import PolymorphicModelChoiceForm
 from django.contrib.contenttypes.models import ContentType
 from django.apps import apps
 
