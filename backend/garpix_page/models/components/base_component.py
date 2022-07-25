@@ -49,7 +49,7 @@ class BaseComponent(PolymorphicModel):
     def __str__(self):
         return self.title
 
-    def get_context(self):
+    def get_context(self, request):
         context = {
             'object': self,
         }
