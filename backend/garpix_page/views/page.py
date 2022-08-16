@@ -62,14 +62,19 @@ class PageView(DetailView):
             if item.get_absolute_url() == f'{current_language_code_url_prefix}/{url}':
                 obj = item
                 break
-        if not obj:
-            raise Http404
-        if not obj.is_active:
-            raise Http404
-        return obj
+        if not obj or not obj.is_active:
+            return None
 
     def get(self, request, *args, **kwargs):
+        from django.shortcuts import render
         self.object = self.get_object()
+        if not self.object:
+            try:
+                response = render(request, "404.html", context={})
+                response.status_code = 404
+                return response
+            except Exception:
+                raise Http404
         user = request.user
         if getattr(self.object, 'login_required', False):
             if not user.is_authenticated:
@@ -81,7 +86,7 @@ class PageView(DetailView):
             request_get = set(request.GET.keys())
             parameters = set(self.object.query_parameters_required)
             if request_get != parameters:
-                return self._get_home_page()
+                return redirect(settings.LOGIN_URL)
         context = self.get_context_data(object=self.object)
         redir = check_redirect(request, context)
         if redir:

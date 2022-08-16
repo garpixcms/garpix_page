@@ -56,7 +56,10 @@ class BaseComponent(PolymorphicModel):
         return context
 
     def model_name(self):
-        return self.get_real_instance_class()._meta.verbose_name  # noqa
+        real_instance = self.get_real_instance_class()
+        if real_instance:
+            return real_instance._meta.verbose_name  # noqa
+        return '- нет -'
 
     model_name.short_description = 'Тип'
 
