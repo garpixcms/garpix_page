@@ -161,9 +161,9 @@ class RealBasePageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicM
             if len_old_title > 0:
                 title = f"{obj.title} ({len_old_title})"
                 slug = f"{obj.slug}-{len_old_title}"
+                obj.title = title
+                obj.slug = slug
             obj.is_active = False
-            obj.title = title
-            obj.slug = slug
             obj.save()
 
     clone_object.short_description = 'Клонировать объект'
