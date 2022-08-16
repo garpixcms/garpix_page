@@ -1,6 +1,6 @@
 import django.apps
 
-from ..models import BasePage, BaseComponent
+from ..models import BasePage, BaseComponent  # noqa
 
 model_list = []
 components_list = []

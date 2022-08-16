@@ -2,11 +2,9 @@ from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
 from polymorphic.managers import PolymorphicManager
-
 from ...models import BasePage
 from polymorphic.models import PolymorphicModel
-
-from ...serializers import get_serializer
+from ...serializers import get_components_serializer
 
 
 class PageComponent(models.Model):
@@ -51,9 +49,8 @@ class BaseComponent(PolymorphicModel):
     def __str__(self):
         return self.title
 
-    def get_context(self, request=None, *args, **kwargs):
+    def get_context(self, request):
         context = {
-            'request': request,
             'object': self,
         }
         return context
@@ -75,11 +72,10 @@ class BaseComponent(PolymorphicModel):
 
     def get_context_data(self, request):
         component_context = self.get_context(request)
-        component_context.pop('request')
         context = {"component_model": self.__class__.__name__}
         for k, v in component_context.items():
             if hasattr(v, 'is_for_component_view'):
-                model_serializer_class = get_serializer(v.__class__)
+                model_serializer_class = get_components_serializer(v.__class__)
                 context[k] = model_serializer_class(v, context={"request": request}).data
         return context
 

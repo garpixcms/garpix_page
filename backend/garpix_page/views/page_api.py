@@ -2,11 +2,11 @@ from rest_framework import status
 from django.utils.translation import activate
 from rest_framework import views
 from rest_framework.response import Response
-from django.contrib.auth import get_user_model
 import django.apps
 from django.utils.module_loading import import_string
 from django.conf import settings
 from ..serializers.serializer import get_serializer
+from ..cache import cache_service
 
 from ..utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
 
@@ -32,9 +32,13 @@ class PageApiView(views.APIView):
 
     @staticmethod
     def get_instance_by_slug(slug):
+        instance_cache = cache_service.get_instance_by_slug(slug)
+        if instance_cache is not None:
+            return instance_cache
         for m in model_list:
             instance = m.objects.filter(slug=slug).first()
             if instance:
+                cache_service.set_instance_by_slug(slug, instance)
                 return instance
         return None
 
@@ -101,13 +105,7 @@ class PageApiView(views.APIView):
         if errors is not None:
             return errors
 
-        if request.user.is_authenticated:
-            user = get_user_model().objects.get(pk=request.user.pk)
-        else:
-            user = None
-
-        page_context = page.get_context(request, object=page, user=user)
-        request = page_context.pop('request')
+        page_context = page.get_context(request, object=page, user=request.user)
         for k, v in page_context.items():
             if hasattr(v, 'is_for_page_view'):
                 model_serializer_class = get_serializer(v.__class__)

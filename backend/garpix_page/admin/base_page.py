@@ -39,6 +39,7 @@ class BasePageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChi
 
     list_display = ('title', 'created_at', 'is_active', 'get_absolute_url',)
     list_editable = ('is_active',)
+    raw_id_fields = ('parent',)
 
     readonly_fields = ('get_absolute_url', 'created_at', 'updated_at')
 
