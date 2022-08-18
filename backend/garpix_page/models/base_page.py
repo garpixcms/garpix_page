@@ -74,9 +74,9 @@ class BasePage(PolymorphicMPTTModel):
 
     @cached_property
     def absolute_url(self):
-        url_cache = cache_service.get_url(self.pk)
-        if url_cache is not None:
-            return url_cache
+        # url_cache = cache_service.get_url(self.pk)
+        # if url_cache is not None:
+        #     return url_cache
 
         current_language_code_url_prefix = get_current_language_code_url_prefix()
 

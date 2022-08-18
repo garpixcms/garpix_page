@@ -64,6 +64,7 @@ class PageView(DetailView):
                 break
         if not obj or not obj.is_active:
             return None
+        return obj
 
     def get(self, request, *args, **kwargs):
         from django.shortcuts import render

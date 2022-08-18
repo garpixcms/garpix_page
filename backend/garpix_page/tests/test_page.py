@@ -5,6 +5,7 @@ from rest_framework.test import APIClient, APITestCase
 from model_bakery import baker
 
 from ..utils.get_garpix_page_models import get_garpix_page_models
+from ..cache import cache_service
 
 
 class BasePageApiTest(APITestCase):
@@ -73,6 +74,7 @@ class BasePageApiTest(APITestCase):
         for language in self.languages_list:
             responses.append((self.client.get(f'/{settings.API_URL}/page/{language}/{page.slug}'), page))
             responses.append((self.client.get(f'/{settings.API_URL}/page/{language}/{page.slug}/'), page))
+            cache_service.clear_all()
         return responses
 
     def check_response_status(self, responses, status_code=None):
