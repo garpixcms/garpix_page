@@ -4,9 +4,11 @@
     margin-bottom: 30px;
     background: #fff;
 }
+
 .component-group li {
     margin-bottom: 25px;
 }
+
 .component-group__caption {
     margin: 10px 0;
     padding: 8px;
@@ -18,15 +20,22 @@
     background: #79aec8;
     color: #fff;
 }
+
 .component-group__preview {
     display: block;
 }
+
 .component-group__preview--empty {
     color: rgb(254, 191, 1);
 }
 
 .component-hidden {
     display: none;
+}
+
+.component-search {
+    margin-right: 5px;
+    height: 18px;
 }
 
 /**

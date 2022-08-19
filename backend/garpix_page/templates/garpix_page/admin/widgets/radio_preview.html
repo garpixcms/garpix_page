@@ -3,12 +3,12 @@
 {% with id=widget.attrs.id %}
 <ul{% if id %} id="{{ id }}"{% endif %} class="js-components-list {{ widget.attrs.class }}">
     <label>
-        <img src="/static-backend/admin/img/search.svg" style="margin-right: 5px;" alt="">
+        <img class="component-search" src="/static-backend/admin/img/search.svg" alt="Search">
         <input class="js-search" placeholder="Поиск">
     </label>
 
     {% for group, options in widget.sorted_groups.items %}
-        <details class="component-group" open>
+        <details class="js-component-group component-group" open>
             <summary class="component-group__caption">{{ group|default:'Без группы' }}</summary>
             <ul{% if widget.attrs.class %} class="{{ widget.attrs.class }}"{% endif %}>
                 {% for option in options %}

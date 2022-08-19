@@ -43,7 +43,7 @@ class PolymorphicModelPreviewChoiceForm(PolymorphicModelChoiceForm):
         css = {
             'all': ('css/admin/styles.css',)
         }
-        js = ('js/admin/script.js',)
+        js = ('js/admin/components.js',)
 
     type_label = 'Тип'
 

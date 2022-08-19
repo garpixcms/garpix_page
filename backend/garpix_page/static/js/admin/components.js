@@ -355,22 +355,24 @@ class ItcSimpleSlider {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+  // Инициализация слайдера.
   const sliders = document.querySelectorAll('.js-slider');
   sliders.forEach(slider => {
-    // Инициализация слайдера.
     new ItcSimpleSlider(slider, {
       indicators: true,
       swipe: true,
     });
   });
 
+  // Фильтрация.
   const searchInput = document.querySelector('.js-search');
+  const groupList = document.querySelectorAll('.js-component-group');
   const componentsList = document.querySelector('.js-components-list');
   const components = componentsList.querySelectorAll('.js-component');
-
   searchInput.addEventListener('input', () => {
     const searchText = searchInput.value.toLowerCase().trim();
 
+    // Скрываем компоненты.
     components.forEach(component => {
       if (searchText == '') {
         component.classList.remove('component-hidden');
@@ -383,5 +385,14 @@ document.addEventListener('DOMContentLoaded', function () {
         component.classList.add('component-hidden');
       }
     });
+
+    // Скрываем пустые группы.
+    groupList.forEach(group => {
+      if (!group.querySelector('.js-component:not(.component-hidden)')) {
+        group.classList.add('component-hidden');
+      } else {
+        group.classList.remove('component-hidden');
+      }
+    })
   })
 });
