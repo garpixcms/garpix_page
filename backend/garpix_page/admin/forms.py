@@ -31,11 +31,12 @@ class AdminRadioSelectPreview(forms.RadioSelect):
         groups = optgroups
         result = {}
         for group in groups:
-            groupKey = group[1][0]['attrs']['group']
-            if groupKey not in result:
-                result[groupKey] = []
-            result[groupKey].extend(group[1])
-
+            subgroups = group[1]
+            for subgroup in subgroups:
+                groupKey = subgroup['attrs']['group']
+                if groupKey not in result:
+                    result[groupKey] = []
+                result[groupKey].append(subgroup)
         return result
 
 class PolymorphicModelPreviewChoiceForm(PolymorphicModelChoiceForm):
