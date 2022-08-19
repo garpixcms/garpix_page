@@ -39,6 +39,7 @@ class AdminRadioSelectPreview(forms.RadioSelect):
                 result[groupKey].append(subgroup)
         return result
 
+
 class PolymorphicModelPreviewChoiceForm(PolymorphicModelChoiceForm):
     class Media:
         css = {
