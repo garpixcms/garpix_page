@@ -1,0 +1,19 @@
+.component-group {
+    border: none;
+    margin-bottom: 30px;
+    background: #fff;
+}
+.component-group li {
+    margin-bottom: 25px;
+}
+.component-group__caption {
+    margin: 10px 0;
+    padding: 8px;
+    font-weight: 400;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-align: left;
+    background: #79aec8;
+    color: #fff;
+}
