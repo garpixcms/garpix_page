@@ -25,7 +25,6 @@ class AdminRadioSelectPreview(forms.RadioSelect):
         context["widget"]["sorted_groups"] = self.sorted_groups(
             context["widget"]["optgroups"]
         )
-        context["test"] = self.choices
         return context
 
     def sorted_groups(self, optgroups):

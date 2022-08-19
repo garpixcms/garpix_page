@@ -5,7 +5,7 @@
  */
 
 class ItcSimpleSlider {
-  // Базовые классы и селекторы
+  // Базовые классы и селекторы.
   static PREFIX = 'slider';
   static CLASS_NAME_ITEM = `${ItcSimpleSlider.PREFIX}__item`;
   static CLASS_NAME_ITEM_ACTIVE = `${ItcSimpleSlider.PREFIX}__item_active`;
@@ -26,13 +26,12 @@ class ItcSimpleSlider {
   static SELECTOR_CONTROL = `.${ItcSimpleSlider.CLASS_NAME_CONTROL}`;
   static SELECTOR_CONTROL_NEXT = `.${ItcSimpleSlider.CLASS_NAME_CONTROL_NEXT}`;
   static SELECTOR_CONTROL_PREV = `.${ItcSimpleSlider.CLASS_NAME_CONTROL_PREV}`;
-
   // порог для переключения слайда (20%)
   static SWIPE_THRESHOLD = 20;
   // класс для отключения transition
   static TRANSITION_NONE = 'transition-none';
 
-  // Определите, поддерживает ли текущий клиент пассивные события
+  // Поддерживает ли текущий клиент пассивные события.
   static checkSupportPassiveEvents() {
     let passiveSupported = false;
     try {
@@ -105,6 +104,7 @@ class ItcSimpleSlider {
     this._addEventListener();
   }
 
+  // установка нужных классов
   _setActiveClass() {
     const elActive = this._el.querySelector(ItcSimpleSlider.SELECTOR_ITEM_ACTIVE);
     elActive ? elActive.classList.remove(ItcSimpleSlider.CLASS_NAME_ITEM_ACTIVE) : null;
@@ -125,10 +125,6 @@ class ItcSimpleSlider {
     } else if (this._currentIndex === this._elsItem.length - 1) {
       elNextBtn.classList.remove(ItcSimpleSlider.CLASS_NAME_CONTROL_SHOW);
     }
-
-    this._el.dispatchEvent(new CustomEvent('active.itc.slider', {
-      bubbles: true,
-    }));
   }
 
   // смена слайдов
@@ -192,7 +188,7 @@ class ItcSimpleSlider {
     this._el.insertAdjacentHTML('beforeend', `<ol class="${ItcSimpleSlider.CLASS_NAME_INDICATORS}">${html}</ol>`);
   }
 
-  // refresh extreme values
+  // обновление значений переменных
   _refreshExtremeValues() {
     this._minOrder = parseInt(this._elsItem[0].dataset.order, 10);
     this._maxOrder = this._minOrder;
@@ -215,7 +211,7 @@ class ItcSimpleSlider {
     }
   }
 
-  // adding listeners
+  // привязка к событиям
   _addEventListener() {
     function onClick(e) {
       const $target = e.target;
