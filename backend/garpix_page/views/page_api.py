@@ -98,6 +98,9 @@ class PageApiView(views.APIView):
         slug = slug_list[-1]
         page = self.get_object(slug)
 
+        if not page or not page.is_active:
+            page = None
+
         if page and page.absolute_url != self.get_absolute_url_from_request(slug_list, slug):
             page = None
 
