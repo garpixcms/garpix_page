@@ -34,7 +34,7 @@ class AdminRadioSelectPreview(forms.RadioSelect):
             groupKey = group[1][0]['attrs']['group']
             if groupKey not in result:
                 result[groupKey] = []
-            result[groupKey].append(*group[1])
+            result[groupKey].extend(group[1])
 
         return result
 
