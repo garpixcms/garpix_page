@@ -25,6 +25,10 @@
     color: rgb(254, 191, 1);
 }
 
+.component-hidden {
+    display: none;
+}
+
 /**
   * SimpleAdaptiveSlider by Itchief v2.0.0 (https://github.com/itchief/ui-components/tree/master/simple-adaptive-slider)
   * Copyright 2020 - 2021 Alexander Maltsev

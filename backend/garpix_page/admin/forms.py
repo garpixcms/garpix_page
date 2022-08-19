@@ -11,11 +11,11 @@ class AdminRadioSelectPreview(forms.RadioSelect):
         result = super().create_option(name, value, *args, **kwargs)
         ct = ContentType.objects.filter(pk=value).first()
         result['attrs']['preview'] = []
-        result['attrs']['group'] = 'Без категории'
+        result['attrs']['group'] = None
         if ct is not None:
             model = apps.get_model(ct.app_label, ct.model)
             preview = getattr(model, 'admin_preview_image', [])
-            group = getattr(model, 'admin_group', 'Без категории')
+            group = getattr(model, 'admin_group', None)
             result['attrs']['preview'] = preview if isinstance(preview, list) else [preview]
             result['attrs']['group'] = group
         return result

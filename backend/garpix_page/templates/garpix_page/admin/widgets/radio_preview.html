@@ -1,13 +1,18 @@
 {% load static %}
 
 {% with id=widget.attrs.id %}
-<ul{% if id %} id="{{ id }}"{% endif %}{% if widget.attrs.class %} class="{{ widget.attrs.class }}"{% endif %}>
+<ul{% if id %} id="{{ id }}"{% endif %} class="js-components-list {{ widget.attrs.class }}">
+    <label>
+        <img src="/static-backend/admin/img/search.svg" style="margin-right: 5px;" alt="">
+        <input class="js-search" placeholder="Поиск">
+    </label>
+
     {% for group, options in widget.sorted_groups.items %}
         <details class="component-group" open>
-            <summary class="component-group__caption">{{ group }}</summary>
+            <summary class="component-group__caption">{{ group|default:'Без группы' }}</summary>
             <ul{% if widget.attrs.class %} class="{{ widget.attrs.class }}"{% endif %}>
                 {% for option in options %}
-                    <li>
+                    <li class="js-component">
                         <label>
                             <span class="component-group__preview">
                                 {% if option.attrs.preview|length == 0 %}

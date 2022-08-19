@@ -362,5 +362,26 @@ document.addEventListener('DOMContentLoaded', function () {
       indicators: true,
       swipe: true,
     });
+  });
+
+  const searchInput = document.querySelector('.js-search');
+  const componentsList = document.querySelector('.js-components-list');
+  const components = componentsList.querySelectorAll('.js-component');
+
+  searchInput.addEventListener('input', () => {
+    const searchText = searchInput.value.toLowerCase().trim();
+
+    components.forEach(component => {
+      if (searchText == '') {
+        component.classList.remove('component-hidden');
+        return;
+      }
+
+      if (component.textContent.toLowerCase().trim().includes(searchText)) {
+        component.classList.remove('component-hidden');
+      } else {
+        component.classList.add('component-hidden');
+      }
+    });
   })
 });
