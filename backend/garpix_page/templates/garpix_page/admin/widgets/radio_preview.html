@@ -9,15 +9,30 @@
                 {% for option in options %}
                     <li>
                         <label>
-                            <span style="display: block">
-                                {% if option.attrs.preview is None %}
-                                    <span style="color: rgb(254, 191, 1)">Тут должно быть превью компонента. Если его нет, пожалуйста, обратитесь к разработчику.</span>
+                            <span class="component-group__preview">
+                                {% if option.attrs.preview|length == 0 %}
+                                    <span class="component-group__preview--empty">Тут должно быть превью компонента. Если его нет, пожалуйста, обратитесь к разработчику.</span>
                                 {% else %}
-                                    <img
-                                        style="max-width: 600px; margin-bottom: 5px; max-height: 600px;"
-                                        class="swiper--img_circle"
-                                        src="{% static option.attrs.preview %}"
-                                    />
+
+                                {% comment %}
+                                    Добавить класс js-slider только если картинок больше 1
+                                {% endcomment %}
+                                <div class="{% if option.attrs.preview|length > 1 %} js-slider {% endif %} slider">
+                                    <div class="slider__wrapper">
+                                      <div class="slider__items">
+                                            {% for image in option.attrs.preview %}
+                                                <div class="slider__item">
+                                                    <img
+                                                        class="swiper--img_circle slider__item--img"
+                                                        src="{% static image %}"
+                                                    />
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <a class="slider__control slider__control_prev" href="#" role="button" data-slide="prev"></a>
+                                    <a class="slider__control slider__control_next" href="#" role="button" data-slide="next"></a>
+                                </div>
                                 {% endif %}
                             </span>
                             {% include option.template_name with widget=option %}

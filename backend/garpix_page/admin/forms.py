@@ -10,13 +10,13 @@ class AdminRadioSelectPreview(forms.RadioSelect):
     def create_option(self, name, value, *args, **kwargs):
         result = super().create_option(name, value, *args, **kwargs)
         ct = ContentType.objects.filter(pk=value).first()
-        result['attrs']['preview'] = None
+        result['attrs']['preview'] = []
         result['attrs']['group'] = 'Без категории'
         if ct is not None:
             model = apps.get_model(ct.app_label, ct.model)
-            preview = getattr(model, 'admin_preview_image', None)
+            preview = getattr(model, 'admin_preview_image', [])
             group = getattr(model, 'admin_group', 'Без категории')
-            result['attrs']['preview'] = preview
+            result['attrs']['preview'] = preview if isinstance(preview, list) else [preview]
             result['attrs']['group'] = group
         return result
 
@@ -44,6 +44,7 @@ class PolymorphicModelPreviewChoiceForm(PolymorphicModelChoiceForm):
         css = {
             'all': ('css/admin/styles.css',)
         }
+        js = ('js/admin/script.js',)
 
     type_label = 'Тип'
 
