@@ -1,0 +1,164 @@
+/* Component */
+.component-group {
+    border: none;
+    margin-bottom: 30px;
+    background: #fff;
+}
+
+.component-group li {
+    margin-bottom: 25px;
+}
+
+.component-group__caption {
+    margin: 10px 0;
+    padding: 8px;
+    font-weight: 400;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-align: left;
+    background: #79aec8;
+    color: #fff;
+}
+
+.component-group__preview {
+    display: block;
+}
+
+.component-group__preview--empty {
+    color: rgb(254, 191, 1);
+}
+
+.component-hidden {
+    display: none;
+}
+
+.component-search {
+    margin-right: 5px;
+    height: 18px;
+}
+
+/**
+  * SimpleAdaptiveSlider by Itchief v2.0.0 (https://github.com/itchief/ui-components/tree/master/simple-adaptive-slider)
+  * Copyright 2020 - 2021 Alexander Maltsev
+  * Licensed under MIT (https://github.com/itchief/ui-components/blob/master/LICENSE)
+  */
+.slider {
+    position: relative;
+    overflow: hidden;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.slider__wrapper {
+    position: relative;
+    overflow: hidden;
+    background-color: #eee;
+}
+
+.slider__items {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+.transition-none {
+    transition: none;
+}
+
+.slider__item {
+    flex: 0 0 100%;
+    max-width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slider__item--img {
+    margin-bottom: 5px;
+    max-height: 600px;
+    max-width: 100%;
+}
+
+.slider__control {
+    position: absolute;
+    top: 50%;
+    width: 40px;
+    height: 50px;
+    transform: translateY(-50%);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0.5;
+    user-select: none;
+}
+
+.slider__control_show {
+    display: flex;
+}
+
+.slider__control:hover,
+.slider__control:focus {
+    color: #fff;
+    text-decoration: none;
+    opacity: 0.7;
+}
+
+.slider__control_prev {
+    left: 0;
+}
+
+.slider__control_next {
+    right: 0;
+}
+
+.slider__control::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: transparent no-repeat center center;
+    background-size: 100% 100%;
+}
+
+.slider__control_prev::before {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 8 8'%3E%3Cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3E%3C/svg%3E");
+}
+
+.slider__control_next::before {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E");
+}
+
+.slider__indicators {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 10px;
+    display: flex;
+    justify-content: center;
+    padding-left: 0;
+    margin: 0 15% !important;
+    list-style: none;
+    user-select: none;
+}
+
+.slider__indicator {
+    flex: 0 1 auto;
+    width: 30px;
+    height: 4px;
+    margin-right: 3px;
+    margin-left: 3px;
+    background-color: rgba(255, 255, 255, 0.5);
+    background-clip: padding-box;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    cursor: pointer;
+    margin-top: 0 !important;
+}
+
+.slider__indicator_active {
+    background-color: #fff;
+}
