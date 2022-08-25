@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'garpix_utils',
     'garpix_page',
     'app',
-    'garpix_qa',
+    'eqator',
 ]
 
 MIDDLEWARE = [
@@ -170,3 +170,5 @@ CACHES = {
         'LOCATION': 'app_cache_table',
     }
 }
+
+TEST_COVERAGE_RATE = 40
