@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
+from .forms import PageForm
 from ..models.base_page import BasePage
 from modeltranslation.admin import TabbedTranslationAdmin
 from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, PolymorphicMPTTChildModelAdmin
@@ -27,6 +28,8 @@ class BasePageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChi
     empty_value_display = '- нет -'
     save_on_top = True
     view_on_site = True
+
+    base_form = PageForm
 
     # change_form_template = 'garpix_page/admin/page_change_form.html'
 

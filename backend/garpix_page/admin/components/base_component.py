@@ -49,3 +49,28 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
     list_filter = (PolymorphicChildModelFilter, 'pages')
     list_display = ('title', 'model_name')
     add_type_form = PolymorphicModelPreviewChoiceForm
+
+    actions = ('clone_object', )
+
+    def clone_object(self, request, queryset):
+        """Копирование(клонирование) выбранных объектов - action"""
+        for obj in queryset:
+
+            obj = obj.get_real_instance()
+
+            pages = obj.pagecomponent_set.all()
+
+            obj.pk = None
+            obj.id = None
+            len_old_title = obj.__class__.objects.filter(title__icontains=obj.title).count()
+            if len_old_title > 0:
+                title = f"{obj.title} ({len_old_title})"
+                obj.title = title
+            obj.is_active = False
+            obj.save()
+
+            obj.pages.set(pages)
+
+            obj.save()
+
+    clone_object.short_description = 'Клонировать объект'
