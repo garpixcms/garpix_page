@@ -139,10 +139,13 @@
     bottom: 10px;
     display: flex;
     justify-content: center;
-    padding-left: 0;
+    align-items: center;
+    padding: 10px 0;
     margin: 0 15% !important;
     list-style: none;
     user-select: none;
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0.5;
 }
 
 .slider__indicator {
@@ -157,6 +160,7 @@
     border-bottom: 10px solid transparent;
     cursor: pointer;
     margin-top: 0 !important;
+    margin-bottom: 0 !important;
 }
 
 .slider__indicator_active {

@@ -395,4 +395,20 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     })
   })
+
+  // Кнопка сохранить у выбранной опции.
+  const submitInput = document.querySelector('.submit-row input');
+  let prevInput = null;
+  components.forEach(component => {
+    const input = component.querySelector('input[type=radio]');
+    input.addEventListener('input', () => {
+      prevInput?.remove();
+      prevInput = submitInput.cloneNode(true);
+      component.appendChild(prevInput)
+    })
+
+    if (input.getAttribute('checked') != null) {
+      input.dispatchEvent(new CustomEvent('input'));
+    }
+  })
 });
