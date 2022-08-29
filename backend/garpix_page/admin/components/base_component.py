@@ -40,10 +40,14 @@ class BaseComponentAdmin(PolymorphicChildModelAdmin, TabbedTranslationAdmin):
     def has_module_permission(self, request):
         return False
 
+    def get_form(self, request, obj=None, **kwargs):
+        if request.GET.get('_popup') and request.GET.get('_to_field'):
+            self.exclude = ('pages',)
+        return super().get_form(request, obj=None, **kwargs)
+
 
 @admin.register(BaseComponent)
 class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin):
-
     child_models = get_garpix_page_component_models()
     base_model = BaseComponent
     list_filter = (PolymorphicChildModelFilter, 'pages')
