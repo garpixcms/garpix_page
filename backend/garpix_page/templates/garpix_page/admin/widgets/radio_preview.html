@@ -35,8 +35,10 @@
                                             {% endfor %}
                                         </div>
                                     </div>
-                                    <a class="slider__control slider__control_prev" href="#" role="button" data-slide="prev"></a>
-                                    <a class="slider__control slider__control_next" href="#" role="button" data-slide="next"></a>
+                                    {% if option.attrs.preview|length > 1 %}
+                                        <a class="slider__control slider__control_prev" href="#" role="button" data-slide="prev"></a>
+                                        <a class="slider__control slider__control_next" href="#" role="button" data-slide="next"></a>
+                                    {% endif %}
                                 </div>
                                 {% endif %}
                             </span>

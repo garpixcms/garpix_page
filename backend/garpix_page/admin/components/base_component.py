@@ -49,6 +49,7 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
     list_filter = (PolymorphicChildModelFilter, 'pages')
     list_display = ('title', 'model_name')
     add_type_form = PolymorphicModelPreviewChoiceForm
+    save_on_top = True
 
     actions = ('clone_object', )
 
