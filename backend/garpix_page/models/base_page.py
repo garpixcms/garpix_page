@@ -12,9 +12,10 @@ from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeign
 from django.utils.html import format_html
 from garpix_utils.managers import GCurrentSiteManager, GPolymorphicCurrentSiteManager
 from ..cache import cache_service
+from ..mixins import CloneMixin
 
 
-class BasePage(PolymorphicMPTTModel):
+class BasePage(CloneMixin, PolymorphicMPTTModel):
     """
     Базовая страница, на основе которой создаются все прочие страницы.
     """
@@ -86,10 +87,10 @@ class BasePage(PolymorphicMPTTModel):
                 if obj.slug:
                     url_arr.insert(0, obj.slug)
             result = "{}/{}".format(current_language_code_url_prefix, '/'.join(url_arr))
-            cache_service.set_url(self.pk, result)
+            # cache_service.set_url(self.pk, result)
             return result
         result = "{}".format(current_language_code_url_prefix) if len(current_language_code_url_prefix) > 1 else '/'
-        cache_service.set_url(self.pk, result)
+        # cache_service.set_url(self.pk, result)
         return result
 
     absolute_url.short_description = 'URL'
@@ -176,9 +177,9 @@ class BasePage(PolymorphicMPTTModel):
         return format_html('<a class="related-widget-wrapper-link add-related addlink" href="{0}?_to_field=id&_popup=1&pages={1}">Добавить компонент</a>', link, self.id)
 
 
-@receiver(post_save)
-def uncache(sender, instance: BasePage, created, update_fields, **kwargs):
-    if type(sender) == type(BasePage) and not created:
-        cache_service.clear_all_by_page(instance.pk, instance.slug)
-        if instance.is_root_node():
-            cache_service.clear_all()
+# @receiver(post_save)
+# def uncache(sender, instance: BasePage, created, update_fields, **kwargs):
+#     if type(sender) == type(BasePage) and not created:
+#         cache_service.clear_all_by_page(instance.pk, instance.slug)
+#         if instance.is_root_node():
+#             cache_service.clear_all()

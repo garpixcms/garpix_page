@@ -1,4 +1,4 @@
-{% extends 'tabbed_admin/change_form.html' %}
+{% extends 'admin/change_form.html' %}
 
 {% load static %}
 
@@ -14,7 +14,7 @@
 {{ block.super }}
 <div class="submit-row">
     {{ object }}
-    <a href="#openModal" class="default submit-row-new_choice button">Клонировать страницу</a>
+    <a href="#openModal" class="default submit-row-new_choice button">Клонировать компонент</a>
 </div>
 
 <div id="openModal" class="modal">

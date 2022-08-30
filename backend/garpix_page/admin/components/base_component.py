@@ -20,7 +20,7 @@ class BaseComponentAdmin(PolymorphicChildModelAdmin, TabbedTranslationAdmin):
         'pages',
     )
 
-    change_form_template = 'garpix_page/admin/components_change_form.html'
+    change_form_template = 'garpix_page/admin/component_change_form.html'
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
 
@@ -71,7 +71,7 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
             len_old_title = obj.__class__.objects.filter(title__icontains=obj.title).count()
             title = f"{obj.title} ({len_old_title})" if len_old_title > 0 else obj.title
 
-            new_obj = obj.clone_object(title)
+            new_obj = obj.clone_object(title=title)
 
             new_obj.save()
 
@@ -81,12 +81,12 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
         urls = super().get_urls()
 
         my_urls = [
-            path('<int:pk>/change/clone_component/', self.clone_component, name='clone_component/'),
+            path('<int:pk>/change/full_clone/', self.full_clone, name='full_clone/'),
         ]
 
         return my_urls + urls
 
-    def clone_component(self, request, pk):
+    def full_clone(self, request, pk):
         if request.method == 'POST':
             obj = self.get_object(request, pk)
 
@@ -98,7 +98,7 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
                 len_old_title = obj.__class__.objects.filter(title__icontains=obj.title).count()
                 title = f"{obj.title} ({len_old_title})" if len_old_title > 0 else obj.title
 
-            new_obj = obj.clone_object(title)
+            new_obj = obj.clone_object(title=title)
 
             new_obj.save()
         link = reverse("admin:garpix_page_basecomponent_changelist")

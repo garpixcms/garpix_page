@@ -2,14 +2,16 @@ from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
 from polymorphic.managers import PolymorphicManager
+
+from ...mixins import CloneMixin
 from ...models import BasePage
 from polymorphic.models import PolymorphicModel
 from ...serializers import get_components_serializer
 
 
 class PageComponent(models.Model):
-    component = models.ForeignKey("BaseComponent", related_name='page_components', on_delete=models.CASCADE, verbose_name='Компонент')
-    page = models.ForeignKey("BasePage", related_name='page_components', on_delete=models.CASCADE, verbose_name='Страница')
+    component = models.ForeignKey("BaseComponent", on_delete=models.CASCADE, verbose_name='Компонент')
+    page = models.ForeignKey("BasePage", on_delete=models.CASCADE, verbose_name='Страница')
     view_order = models.IntegerField(default=1, verbose_name='Порядок отображения')
 
     def __str__(self):
@@ -22,7 +24,7 @@ class PageComponent(models.Model):
         verbose_name_plural = 'Компоненты страницы'
 
 
-class BaseComponent(PolymorphicModel):
+class BaseComponent(CloneMixin, PolymorphicModel):
     """
     Базовый компонент
     """
@@ -84,45 +86,3 @@ class BaseComponent(PolymorphicModel):
 
     def get_serializer(self):
         return None
-
-    def clone_object(self, title=None):  # noqa
-
-        related_objects_to_copy = []
-        relations_to_set = {}
-
-        for field in self._meta.get_fields():
-            if field.one_to_many:
-                related_object_manager = getattr(self, field.name)
-                related_objects = list(related_object_manager.all())
-                if related_objects:
-                    related_objects_to_copy += related_objects
-
-            elif field.many_to_many:
-                related_object_manager = getattr(self, field.name)
-                relations = list(related_object_manager.all())
-                if relations:
-                    relations_to_set[field.name] = relations
-
-        self.pk = None
-        self.id = None
-
-        if title:
-            self.title = title
-
-        self.save()
-
-        for related_object in related_objects_to_copy:
-            for related_object_field in related_object._meta.fields:
-                if related_object_field.related_model == self.__class__:
-                    related_object.pk = None
-                    setattr(related_object, related_object_field.name, self)
-                    related_object.save()
-
-        for field_name, relations in relations_to_set.items():
-            field = getattr(self, field_name)
-            field.set(relations)
-            text_relations = []
-            for relation in relations:
-                text_relations.append(str(relation))
-
-        return self
