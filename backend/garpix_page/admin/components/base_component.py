@@ -4,6 +4,9 @@ from django.utils.text import format_lazy
 from modeltranslation.admin import TabbedTranslationAdmin
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelFilter, PolymorphicChildModelAdmin
 
+from django.urls import reverse
+from django.http import HttpResponseRedirect
+from django.urls import path
 from garpix_page.models import BaseComponent, BasePage
 from garpix_page.utils.get_garpix_page_models import get_garpix_page_component_models
 from ..forms import PolymorphicModelPreviewChoiceForm
@@ -16,6 +19,8 @@ class BaseComponentAdmin(PolymorphicChildModelAdmin, TabbedTranslationAdmin):
     filter_horizontal = (
         'pages',
     )
+
+    change_form_template = 'garpix_page/admin/components_change_form.html'
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
 
@@ -63,19 +68,38 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
 
             obj = obj.get_real_instance()
 
-            pages = obj.pagecomponent_set.all()
-
-            obj.pk = None
-            obj.id = None
             len_old_title = obj.__class__.objects.filter(title__icontains=obj.title).count()
-            if len_old_title > 0:
-                title = f"{obj.title} ({len_old_title})"
-                obj.title = title
-            obj.is_active = False
-            obj.save()
+            title = f"{obj.title} ({len_old_title})" if len_old_title > 0 else obj.title
 
-            obj.pages.set(pages)
+            new_obj = obj.clone_object(title)
 
-            obj.save()
+            new_obj.save()
 
     clone_object.short_description = 'Клонировать объект'
+
+    def get_urls(self):
+        urls = super().get_urls()
+
+        my_urls = [
+            path('<int:pk>/change/clone_component/', self.clone_component, name='clone_component/'),
+        ]
+
+        return my_urls + urls
+
+    def clone_component(self, request, pk):
+        if request.method == 'POST':
+            obj = self.get_object(request, pk)
+
+            obj = obj.get_real_instance()
+
+            title = request.POST.get('title', None)
+
+            if not title:
+                len_old_title = obj.__class__.objects.filter(title__icontains=obj.title).count()
+                title = f"{obj.title} ({len_old_title})" if len_old_title > 0 else obj.title
+
+            new_obj = obj.clone_object(title)
+
+            new_obj.save()
+        link = reverse("admin:garpix_page_basecomponent_changelist")
+        return HttpResponseRedirect(link)
