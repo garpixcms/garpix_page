@@ -34,7 +34,6 @@ class PageView(PageViewMixin,DetailView):
                 return home_page
         raise Http404
 
-
     def get_object(self, queryset=None):
         """
         Метод для получения объекта страницы.
