@@ -169,9 +169,7 @@ class RealBasePageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicM
             slug = f"{obj.slug}-{len_old_title}"
             obj.title = title
             obj.slug = slug
-
             new_obj = obj.clone_object(title=title, slug=slug)
-
             new_obj.save()
 
     clone_object.short_description = 'Клонировать объект'
@@ -204,21 +202,13 @@ class RealBasePageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicM
     def full_clone(self, request, pk):
         if request.method == 'POST':
             obj = self.get_object(request, pk)
-
             obj = obj.get_real_instance()
-
             title = request.POST.get('title', None)
-
             len_old_title = obj.__class__.objects.filter(title__icontains=obj.title).count()
-
             if not title:
                 title = f"{obj.title} ({len_old_title})" if len_old_title > 0 else obj.title
-
-
             slug = f"{obj.slug}-{len_old_title}"
-
             new_obj = obj.clone_object(title=title, slug=slug)
-
             new_obj.save()
         link = reverse("admin:garpix_page_basepage_changelist")
         return HttpResponseRedirect(link)
