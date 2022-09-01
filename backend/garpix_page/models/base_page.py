@@ -77,6 +77,8 @@ class BasePage(CloneMixin, PolymorphicMPTTModel):
         current_language_code_url_prefix = get_current_language_code_url_prefix()
 
         if url_cache is not None:
+            if url_cache == '':
+                return f'{current_language_code_url_prefix}'
             return f'{current_language_code_url_prefix}/{url_cache}'
 
         if self.slug:
@@ -91,7 +93,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel):
             cache_service.set_url(self.pk, url)
             return result
         result = "{}".format(current_language_code_url_prefix) if len(current_language_code_url_prefix) > 1 else '/'
-        cache_service.set_url(self.pk, '/')
+        cache_service.set_url(self.pk, '')
         return result
 
     absolute_url.short_description = 'URL'
