@@ -33,6 +33,7 @@ class PageViewMixin:
         url = cls.get_absolute_url_from_request(slug_list, slug)
 
         instance_cache = cache_service.get_instance_by_url(url)
+
         if instance_cache is not None:
             return instance_cache
 
@@ -41,10 +42,7 @@ class PageViewMixin:
         for instance in instances:
             if instance.absolute_url == url:
                 instance = instance.get_real_instance()
-                break
-        else:
-            instance = None
-        if instance:
-            cache_service.set_instance_by_url(url, instance)
-            return instance
+                cache_service.set_instance_by_url(url, instance)
+                return instance
+
         return None
