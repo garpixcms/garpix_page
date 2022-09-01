@@ -2,6 +2,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
 from polymorphic.managers import PolymorphicManager
+
+from ...mixins import CloneMixin
 from ...models import BasePage
 from polymorphic.models import PolymorphicModel
 from ...serializers import get_components_serializer
@@ -22,7 +24,7 @@ class PageComponent(models.Model):
         verbose_name_plural = 'Компоненты страницы'
 
 
-class BaseComponent(PolymorphicModel):
+class BaseComponent(CloneMixin, PolymorphicModel):
     """
     Базовый компонент
     """

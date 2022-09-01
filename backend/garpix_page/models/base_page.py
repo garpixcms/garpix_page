@@ -12,9 +12,10 @@ from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeign
 from django.utils.html import format_html
 from garpix_utils.managers import GCurrentSiteManager, GPolymorphicCurrentSiteManager
 from ..cache import cache_service
+from ..mixins import CloneMixin
 
 
-class BasePage(PolymorphicMPTTModel):
+class BasePage(CloneMixin, PolymorphicMPTTModel):
     """
     Базовая страница, на основе которой создаются все прочие страницы.
     """

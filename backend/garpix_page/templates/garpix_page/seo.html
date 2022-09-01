@@ -17,4 +17,4 @@
 <meta property="og:image" content="https://{{ request.get_host }}{{ object.seo_image.url }}"/>
 {% endif %}
 
-<link rel="canonical" href="{{ object.get_absolute_url }}"/>
+<link rel="canonical" href="https://{{ request.get_host }}{{ object.get_absolute_url }}"/>
