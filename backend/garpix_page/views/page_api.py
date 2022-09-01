@@ -6,12 +6,8 @@ import django.apps
 from django.utils.module_loading import import_string
 from django.conf import settings
 
-from .page_view_mixin import PageViewMixin
-from ..models import BasePage
+from garpix_page.mixins.views import PageViewMixin
 from ..serializers.serializer import get_serializer
-from ..cache import cache_service
-
-from ..utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
 
 model_list = []
 for model in django.apps.apps.get_models():

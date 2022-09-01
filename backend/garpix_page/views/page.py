@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.http import Http404
 
-from .page_view_mixin import PageViewMixin
+from garpix_page.mixins.views import PageViewMixin
 from ..utils.get_garpix_page_models import get_garpix_page_models
 from ..utils.check_redirect import check_redirect
 from django.shortcuts import redirect
