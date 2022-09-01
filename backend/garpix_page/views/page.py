@@ -11,7 +11,7 @@ from django.views.generic import DetailView
 languages_list = [x[0] for x in settings.LANGUAGES]
 
 
-class PageView(PageViewMixin,DetailView):
+class PageView(PageViewMixin, DetailView):
     def get_template_names(self):
         """
         Метод для получения темплейта для страницы.
