@@ -151,6 +151,8 @@ USE_DEFAULT_LANGUAGE_PREFIX = False
 
 LANGUAGES = (
     ('en', 'English'),
+    ('de', 'German'),
+    ('ru', 'Russian'),
 )
 
 # migrations
