@@ -90,7 +90,7 @@ class BasePage(PolymorphicMPTTModel):
             cache_service.set_url(self.pk, url)
             return result
         result = "{}".format(current_language_code_url_prefix) if len(current_language_code_url_prefix) > 1 else '/'
-        cache_service.set_url(self.pk, '/')
+        cache_service.set_url(self.pk, '')
         return result
 
     absolute_url.short_description = 'URL'
