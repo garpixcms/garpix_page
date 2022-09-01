@@ -1,14 +1,17 @@
 from django.conf import settings
 from django.http import Http404
 
-from ..utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
+from .page_view_mixin import PageViewMixin
 from ..utils.get_garpix_page_models import get_garpix_page_models
 from ..utils.check_redirect import check_redirect
 from django.shortcuts import redirect
 from django.views.generic import DetailView
 
 
-class PageView(DetailView):
+languages_list = [x[0] for x in settings.LANGUAGES]
+
+
+class PageView(PageViewMixin,DetailView):
     def get_template_names(self):
         """
         Метод для получения темплейта для страницы.
@@ -31,39 +34,19 @@ class PageView(DetailView):
                 return home_page
         raise Http404
 
-    def _get_object_list_by_url(self, url):
-        obj_list = []
-        slugs = url.rstrip('/').split('/')
-        slug = slugs[-1]
-        parent_slug = slugs[-2] if len(slugs) > 2 else None
-        for model in get_garpix_page_models():
-            if parent_slug:
-                _obj = model.on_site.filter(slug=slug, parent__slug=parent_slug).first()
-            else:
-                _obj = model.on_site.filter(slug=slug).first()
-            if _obj:
-                obj_list.append(_obj)
-        return obj_list
 
     def get_object(self, queryset=None):
         """
         Метод для получения объекта страницы.
         Сравнивает текущий урл со slug, которые мы получаем из родительских страниц нашей страницы.
         """
-        current_language_code_url_prefix = get_current_language_code_url_prefix()
         url = self.kwargs.get('url', None)
         # home pages
         if url is None or url == '':
             return self._get_home_page()
-        # get page object
-        obj_list = self._get_object_list_by_url(url)
-        obj = None
-        for item in obj_list:
-            if item.get_absolute_url() == f'{current_language_code_url_prefix}/{url}':
-                obj = item
-                break
-        if not obj or not obj.is_active:
-            return None
+
+        obj = self.get_instance_by_slug(url, languages_list)
+
         return obj
 
     def get(self, request, *args, **kwargs):
