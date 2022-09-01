@@ -77,6 +77,8 @@ class BasePage(CloneMixin, PolymorphicMPTTModel):
         current_language_code_url_prefix = get_current_language_code_url_prefix()
 
         if url_cache is not None:
+            if url_cache == '':
+                return f'{current_language_code_url_prefix}'
             return f'{current_language_code_url_prefix}/{url_cache}'
 
         if self.slug:
