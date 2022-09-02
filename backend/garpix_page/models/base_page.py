@@ -11,8 +11,10 @@ from garpix_page.utils.get_file_path import get_file_path
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey, PolymorphicMPTTModelManager
 from django.utils.html import format_html
 from garpix_utils.managers import GCurrentSiteManager, GPolymorphicCurrentSiteManager
+
 from ..cache import cache_service
 from ..mixins import CloneMixin
+from ..utils.get_seo_value import get_seo_value
 
 
 class BasePage(CloneMixin, PolymorphicMPTTModel):
@@ -176,7 +178,39 @@ class BasePage(CloneMixin, PolymorphicMPTTModel):
 
     def admin_link_to_add_component(self):
         link = reverse("admin:garpix_page_basecomponent_add")
-        return format_html('<a class="related-widget-wrapper-link add-related addlink" href="{0}?_to_field=id&_popup=1&pages={1}">Добавить компонент</a>', link, self.id)
+        return format_html(
+            '<a class="related-widget-wrapper-link add-related addlink" href="{0}?_to_field=id&_popup=1&pages={1}">Добавить компонент</a>',
+            link, self.id)
+
+    def get_seo_title(self):
+        if self.seo_title:
+            return self.seo_title
+        return get_seo_value(self, 'seo_title')
+
+    def get_seo_keywords(self):
+        if self.seo_keywords:
+            return self.seo_keywords
+        return get_seo_value(self, 'seo_keywords')
+
+    def get_seo_description(self):
+        if self.seo_description:
+            return self.seo_description
+        return get_seo_value(self, 'seo_description')
+
+    def get_seo_author(self):
+        if self.seo_author:
+            return self.seo_author
+        return get_seo_value(self, 'seo_author')
+
+    def get_seo_og_type(self):
+        if self.seo_og_type:
+            return self.seo_og_type
+        return get_seo_value(self, 'seo_og_type')
+
+    def get_seo_image(self):
+        if self.seo_image:
+            return self.seo_image
+        return get_seo_value(self, 'seo_image')
 
 
 @receiver(post_save)
