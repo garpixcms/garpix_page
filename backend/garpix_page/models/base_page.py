@@ -73,13 +73,11 @@ class BasePage(CloneMixin, PolymorphicMPTTModel):
 
     @cached_property
     def absolute_url(self):
-        url_cache = cache_service.get_url(self.pk)
         current_language_code_url_prefix = get_current_language_code_url_prefix()
+        url_cache = cache_service.get_url(self.pk, current_language_code_url_prefix)
 
         if url_cache is not None:
-            if url_cache == '':
-                return f'{current_language_code_url_prefix}'
-            return f'{current_language_code_url_prefix}/{url_cache}'
+            return url_cache
 
         if self.slug:
             obj = self
@@ -90,10 +88,11 @@ class BasePage(CloneMixin, PolymorphicMPTTModel):
                     url_arr.insert(0, obj.slug)
             url = '/'.join(url_arr)
             result = "{}/{}".format(current_language_code_url_prefix, url)
-            cache_service.set_url(self.pk, url)
+            cache_service.set_url(self.pk, result)
             return result
+
         result = "{}".format(current_language_code_url_prefix) if len(current_language_code_url_prefix) > 1 else '/'
-        cache_service.set_url(self.pk, '')
+        cache_service.set_url(self.pk, result)
         return result
 
     absolute_url.short_description = 'URL'

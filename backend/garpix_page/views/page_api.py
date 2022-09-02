@@ -5,10 +5,9 @@ from rest_framework.response import Response
 import django.apps
 from django.utils.module_loading import import_string
 from django.conf import settings
-from ..serializers.serializer import get_serializer
-from ..cache import cache_service
 
-from ..utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
+from garpix_page.mixins.views import PageViewMixin
+from ..serializers.serializer import get_serializer
 
 model_list = []
 for model in django.apps.apps.get_models():
@@ -21,30 +20,7 @@ for model in django.apps.apps.get_models():
 languages_list = [x[0] for x in settings.LANGUAGES]
 
 
-class PageApiView(views.APIView):
-
-    @staticmethod
-    def get_absolute_url_from_request(slug_list, slug):
-        current_language_code_url_prefix = get_current_language_code_url_prefix()
-        if slug != '':
-            return "{}/{}".format(current_language_code_url_prefix, '/'.join(slug_list))
-        return "{}".format(current_language_code_url_prefix) if len(current_language_code_url_prefix) > 1 else '/'
-
-    @staticmethod
-    def get_instance_by_slug(slug):
-        instance_cache = cache_service.get_instance_by_slug(slug)
-        if instance_cache is not None:
-            return instance_cache
-        for m in model_list:
-            instance = m.objects.filter(slug=slug).first()
-            if instance:
-                cache_service.set_instance_by_slug(slug, instance)
-                return instance
-        return None
-
-    def get_object(self, slug):
-        obj = self.get_instance_by_slug(slug)
-        return obj
+class PageApiView(PageViewMixin, views.APIView):
 
     @staticmethod
     def get_error_page_response_data(page, request, page_name):
@@ -76,6 +52,11 @@ class PageApiView(views.APIView):
 
         return None
 
+    def get_object(self, slugs):
+
+        obj = self.get_instance_by_slug(slugs, languages_list)
+        return obj
+
     def get(self, request, slugs):  # noqa
 
         language = languages_list[0]
@@ -83,26 +64,7 @@ class PageApiView(views.APIView):
             language = request.META['HTTP_ACCEPT_LANGUAGE']
         activate(language)
 
-        slug_list = slugs.split('/')
-
-        if slug_list[0] in languages_list:
-            activate(slug_list[0])
-            slug_list.pop(0)
-
-        if len(slug_list) == 0:
-            slug_list.append('')
-
-        if len(slug_list) > 1 and slug_list[-1] == '':
-            slug_list.pop(-1)
-
-        slug = slug_list[-1]
-        page = self.get_object(slug)
-
-        if not page or not page.is_active:
-            page = None
-
-        if page and page.absolute_url != self.get_absolute_url_from_request(slug_list, slug):
-            page = None
+        page = self.get_object(slugs)
 
         errors = self.check_errors(page, request)
         if errors is not None:
