@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path, re_path
+from django.urls import path, re_path, include
 from django.conf.urls.i18n import i18n_patterns
 from multiurl import ContinueResolving, multiurl
 from django.http import Http404
@@ -13,6 +13,7 @@ from garpix_page.views.sitemap import sitemap_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('page_lock/', include('garpix_admin_lock.urls')),
     re_path(r'{}/page_models_list/$'.format(settings.API_URL), PageApiListView.as_view()),
     re_path(r'{}/page/(?P<slugs>.*)$'.format(settings.API_URL), PageApiView.as_view()),
     path('sitemap.xml', sitemap, sitemap_view(), name='django.contrib.sitemaps.views.sitemap'),
