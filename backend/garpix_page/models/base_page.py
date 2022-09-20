@@ -181,7 +181,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel):
 
 @receiver(pre_save)
 def uncache_page(sender, instance: BasePage, update_fields, **kwargs):
-    if type(sender) == type(BasePage) and hasattr(instance, 'id'):
+    if type(sender) == type(BasePage) and instance.id:
         old_instance_url = BasePage.objects.get(id=instance.id).get_absolute_url()
         instance_url = instance.get_absolute_url()
         if old_instance_url != instance_url:
