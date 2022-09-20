@@ -13,9 +13,10 @@ from django.utils.html import format_html
 from garpix_utils.managers import GCurrentSiteManager, GPolymorphicCurrentSiteManager
 from ..cache import cache_service
 from ..mixins import CloneMixin
+from garpix_admin_lock.mixins import PageLockViewMixin
 
 
-class BasePage(CloneMixin, PolymorphicMPTTModel):
+class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
     """
     Базовая страница, на основе которой создаются все прочие страницы.
     """

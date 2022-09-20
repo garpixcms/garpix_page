@@ -14,7 +14,8 @@ from ..forms import PolymorphicModelPreviewChoiceForm
 
 class BaseComponentAdmin(PolymorphicChildModelAdmin, TabbedTranslationAdmin):
     base_model = BaseComponent
-    list_display = ('title', 'model_name')
+    list_display = ('title', 'model_name',)
+    search_fields = ('title', 'pages__title')
 
     filter_horizontal = (
         'pages',
@@ -59,6 +60,7 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
     list_display = ('title', 'model_name')
     add_type_form = PolymorphicModelPreviewChoiceForm
     save_on_top = True
+    search_fields = ('title', 'pages__title')
 
     actions = ('clone_object', )
 
