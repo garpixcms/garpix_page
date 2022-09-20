@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.functional import cached_property
 from django.db import models
@@ -179,9 +179,14 @@ class BasePage(CloneMixin, PolymorphicMPTTModel):
         return format_html('<a class="related-widget-wrapper-link add-related addlink" href="{0}?_to_field=id&_popup=1&pages={1}">Добавить компонент</a>', link, self.id)
 
 
-@receiver(post_save)
-def uncache(sender, instance: BasePage, created, update_fields, **kwargs):
-    if type(sender) == type(BasePage) and not created:
-        cache_service.clear_all_by_page(instance.pk, instance.slug)
+@receiver(pre_save)
+def uncache_page(sender, instance: BasePage, update_fields, **kwargs):
+    if type(sender) == type(BasePage) and instance.id:
+        old_instance_url = BasePage.objects.get(id=instance.id).get_absolute_url()
+        instance_url = instance.get_absolute_url()
+        if old_instance_url != instance_url:
+            cache_service.clear_all_by_page(instance.pk, old_instance_url)
+        else:
+            cache_service.clear_all_by_page(instance.pk, instance_url)
         if instance.is_root_node():
             cache_service.clear_all()
