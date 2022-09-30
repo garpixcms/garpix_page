@@ -57,6 +57,9 @@ class BaseComponent(CloneMixin, PolymorphicModel):
         }
         return context
 
+    def get_template(self):
+        return self.template
+
     def model_name(self):
         real_instance = self.get_real_instance_class()
         if real_instance:
@@ -82,7 +85,15 @@ class BaseComponent(CloneMixin, PolymorphicModel):
             if hasattr(v, 'is_for_component_view'):
                 model_serializer_class = get_components_serializer(v.__class__)
                 context[k] = model_serializer_class(v, context={"request": request}).data
+        context.update({
+            'admin_edit_url': self.get_admin_url_edit_object(),
+            'template': self.get_template()
+        })
         return context
 
     def get_serializer(self):
         return None
+
+    def get_admin_url_edit_object(self):
+        url = reverse(f'admin:{self._meta.app_label}_{self._meta.model_name}_change', args=[self.id])
+        return url

@@ -493,6 +493,10 @@ class TextComponent(BaseComponent):
     class Meta:
         verbose_name = 'Текстовый компонент'
         verbose_name_plural = 'Текстовые компоненты'
+        
+    def get_context_data(self, request):  # add overriding this method to customize component's context
+        context = super().get_context_data(request)
+        return context
 
 ```
 Admin
@@ -528,7 +532,7 @@ class TextComponentTranslationOptions(TranslationOptions):
 ```
 
 BaseComponent has m2m field `pages` to specify on which pages the component should be displayed. Through table also has `view_order` field to specify the ordering of components at the page (ascending order). 
-You can override `get_context` method to add some info to component context.
+You can override `get_context_data` method to add some info to component context.
 
 Example answer with some components:
 
@@ -605,6 +609,36 @@ Example answer with some components:
         "global": {}
     }
 }
+```
+
+Templates:
+
+If you want to override the base component template, add `template` parameter to component class:
+
+```python
+# app/models/components.py
+
+from garpix_page.models import BaseComponent
+
+class TextComponent(BaseComponent):
+    # ...
+    template = 'text_component.html'
+    # ...
+
+```
+
+In html you can use `component` object:
+```html
+# templates/pages/components/default.html
+
+<h1>{{ component.title }}</h1>
+```
+
+You can add `gx-component`data attribute to section with the component in template to add edit functionality for admin from the template:
+```html
+<section class="text-component" data-gx-component="{{ component.admin_edit_url }}">
+    ...
+</section>
 ```
 
 ## Important!
