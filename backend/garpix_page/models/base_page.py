@@ -115,6 +115,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
     def get_context(self, request=None, *args, **kwargs):
         context = {
             'object': self,
+            'components': self.get_components_context(request)
         }
         return context
 
