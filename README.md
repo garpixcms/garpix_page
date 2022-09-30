@@ -294,6 +294,12 @@ Templates:
 {% include 'garpix_page/admin_toolbar.html' %}
 <main>
     {% block content %}404{% endblock %}
+    {% block components %}
+        {% for component in components %}
+        {{ component.template }}
+        {% include component.template %}
+        {% endfor %}
+    {% endblock %}
 </main>
 </body>
 </html>
