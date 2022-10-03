@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.functional import cached_property
 from django.db import models
@@ -11,13 +11,13 @@ from garpix_page.utils.get_file_path import get_file_path
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey, PolymorphicMPTTModelManager
 from django.utils.html import format_html
 from garpix_utils.managers import GCurrentSiteManager, GPolymorphicCurrentSiteManager
-
 from ..cache import cache_service
 from ..mixins import CloneMixin
+from garpix_admin_lock.mixins import PageLockViewMixin
 from ..utils.get_seo_value import get_seo_value
 
 
-class BasePage(CloneMixin, PolymorphicMPTTModel):
+class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
     """
     Базовая страница, на основе которой создаются все прочие страницы.
     """
@@ -116,6 +116,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel):
     def get_context(self, request=None, *args, **kwargs):
         context = {
             'object': self,
+            'components': self.get_components_context(request)
         }
         return context
 
@@ -213,9 +214,14 @@ class BasePage(CloneMixin, PolymorphicMPTTModel):
         return get_seo_value(self, 'seo_image')
 
 
-@receiver(post_save)
-def uncache(sender, instance: BasePage, created, update_fields, **kwargs):
-    if type(sender) == type(BasePage) and not created:
-        cache_service.clear_all_by_page(instance.pk, instance.slug)
+@receiver(pre_save)
+def uncache_page(sender, instance: BasePage, update_fields, **kwargs):
+    if type(sender) == type(BasePage) and instance.id:
+        old_instance_url = BasePage.objects.get(id=instance.id).get_absolute_url()
+        instance_url = instance.get_absolute_url()
+        if old_instance_url != instance_url:
+            cache_service.clear_all_by_page(instance.pk, old_instance_url)
+        else:
+            cache_service.clear_all_by_page(instance.pk, instance_url)
         if instance.is_root_node():
             cache_service.clear_all()

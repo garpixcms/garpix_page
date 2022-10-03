@@ -21,8 +21,8 @@ for model in django.apps.apps.get_models():
 
 
 def get_garpix_page_models():
-    return model_list
+    return sorted(model_list, key=lambda x: x._meta.verbose_name)
 
 
 def get_garpix_page_component_models():
-    return components_list
+    return sorted(components_list, key=lambda x: x._meta.verbose_name)

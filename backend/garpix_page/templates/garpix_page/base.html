@@ -14,7 +14,8 @@
     {% block content %}
     {% endblock %}
     {% block components %}
-        {% for component in object.get_components %}
+        {% for component in components %}
+        {{ component.template }}
         {% include component.template %}
         {% endfor %}
     {% endblock %}

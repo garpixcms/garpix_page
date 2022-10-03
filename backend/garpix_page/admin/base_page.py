@@ -17,6 +17,7 @@ from django.utils.translation import gettext as _
 from polymorphic.admin import PolymorphicChildModelFilter
 from tabbed_admin import TabbedModelAdmin
 from mptt.admin import DraggableMPTTAdmin
+from garpix_admin_lock.mixins import PageLockAdminMixin
 
 
 class ComponentsTabularInline(admin.TabularInline):
@@ -25,7 +26,7 @@ class ComponentsTabularInline(admin.TabularInline):
     extra = 0
 
 
-class BasePageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
+class PageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
     base_model = BasePage
     list_per_page = settings.GARPIX_PAGE_ADMIN_LIST_PER_PAGE if hasattr(settings,
                                                                         'GARPIX_PAGE_ADMIN_LIST_PER_PAGE') else 25
@@ -112,11 +113,11 @@ class BasePageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChi
         tabs_fieldsets = self.get_formatted_tabs(request, obj)['fieldsets']
         self.fieldsets = ()
         self.fieldsets = self.add_tabbed_item(tabs_fieldsets, self.fieldsets)
-        return super(BasePageAdmin, self).get_fieldsets(request, obj)
+        return super().get_fieldsets(request, obj)
 
 
 @admin.register(BasePage)
-class RealBasePageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin):
+class RealPageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin):
     """
     Стандартные настройки для базовых страниц.
     """
@@ -144,7 +145,7 @@ class RealBasePageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicM
     readonly_fields = ('created_at', 'updated_at', 'model_name')
 
     def indented_title(self, item):
-        return super(RealBasePageAdmin, self).indented_title(item)
+        return super().indented_title(item)
 
     indented_title.short_description = "Название"
 
@@ -212,3 +213,30 @@ class RealBasePageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicM
             new_obj.save()
         link = reverse("admin:garpix_page_basepage_changelist")
         return HttpResponseRedirect(link)
+
+
+#  Базовая админка для страниц с локом
+class BasePageAdmin(PageLockAdminMixin, PageAdmin):
+    lock_change_view = True
+    change_form_template = 'garpix_page/admin/page_change_form.html'
+
+    def has_change_permission(self, req, *args):
+        can_add = super().has_change_permission(req, *args)
+
+        if can_add and not self._is_locked(req):
+            return True
+
+        return False
+
+
+class RealBasePageAdmin(PageLockAdminMixin, RealPageAdmin):
+    lock_change_view = True
+
+
+#  Базовая админка для страниц без лока
+class RealBasePageWithoutLockAdmin(PageAdmin):
+    pass
+
+
+class BasePageWithoutLockAdmin(PageAdmin):
+    pass

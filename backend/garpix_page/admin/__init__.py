@@ -1,3 +1,7 @@
-from .base_page import BasePageAdmin  # noqa
-from .base_page import RealBasePageAdmin  # noqa
+from .base_page import (  # noqa
+    BasePageAdmin,
+    RealBasePageAdmin,
+    RealBasePageWithoutLockAdmin,
+    BasePageWithoutLockAdmin,
+)
 from .settings import *  # noqa

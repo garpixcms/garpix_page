@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'garpix_page',
     'app',
     'eqator',
+    'garpix_admin_lock',
 ]
 
 MIDDLEWARE = [
@@ -159,6 +160,7 @@ LANGUAGES = (
 
 MIGRATION_MODULES = {
     'garpix_page': 'app.migrations.garpix_page',
+    'garpix_admin_lock': 'app.migrations.garpix_admin_lock',
 }
 
 GARPIX_PAGE_ADMIN_LIST_PER_PAGE = 25
