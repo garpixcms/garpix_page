@@ -14,7 +14,6 @@ from garpix_utils.managers import GCurrentSiteManager, GPolymorphicCurrentSiteMa
 from ..cache import cache_service
 from ..mixins import CloneMixin
 from garpix_admin_lock.mixins import PageLockViewMixin
-from ..utils.get_seo_value import get_seo_value
 
 
 class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
@@ -183,35 +182,48 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
             '<a class="related-widget-wrapper-link add-related addlink" href="{0}?_to_field=id&_popup=1&pages={1}">Добавить компонент</a>',
             link, self.id)
 
+    def get_seo_value(self, field_name):
+        from garpix_page.admin.settings.seo_template import SeoTemplateForm
+        from garpix_page.models.settings import SeoTemplate
+
+        seo_value_cache = cache_service.get_seo_by_page(self.pk, field_name)
+
+        print(seo_value_cache)
+
+        if seo_value_cache is not None:
+            return seo_value_cache
+        if value := getattr(self, field_name):
+            seo_value = value
+        else:
+
+            seo_templates = SeoTemplate.on_site.filter(is_active=True).all()
+            for temp in seo_templates:
+                if temp.rule_field == SeoTemplateForm.RULE_FIELD.MODEL_NAME and self.__class__.__name__ == temp.model_rule_value or str(
+                        getattr(self, temp.rule_field, None)) == temp.rule_value:
+                    seo_value = getattr(temp, field_name, '').format(**self.__dict__)
+                    break
+            else:
+                seo_value = ''
+        cache_service.set_seo_by_page(self.pk, field_name, seo_value)
+        return seo_value
+
     def get_seo_title(self):
-        if self.seo_title:
-            return self.seo_title
-        return get_seo_value(self, 'seo_title')
+        return self.get_seo_value('seo_title')
 
     def get_seo_keywords(self):
-        if self.seo_keywords:
-            return self.seo_keywords
-        return get_seo_value(self, 'seo_keywords')
+        return self.get_seo_value('seo_keywords')
 
     def get_seo_description(self):
-        if self.seo_description:
-            return self.seo_description
-        return get_seo_value(self, 'seo_description')
+        return self.get_seo_value('seo_description')
 
     def get_seo_author(self):
-        if self.seo_author:
-            return self.seo_author
-        return get_seo_value(self, 'seo_author')
+        return self.get_seo_value('seo_author')
 
     def get_seo_og_type(self):
-        if self.seo_og_type:
-            return self.seo_og_type
-        return get_seo_value(self, 'seo_og_type')
+        return self.get_seo_value('seo_og_type')
 
     def get_seo_image(self):
-        if self.seo_image:
-            return self.seo_image
-        return get_seo_value(self, 'seo_image')
+        return self.get_seo_value('seo_image')
 
 
 @receiver(pre_save)

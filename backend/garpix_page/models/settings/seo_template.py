@@ -6,6 +6,7 @@ from garpix_utils.managers import GCurrentSiteManager
 from garpix_utils.models import ActiveMixin
 
 from garpix_page.utils.all_sites import get_all_sites
+from garpix_page.cache import cache_service
 
 
 class SeoTemplate(ActiveMixin, models.Model):
@@ -37,3 +38,8 @@ class SeoTemplate(ActiveMixin, models.Model):
 
     def __str__(self):
         return f'Шаблон для seo # {self.id}'
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        cache_service.clear_seo_data()
+        super().save()

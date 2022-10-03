@@ -27,9 +27,35 @@ class PageCacheService:
         cache_key = f'{self.cache_slug_prefix}{url}'
         cache.set(cache_key, result)
 
+    def set_seo_by_page(self, pk, field_name, result):
+        cache_key = f'page_{field_name}_{pk}'
+        cache.set(cache_key, result)
+
+    def get_seo_by_page(self, pk, field_name):
+        cache_key = f'page_{field_name}_{pk}'
+        seo_cache = cache.get(cache_key)
+        if seo_cache is not None:
+            return seo_cache
+        return None
+
+    def clear_seo_data(self, pk=None):
+        from garpix_page.models import BasePage
+        seo_fields = [field_name for field in BasePage._meta.get_fields() if (field_name := field.name)[:4] == 'seo_']
+        keys = []
+        if pk:
+            for seo_field in seo_fields:
+                keys.append(f'page_{seo_field}_{pk}')
+        else:
+            for page in BasePage.objects.all():
+                for seo_field in seo_fields:
+                    keys.append(f'page_{seo_field}_{page.pk}')
+
+        cache.delete_many(keys=keys)
+
     def clear_all_by_page(self, pk, url):
         cache.delete(f'{self.cache_url_prefix}{pk}')
         cache.delete(f'{self.cache_slug_prefix}{url}')
+        self.clear_seo_data(pk)
 
     def clear_all(self):
         cache.clear()
