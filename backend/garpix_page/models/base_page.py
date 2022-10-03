@@ -188,8 +188,6 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
 
         seo_value_cache = cache_service.get_seo_by_page(self.pk, field_name)
 
-        print(seo_value_cache)
-
         if seo_value_cache is not None:
             return seo_value_cache
         if value := getattr(self, field_name):
