@@ -1,5 +1,6 @@
 from django.core.cache import cache
 
+from garpix_page.utils.all_sites import get_all_sites
 from garpix_page.utils.get_languages import get_languages
 
 
@@ -46,13 +47,13 @@ class PageCacheService:
         keys = []
         if pk:
             for seo_field in seo_fields:
-                for lang in get_languages():
-                    keys.append(f'page_{seo_field}_{lang}_{pk}')
+                for site in get_all_sites():
+                    keys.append(f'page_{seo_field}_{site}_{pk}')
         else:
             for page in BasePage.objects.all():
                 for seo_field in seo_fields:
-                    for lang in get_languages():
-                        keys.append(f'page_{seo_field}_{lang}_{page.pk}')
+                    for site in get_all_sites():
+                        keys.append(f'page_{seo_field}_{site}_{page.pk}')
 
         cache.delete_many(keys=keys)
 
