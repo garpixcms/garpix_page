@@ -4,3 +4,4 @@ from .base_page import (  # noqa
     RealBasePageWithoutLockAdmin,
     BasePageWithoutLockAdmin,
 )
+from .components.grapes_js_html import GrapesJsHtmlComponentAdmin

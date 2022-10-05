@@ -5,4 +5,7 @@
 <div>
     {{object.content|safe}}
 </div>
+{% for item in components %}
+    {{ item.object.html|safe }}
+{% endfor %}
 {% endblock %}
