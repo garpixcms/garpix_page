@@ -19,6 +19,8 @@ from tabbed_admin import TabbedModelAdmin
 from mptt.admin import DraggableMPTTAdmin
 from garpix_admin_lock.mixins import PageLockAdminMixin
 
+from ..utils.get_languages import get_languages
+
 
 class ComponentsTabularInline(admin.TabularInline):
     model = PageComponent
@@ -53,6 +55,22 @@ class PageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildMo
 
     def get_form(self, request, *args, **kwargs):
         form = super().get_form(request, *args, **kwargs)
+        obj = args[0]
+        sites = obj.sites.all()
+        if obj and isinstance(obj, BasePage):
+            lang_seo_fields = ['seo_title', 'seo_keywords', 'seo_description', 'seo_author']
+            non_lang_seo_fields = ['seo_og_type', 'seo_image']
+            for field in non_lang_seo_fields:
+                form.base_fields[field].help_text = "Итоговое значение:"
+                for site in sites:
+                    form.base_fields[field].help_text += f"<br> для сайта {site.name} - {obj.get_seo_value(field_name=field, site=site)}"
+
+            for field in lang_seo_fields:
+                for lang in get_languages():
+                    form.base_fields[f'{field}_{lang}'].help_text = "Итоговое значение:"
+                    for site in sites:
+                        form.base_fields[f'{field}_{lang}'].help_text += f"<br> для сайта {site.name} - {obj.get_seo_value(field_name=f'{field}_{lang}', site=site)}"
+
         # form.current_user = request.user
         return form
 

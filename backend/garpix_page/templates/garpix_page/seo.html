@@ -11,10 +11,7 @@
 <meta property="og:type" content="{{object.get_seo_og_type}}">
 <meta property="og:url" content="https://{{ request.get_host }}{{object.get_absolute_url}}">
 <meta property="og:site_name" content="{{object.title}}">
-
-{% get_current_language as LANGUAGE_CODE %}
-{% get_language_info for LANGUAGE_CODE as l %}
-<meta property="og:locale" content='{{ l.code }}_{{ l.name_local }}'>
+<meta property="og:locale" content='ru_RU'>
 {% if object.seo_image %}
 <meta property="og:image" content="https://{{ request.get_host }}{{ object.get_seo_image.url }}"/>
 {% endif %}

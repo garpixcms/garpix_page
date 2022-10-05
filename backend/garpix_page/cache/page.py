@@ -1,5 +1,7 @@
 from django.core.cache import cache
 
+from garpix_page.utils.get_languages import get_languages
+
 
 class PageCacheService:
     cache_url_prefix = 'url_page_'
@@ -27,12 +29,12 @@ class PageCacheService:
         cache_key = f'{self.cache_slug_prefix}{url}'
         cache.set(cache_key, result)
 
-    def set_seo_by_page(self, pk, field_name, result):
-        cache_key = f'page_{field_name}_{pk}'
+    def set_seo_by_page(self, pk, field_name, result, site):
+        cache_key = f'page_{field_name}_{site}_{pk}'
         cache.set(cache_key, result)
 
-    def get_seo_by_page(self, pk, field_name):
-        cache_key = f'page_{field_name}_{pk}'
+    def get_seo_by_page(self, pk, field_name, site):
+        cache_key = f'page_{field_name}_{site}_{pk}'
         seo_cache = cache.get(cache_key)
         if seo_cache is not None:
             return seo_cache
@@ -44,11 +46,13 @@ class PageCacheService:
         keys = []
         if pk:
             for seo_field in seo_fields:
-                keys.append(f'page_{seo_field}_{pk}')
+                for lang in get_languages():
+                    keys.append(f'page_{seo_field}_{lang}_{pk}')
         else:
             for page in BasePage.objects.all():
                 for seo_field in seo_fields:
-                    keys.append(f'page_{seo_field}_{page.pk}')
+                    for lang in get_languages():
+                        keys.append(f'page_{seo_field}_{lang}_{page.pk}')
 
         cache.delete_many(keys=keys)
 
