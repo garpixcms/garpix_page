@@ -11,6 +11,7 @@ from django.http import HttpResponseRedirect
 from django.urls import path
 
 from ..models.components.base_component import PageComponent
+from ..utils.all_sites import get_all_sites
 from ..utils.get_garpix_page_models import get_garpix_page_models
 from django.conf import settings
 from django.utils.translation import gettext as _
@@ -56,8 +57,9 @@ class PageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildMo
     def get_form(self, request, *args, **kwargs):
         form = super().get_form(request, *args, **kwargs)
         obj = args[0]
-        sites = obj.sites.all()
+
         if obj and isinstance(obj, BasePage):
+            sites = obj.sites.all() if obj.sites else get_all_sites()
             lang_seo_fields = ['seo_title', 'seo_keywords', 'seo_description', 'seo_author']
             non_lang_seo_fields = ['seo_og_type', 'seo_image']
             for field in non_lang_seo_fields:

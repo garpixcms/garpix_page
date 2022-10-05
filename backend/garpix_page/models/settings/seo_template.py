@@ -41,5 +41,5 @@ class SeoTemplate(ActiveMixin, models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        cache_service.clear_seo_data()
         super().save()
+        cache_service.clear_seo_data()
