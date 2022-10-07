@@ -4,3 +4,5 @@ from .base_page import (  # noqa
     RealBasePageWithoutLockAdmin,
     BasePageWithoutLockAdmin,
 )
+
+from .settings import GarpixPageSiteConfigurationAdmin
