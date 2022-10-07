@@ -11,7 +11,6 @@ class GrapesJsWidget(forms.Textarea):
     '''
     Textarea form widget with support grapesjs.
     This is widget base config grapesjs.
-
     '''
     template_name = GRAPESJS_TEMPLATE
 
@@ -25,14 +24,27 @@ class GrapesJsWidget(forms.Textarea):
             )
         }
         js = [
-            'js/grapesjs/feather-aviary-editor.js',
+            # 'js/grapesjs/feather-aviary-editor.js',
             'js/grapesjs/grapes.js',
-            'js/grapesjs/grapesjs-aviary.min.js',
-            'js/grapesjs/grapesjs-preset-newsletter.min.js',
-            'js/grapesjs/grapesjs-preset-webpage.min.js',
-            'js/grapesjs/grapesjs-lory-slider.min.js',
-            'js/grapesjs/grapesjs-tabs.min.js',
-            'js/grapesjs/grapesjs-plugin-filestack.min.js',
+            # 'js/grapesjs/grapesjs-aviary.min.js',
+            # 'js/grapesjs/grapesjs-preset-newsletter.min.js',
+            # 'js/grapesjs/grapesjs-preset-webpage.min.js',
+            # 'js/grapesjs/grapesjs-lory-slider.min.js',
+            # 'js/grapesjs/grapesjs-tabs.min.js',
+            # 'js/grapesjs/grapesjs-plugin-filestack.min.js',
+            'https://unpkg.com/grapesjs-preset-webpage@1.0.2',
+            'https://unpkg.com/grapesjs-blocks-basic@1.0.1',
+            'https://unpkg.com/grapesjs-plugin-forms@2.0.5',
+            'https://unpkg.com/grapesjs-component-countdown@1.0.1',
+            'https://unpkg.com/grapesjs-plugin-export@1.0.11',
+            'https://unpkg.com/grapesjs-tabs@1.0.6',
+            'https://unpkg.com/grapesjs-custom-code@1.0.1',
+            'https://unpkg.com/grapesjs-touch@0.1.1',
+            'https://unpkg.com/grapesjs-parser-postcss@1.0.1',
+            'https://unpkg.com/grapesjs-tooltip@0.1.7',
+            'https://unpkg.com/grapesjs-tui-image-editor@0.1.3',
+            'https://unpkg.com/grapesjs-typed@1.0.5',
+            'https://unpkg.com/grapesjs-style-bg@1.0.5',
         ]
 
     def get_formatted_id_value(self, value_id):

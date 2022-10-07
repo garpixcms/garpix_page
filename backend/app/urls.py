@@ -10,16 +10,22 @@ from garpix_page.views.page_api import PageApiView, PageApiListView
 from garpix_page.views.index import IndexView
 from garpix_page.views.sitemap import sitemap_view
 from garpix_page.views.get_template import GetTemplate
+from garpix_page.views.upload import DgjsUpload
+from django.conf.urls.static import static
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('get_template/', GetTemplate.as_view(), name='dgjs_get_template'),
+    path('dgjs_upload/', DgjsUpload.as_view(), name='dgjs_upload'),
     path('page_lock/', include('garpix_admin_lock.urls')),
     re_path(r'{}/page_models_list/$'.format(settings.API_URL), PageApiListView.as_view()),
     re_path(r'{}/page/(?P<slugs>.*)$'.format(settings.API_URL), PageApiView.as_view()),
     path('sitemap.xml', sitemap, sitemap_view(), name='django.contrib.sitemaps.views.sitemap'),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(
+        settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += i18n_patterns(
     multiurl(

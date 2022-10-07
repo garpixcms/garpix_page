@@ -25,7 +25,6 @@ class GrapesJsHtmlField(models.TextField):
         if self.check_template_choices(template_choices):
             default_html = template_choices[0][0]
 
-        print(template_choices, 'template_choices')
         self.params_for_formfield = {
             'default_html': default_html,
             'html_name_init_conf': REDACTOR_CONFIG[redactor_config],
