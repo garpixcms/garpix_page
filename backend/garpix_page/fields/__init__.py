@@ -1,1 +1,1 @@
-from .grapes_js_html import *
+from .grapes_js_html import *  # noqa

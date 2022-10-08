@@ -10,6 +10,8 @@
     
     <textarea hidden name="{{ widget.name }}" {% include "django/forms/widgets/attrs.html" %}>
     {% if widget.value %}{{ widget.value }}{% else %}<div>{{ widget.get_render_html_value }}</div>{% endif %}</textarea>
+    <textarea hidden name="{{ widget.name }}_css" id="id_{{ widget.name }}_css"></textarea>
+    <textarea hidden name="{{ widget.name }}_js" id="id_{{ widget.name }}_js"></textarea>
     <div hidden name='get-all-id'>{{ widget.attrs.id }}</div>
     <div id="gjs-{{ widget.attrs.id }}"></div>
     
