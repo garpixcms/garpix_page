@@ -17,27 +17,27 @@ class GrapesJsWidget(forms.Textarea):
     class Media:
         css = {
             'all': (
-                'css/grapesjs/grapes.min.css',
-                'css/grapesjs/grapesjs-preset-newsletter.css',
-                'css/grapesjs/grapesjs-preset-webpage.min.css',
-                'css/grapesjs/grapesjs-plugin-filestack.css',
+                'garpix_page/css/grapesjs/grapes.min.css',
+                'garpix_page/css/grapesjs/grapesjs-preset-newsletter.css',
+                'garpix_page/css/grapesjs/grapesjs-preset-webpage.min.css',
+                'garpix_page/css/grapesjs/grapesjs-plugin-filestack.css',
             )
         }
         js = [
-            'js/grapesjs/grapes.js',
-            'js/grapesjs/grapesjs-preset-webpage.js',
-            'js/grapesjs/grapesjs-blocks-basic.js',
-            'js/grapesjs/grapesjs-plugin-forms.js',
-            'js/grapesjs/grapesjs-component-countdown.js',
-            'js/grapesjs/grapesjs-plugin-export.js',
-            'js/grapesjs/grapesjs-tabs.js',
-            'js/grapesjs/grapesjs-custom-code.js',
-            'js/grapesjs/grapesjs-touch.js',
-            'js/grapesjs/grapesjs-parser-postcss.js',
-            'js/grapesjs/grapesjs-tooltip.js',
-            'js/grapesjs/grapesjs-tui-image-editor.js',
-            'js/grapesjs/grapesjs-typed.js',
-            'js/grapesjs/grapesjs-style-bg.js',
+            'garpix_page/js/grapesjs/grapes.js',
+            'garpix_page/js/grapesjs/grapesjs-preset-webpage.js',
+            'garpix_page/js/grapesjs/grapesjs-blocks-basic.js',
+            'garpix_page/js/grapesjs/grapesjs-plugin-forms.js',
+            'garpix_page/js/grapesjs/grapesjs-component-countdown.js',
+            'garpix_page/js/grapesjs/grapesjs-plugin-export.js',
+            'garpix_page/js/grapesjs/grapesjs-tabs.js',
+            'garpix_page/js/grapesjs/grapesjs-custom-code.js',
+            'garpix_page/js/grapesjs/grapesjs-touch.js',
+            'garpix_page/js/grapesjs/grapesjs-parser-postcss.js',
+            'garpix_page/js/grapesjs/grapesjs-tooltip.js',
+            'garpix_page/js/grapesjs/grapesjs-tui-image-editor.js',
+            'garpix_page/js/grapesjs/grapesjs-typed.js',
+            'garpix_page/js/grapesjs/grapesjs-style-bg.js',
         ]
 
     def get_formatted_id_value(self, value_id):

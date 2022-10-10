@@ -7,6 +7,7 @@ MEDIA_URL = settings.MEDIA_URL
 
 class GrapesJsHtmlComponent(BaseComponent):
     html = GrapesJsHtmlField()
+    admin_preview_image = 'garpix_page/images/admin/grapesjs.png'
 
     def get_context_data(self, request):
         context = super().get_context_data(request)
