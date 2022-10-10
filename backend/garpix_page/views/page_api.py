@@ -72,7 +72,7 @@ class PageApiView(PageViewMixin, views.APIView):
         if errors is not None:
             return errors
 
-        page_context = page.get_context(request, object=page, user=request.user)
+        page_context = page.get_context(request, object=page, user=request.user, api=True)
         for k, v in page_context.items():
             if hasattr(v, 'is_for_page_view'):
                 model_serializer_class = get_serializer(v.__class__)

@@ -54,6 +54,8 @@ class BaseComponent(CloneMixin, PolymorphicModel):
     def get_context(self, request):
         context = {
             'object': self,
+            "component_model": self.__class__.__name__,
+            'admin_edit_url': self.get_admin_url_edit_object(),
         }
         return context
 
@@ -79,16 +81,26 @@ class BaseComponent(CloneMixin, PolymorphicModel):
         return format_html('<a class="inlinechangelink" href="{0}">{1}</a>', link, self.title)
 
     def get_context_data(self, request):
+        context = self.get_context(request)
+
+        context.update({
+            "component_model": self.__class__.__name__,
+            'admin_edit_url': self.get_admin_url_edit_object(),
+            'template': self.get_template()
+        })
+        return context
+
+    def get_api_context_data(self, request):
         component_context = self.get_context(request)
-        context = {"component_model": self.__class__.__name__}
+        context = {
+            "component_model": self.__class__.__name__,
+            'admin_edit_url': self.get_admin_url_edit_object(),
+        }
+
         for k, v in component_context.items():
             if hasattr(v, 'is_for_component_view'):
                 model_serializer_class = get_components_serializer(v.__class__)
                 context[k] = model_serializer_class(v, context={"request": request}).data
-        context.update({
-            'admin_edit_url': self.get_admin_url_edit_object(),
-            'template': self.get_template()
-        })
         return context
 
     def get_serializer(self):

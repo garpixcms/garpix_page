@@ -115,11 +115,16 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
         return self.template
 
     def get_context(self, request=None, *args, **kwargs):
-        context = {
+
+        if kwargs.get('api', False):
+            return {
+                'object': self,
+                'components': self.get_components_context(request, api=True)
+            }
+        return {
             'object': self,
             'components': self.get_components_context(request)
         }
-        return context
 
     @classmethod
     def is_for_page_view(cls):
@@ -160,14 +165,17 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
                     return False
         return True
 
-    def get_components_context(self, request):
+    def get_components_context(self, request, api=False):
         context = []
-        components = self.pagecomponent_set.filter(component__is_active=True)
+        components = self.pagecomponent_set.filter(component__is_active=True).order_by('view_order')
         for component in components:
             component_context = {
                 'view_order': component.view_order
             }
-            component_context.update(component.component.get_context_data(request))
+            if api:
+                component_context.update(component.component.get_api_context_data(request))
+            else:
+                component_context.update(component.component.get_context_data(request))
             context.append(component_context)
         return context
 
@@ -206,7 +214,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
                     try:
                         seo_value = getattr(temp, field_name, '').format(**self.__dict__)
                     except (AttributeError, KeyError) as e:
-                        #ToDo: добавить предупреждение в админке
+                        # ToDo: добавить предупреждение в админке
                         print(f'{field_name}: {e}')
                         seo_value = getattr(temp, field_name, '')
                     break
