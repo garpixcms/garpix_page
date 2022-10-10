@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 django = "==3.1"
 environs = "*"
-psycopg2-binary = "*"
+psycopg2-binary = ">=2.9.3"
 coverage = "*"
 twine = "*"
 m2r = "*"
