@@ -8,6 +8,7 @@ from django.conf import settings
 
 from garpix_page.mixins.views import PageViewMixin
 from ..serializers.serializer import get_serializer
+from ..utils.get_languages import get_languages
 
 model_list = []
 for model in django.apps.apps.get_models():
@@ -17,7 +18,8 @@ for model in django.apps.apps.get_models():
     except:  # noqa
         pass
 
-languages_list = [x[0] for x in settings.LANGUAGES]
+
+languages_list = get_languages()
 
 
 class PageApiView(PageViewMixin, views.APIView):

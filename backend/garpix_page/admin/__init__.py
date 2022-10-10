@@ -5,4 +5,4 @@ from .base_page import (  # noqa
     BasePageWithoutLockAdmin,
 )
 from .components.grapes_js_html import GrapesJsHtmlComponentAdmin  # noqa
-from .settings import GarpixPageSiteConfigurationAdmin  # noqa
+from .settings import *  # noqa

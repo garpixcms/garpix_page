@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.utils import translation
 from django.utils.functional import cached_property
 from django.db import models
 from django.urls import reverse
@@ -178,7 +180,63 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
 
     def admin_link_to_add_component(self):
         link = reverse("admin:garpix_page_basecomponent_add")
-        return format_html('<a class="related-widget-wrapper-link add-related addlink" href="{0}?_to_field=id&_popup=1&pages={1}">Добавить компонент</a>', link, self.id)
+        return format_html(
+            '<a class="related-widget-wrapper-link add-related addlink" href="{0}?_to_field=id&_popup=1&pages={1}">Добавить компонент</a>',
+            link, self.id)
+
+    def get_seo_value(self, field_name, site=None):
+        from garpix_page.admin.settings.seo_template import SeoTemplateForm
+        from garpix_page.models.settings import SeoTemplate
+
+        site = site or Site.objects.get(pk=getattr(settings, 'SITE_ID', 1))
+
+        seo_value_cache = cache_service.get_seo_by_page(self.pk, field_name, site)
+
+        if seo_value_cache is not None:
+            return seo_value_cache
+
+        if value := getattr(self, field_name, ''):
+            seo_value = value
+        else:
+            seo_templates = SeoTemplate.active_objects.filter(sites__in=[site]).all()
+
+            for temp in seo_templates:
+                if temp.rule_field == SeoTemplateForm.RULE_FIELD.MODEL_NAME and self.__class__.__name__ == temp.model_rule_value or str(
+                        getattr(self, temp.rule_field, None)) == temp.rule_value:
+                    try:
+                        seo_value = getattr(temp, field_name, '').format(**self.__dict__)
+                    except (AttributeError, KeyError) as e:
+                        #ToDo: добавить предупреждение в админке
+                        print(f'{field_name}: {e}')
+                        seo_value = getattr(temp, field_name, '')
+                    break
+            else:
+                seo_value = ''
+
+        cache_service.set_seo_by_page(self.pk, field_name, seo_value, site)
+        return seo_value or ''
+
+    def get_seo_title(self):
+        language_code = translation.get_language()
+        return self.get_seo_value(f'seo_title_{language_code}')
+
+    def get_seo_keywords(self):
+        language_code = translation.get_language()
+        return self.get_seo_value(f'seo_keywords_{language_code}')
+
+    def get_seo_description(self):
+        language_code = translation.get_language()
+        return self.get_seo_value(f'seo_description_{language_code}')
+
+    def get_seo_author(self):
+        language_code = translation.get_language()
+        return self.get_seo_value(f'seo_author_{language_code}')
+
+    def get_seo_og_type(self):
+        return self.get_seo_value('seo_og_type')
+
+    def get_seo_image(self):
+        return self.get_seo_value('seo_image')
 
 
 @receiver(pre_save)

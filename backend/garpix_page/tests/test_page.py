@@ -6,6 +6,7 @@ from model_bakery import baker
 
 from ..utils.get_garpix_page_models import get_garpix_page_models
 from ..cache import cache_service
+from ..utils.get_languages import get_languages
 
 
 class BasePageApiTest(APITestCase):
@@ -30,7 +31,7 @@ class BasePageApiTest(APITestCase):
             page = baker.make(page_models[0], slug='', sites=sites)
             self.pages.append(page)
         self.test_user = baker.make(get_user_model())
-        self.languages_list = [x[0] for x in settings.LANGUAGES]
+        self.languages_list = get_languages()
 
     def test_page(self):
         for page in self.pages:

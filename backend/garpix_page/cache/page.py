@@ -1,5 +1,8 @@
 from django.core.cache import cache
 
+from garpix_page.utils.all_sites import get_all_sites
+from garpix_page.utils.get_languages import get_languages
+
 
 class PageCacheService:
     cache_url_prefix = 'url_page_'
@@ -27,9 +30,37 @@ class PageCacheService:
         cache_key = f'{self.cache_slug_prefix}{url}'
         cache.set(cache_key, result)
 
+    def set_seo_by_page(self, pk, field_name, result, site):
+        cache_key = f'page_{field_name}_{site}_{pk}'
+        cache.set(cache_key, result)
+
+    def get_seo_by_page(self, pk, field_name, site):
+        cache_key = f'page_{field_name}_{site}_{pk}'
+        seo_cache = cache.get(cache_key)
+        if seo_cache is not None:
+            return seo_cache
+        return None
+
+    def clear_seo_data(self, pk=None):
+        from garpix_page.models import BasePage
+        seo_fields = [field_name for field in BasePage._meta.get_fields() if (field_name := field.name)[:4] == 'seo_']
+        keys = []
+        if pk:
+            for seo_field in seo_fields:
+                for site in get_all_sites():
+                    keys.append(f'page_{seo_field}_{site}_{pk}')
+        else:
+            for page in BasePage.objects.all():
+                for seo_field in seo_fields:
+                    for site in get_all_sites():
+                        keys.append(f'page_{seo_field}_{site}_{page.pk}')
+
+        cache.delete_many(keys=keys)
+
     def clear_all_by_page(self, pk, url):
         cache.delete(f'{self.cache_url_prefix}{pk}')
         cache.delete(f'{self.cache_slug_prefix}{url}')
+        self.clear_seo_data(pk)
 
     def clear_all(self):
         cache.clear()

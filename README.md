@@ -648,17 +648,25 @@ You can use `gx_component` tag in section with the component to add edit functio
 </section>
 ```
 
+# Seo-templates
+
+You can create seo-template from admin panel. 
+If you set `field` value to `Model title`, the template will be used for pages only for those model.
+In other cases the template will be used for pages with the `value` of the `field`.
+
+You can also specify the sites the template will be used on.
+
 ## Important!
 
 Also, see this project for additional features (`BaseListPage`, `BaseSearchPage`, `sitemap.xml`, etc).
 
 # Changelog
 
-See [CHANGELOG.md](CHANGELOG.md).
+See [CHANGELOG.md](backend/garpix_page/CHANGELOG.md).
 
 # Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+See [CONTRIBUTING.md](backend/garpix_page/CONTRIBUTING.md).
 
 # License
 

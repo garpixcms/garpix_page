@@ -7,8 +7,9 @@ from ..utils.check_redirect import check_redirect
 from django.shortcuts import redirect
 from django.views.generic import DetailView
 
+from ..utils.get_languages import get_languages
 
-languages_list = [x[0] for x in settings.LANGUAGES]
+languages_list = get_languages()
 
 
 class PageView(PageViewMixin, DetailView):
