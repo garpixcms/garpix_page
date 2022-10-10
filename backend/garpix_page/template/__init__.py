@@ -6,4 +6,3 @@ __all__ = ('template_source', )
 
 TemplateStrings.app_dirname = TEMPLATE_DIR
 template_source = TemplateStrings({'DIRS': [], 'APP_DIRS': True, 'OPTIONS': {}, 'NAME': 'django'})
-

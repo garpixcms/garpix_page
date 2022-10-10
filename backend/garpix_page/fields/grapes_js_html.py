@@ -52,4 +52,3 @@ class GrapesJsHtmlField(models.TextField):
             raise SystemCheckError('\nERROR:\n%s: %s' % (self.__class__.__name__, error_info, ))
 
         return True
-

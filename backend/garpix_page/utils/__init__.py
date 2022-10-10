@@ -1,2 +1,2 @@
-from .tags import *
-from .get_source import *
+from .tags import *  # noqa
+from .get_source import *  # noqa

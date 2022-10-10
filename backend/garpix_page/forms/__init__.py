@@ -1,2 +1,2 @@
-from .widgets import *
-from .fields import *
+from .widgets import *  # noqa
+from .fields import * # noqa

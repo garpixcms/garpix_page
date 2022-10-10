@@ -7,6 +7,8 @@ GRAPESJS_TEMPLATE = getattr(settings, 'GRAPESJS_TEMPLATE', 'garpix_page/grapesjs
 # True if you want to save html and css
 GRAPESJS_SAVE_CSS = int(getattr(settings, 'GRAPESJS_SAVE_CSS', False))
 
+GRAPESJS_SAVE_ASSETS_TO_FILE = int(getattr(settings, 'GRAPESJS_SAVE_ASSETS_TO_FILE', False))
+
 # use the value of the field from the db - True, or use the global save editor
 GRAPESJS_DEFAULT_MODELS_DATA = int(getattr(settings, 'GRAPESJS_DEFAULT_MODELS_DATA', True))
 

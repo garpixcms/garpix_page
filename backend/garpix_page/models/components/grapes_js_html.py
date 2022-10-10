@@ -1,9 +1,20 @@
 from .base_component import BaseComponent
 from garpix_page.fields import GrapesJsHtmlField
+from django.conf import settings
+
+MEDIA_URL = settings.MEDIA_URL
 
 
 class GrapesJsHtmlComponent(BaseComponent):
     html = GrapesJsHtmlField()
+
+    def get_context_data(self, request):
+        context = super().get_context_data(request)
+        context.update({
+            'css': request.build_absolute_uri(f'{MEDIA_URL}grapesjs/html_{self.pk}_css.css'),
+            'js': request.build_absolute_uri(f'{MEDIA_URL}grapesjs/html_{self.pk}_js.js')
+        })
+        return context
 
     class Meta:
         verbose_name = 'GrapesJs компонент'

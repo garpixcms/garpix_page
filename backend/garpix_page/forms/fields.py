@@ -35,4 +35,3 @@ class GrapesJsField(forms.CharField):
         value = apply_string_handling(value, 'apply_tag_save')
 
         return super().clean(value)
-

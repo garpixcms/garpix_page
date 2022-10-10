@@ -19,17 +19,14 @@ class ApplyMakeupTag(object):
             lambda t:
                 '<%s><div hidden="">{#%s#}</div>%s</%s>' % (
                     NAME_MAKEUP_TAG, t.source, t.render(Context({})), NAME_MAKEUP_TAG
-                ),
-                    map(Template, strings_to_render)
+                ), map(Template, strings_to_render)
         )
 
         return reduce(lambda s, r: re.sub(REGEX_MAKEUP_INIT, r, s, 1), replace_to_strings, string)
 
     def apply_tag_save(self, string):
         substrings_to_save = [
-            '<%s>%s</%s>' % (NAME_MAKEUP_TAG, sub, NAME_MAKEUP_TAG)
-                for sub in re.findall(REGEX_MAKEUP_SAVE, string)
+            '<%s>%s</%s>' % (NAME_MAKEUP_TAG, sub, NAME_MAKEUP_TAG) for sub in re.findall(REGEX_MAKEUP_SAVE, string)
         ]
 
         return reduce(lambda s, r: re.sub(REGEX_MAKEUP_SAVE, r, s, 1), substrings_to_save, string)
-
