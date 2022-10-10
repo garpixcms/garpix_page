@@ -54,6 +54,8 @@ class BaseComponent(CloneMixin, PolymorphicModel):
     def get_context(self, request):
         context = {
             'object': self,
+            "component_model": self.__class__.__name__,
+            'admin_edit_url': self.get_admin_url_edit_object(),
         }
         return context
 
@@ -90,7 +92,10 @@ class BaseComponent(CloneMixin, PolymorphicModel):
 
     def get_api_context_data(self, request):
         component_context = self.get_context(request)
-        context = {"component_model": self.__class__.__name__}
+        context = {
+            "component_model": self.__class__.__name__,
+            'admin_edit_url': self.get_admin_url_edit_object(),
+        }
 
         for k, v in component_context.items():
             if hasattr(v, 'is_for_component_view'):
