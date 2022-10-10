@@ -7,9 +7,9 @@ from garpix_page.models.base_page import BasePage
 
 def sitemap_view():
     pages = {
-            'queryset': BasePage.on_site.filter(is_active=True).order_by('title'),
-            'date_field': 'created_at'
-        }
+        'queryset': BasePage.on_site.filter(is_active=True).order_by('title'),
+        'date_field': 'created_at'
+    }
 
     try:
         config = GarpixPageSiteConfiguration.get_solo().robots_txt
