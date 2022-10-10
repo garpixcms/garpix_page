@@ -144,7 +144,7 @@ from garpix_page.models import BasePage
 
 class Page(BasePage):
     content = models.TextField(verbose_name='Content', blank=True, default='')
-    
+
     template = 'pages/default.html'
 
     class Meta:
@@ -174,7 +174,7 @@ class Category(BasePage):
         verbose_name_plural = "Categories"
         ordering = ('-created_at',)
 
-        
+
 # app/models/post.py
 
 from django.db import models
@@ -183,7 +183,7 @@ from garpix_page.models import BasePage
 
 class Post(BasePage):
     content = models.TextField(verbose_name='Content', blank=True, default='')
-    
+
     template = 'pages/post.html'
 
     class Meta:
@@ -361,12 +361,12 @@ To add some user permissions to page, add permissions  static field to your page
 ```python
 class Post(BasePage):
     content = models.TextField(verbose_name='Content', blank=True, default='')
-    
+
     template = 'pages/post.html'
-    
+
     login_required = True
     permissions = [IsAdminUser,]
-    
+
     class Meta:
         verbose_name = "Post"
         verbose_name_plural = "Posts"
@@ -464,17 +464,17 @@ from garpix_page.pagination import GarpixPagePagination
 
 class Post(BasePage):
     ...
-    
+
     def get_context(self, request=None, *args, **kwargs):
-     
+
         ...
         # get your_objects_list
         # import objects serializer class YourObjectsSerializer
         ...
-         
+
         paginator = GarpixPagePagination()
-        
-        paginated_list = paginator.get_paginated_data(queryset=your_objects_list, serializer=YourObjectsSerializer, 
+
+        paginated_list = paginator.get_paginated_data(queryset=your_objects_list, serializer=YourObjectsSerializer,
                                                        request=request)
         context = {
             'paginated_list': paginated_list
@@ -499,7 +499,7 @@ class TextComponent(BaseComponent):
     class Meta:
         verbose_name = 'Текстовый компонент'
         verbose_name_plural = 'Текстовые компоненты'
-        
+
     def get_context_data(self, request):  # add overriding this method to customize component's context
         context = super().get_context_data(request)
         return context
@@ -537,7 +537,7 @@ class TextComponentTranslationOptions(TranslationOptions):
 
 ```
 
-BaseComponent has m2m field `pages` to specify on which pages the component should be displayed. Through table also has `view_order` field to specify the ordering of components at the page (ascending order). 
+BaseComponent has m2m field `pages` to specify on which pages the component should be displayed. Through table also has `view_order` field to specify the ordering of components at the page (ascending order).
 You can override `get_context_data` method to add some info to component context.
 
 Example answer with some components:
@@ -640,9 +640,10 @@ In html you can use `component` object:
 <h1>{{ component.title }}</h1>
 ```
 
-You can add `gx-component`data attribute to section with the component in template to add edit functionality for admin from the template:
+You can use `gx_component` tag in section with the component to add edit functionality for admin in template:
 ```html
-<section class="text-component" data-gx-component="{{ component.admin_edit_url }}">
+{% load gx_component %}
+<section class="text-component" {% gx_component component %}>
     ...
 </section>
 ```

@@ -301,11 +301,11 @@
         },
         "garpix-utils": {
             "hashes": [
-                "sha256:0e278edf7ad5910e5439a09e2393f010ccef017dd7f590493ff93ebf7e1b1b4d",
-                "sha256:b42cced42ef4448f6338986448456295ef35041bab4ed24ebd6554f5106e6f78"
+                "sha256:1e83f9d5263e60ed4d1a08a1bdb63bf190be8d42ff1eb98d68476763de50dca9",
+                "sha256:c86a80943809fad819dee072e4642d8d02edfeecf3097320afd6c6d52276b99e"
             ],
             "index": "pypi",
-            "version": "==1.5.0"
+            "version": "==1.6.0"
         },
         "gitdb": {
             "hashes": [
@@ -317,11 +317,11 @@
         },
         "gitpython": {
             "hashes": [
-                "sha256:1c885ce809e8ba2d88a29befeb385fcea06338d3640712b59ca623c220bb5704",
-                "sha256:5b68b000463593e05ff2b261acff0ff0972df8ab1b70d3cdbd41b546c8b8fc3d"
+                "sha256:6bd3451b8271132f099ceeaf581392eaf6c274af74bb06144307870479d0697c",
+                "sha256:77bfbd299d8709f6af7e0c70840ef26e7aff7cf0c1ed53b42dd7fc3a310fcb02"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==3.1.27"
+            "version": "==3.1.28"
         },
         "idna": {
             "hashes": [
@@ -495,7 +495,7 @@
                 "sha256:ffb7a888a047696e7f8240d649b43fb3644f14f0ee229077e7f6b9f9081635bd"
             ],
             "index": "pypi",
-            "version": "==2.9.3"
+            "version": "==2.9.4"
         },
         "pycodestyle": {
             "hashes": [
@@ -631,10 +631,11 @@
         },
         "requests-toolbelt": {
             "hashes": [
-                "sha256:380606e1d10dc85c3bd47bf5a6095f815ec007be7a8b69c878507068df059e6f",
-                "sha256:968089d4584ad4ad7c171454f0a5c6dac23971e9472521ea3b6d49d610aa6fc0"
+                "sha256:64c6b8c51b515d123f9f708a29743f44eb70c4479440641ed2df8c4dea56d985",
+                "sha256:f695d6207931200b46c8ef6addbc8a921fb5d77cc4cd209c2e7d39293fcd2b30"
             ],
-            "version": "==0.9.1"
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "version": "==0.10.0"
         },
         "rfc3986": {
             "hashes": [
