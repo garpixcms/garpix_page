@@ -1,7 +1,6 @@
 from django.core.cache import cache
 
 from garpix_page.utils.all_sites import get_all_sites
-from garpix_page.utils.get_languages import get_languages
 
 
 class PageCacheService:

@@ -55,7 +55,7 @@ class BaseComponent(CloneMixin, PolymorphicModel):
         context = {
             'object': self,
             "component_model": self.__class__.__name__,
-            'admin_edit_url': self.get_admin_url_edit_object(),
+            'admin_edit_url': self.get_admin_url_edit_object()
         }
         return context
 
@@ -84,20 +84,13 @@ class BaseComponent(CloneMixin, PolymorphicModel):
         context = self.get_context(request)
 
         context.update({
-            "component_model": self.__class__.__name__,
-            'admin_edit_url': self.get_admin_url_edit_object(),
             'template': self.get_template()
         })
         return context
 
     def get_api_context_data(self, request):
-        component_context = self.get_context(request)
-        context = {
-            "component_model": self.__class__.__name__,
-            'admin_edit_url': self.get_admin_url_edit_object(),
-        }
-
-        for k, v in component_context.items():
+        context = self.get_context(request)
+        for k, v in context.items():
             if hasattr(v, 'is_for_component_view'):
                 model_serializer_class = get_components_serializer(v.__class__)
                 context[k] = model_serializer_class(v, context={"request": request}).data
