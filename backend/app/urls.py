@@ -21,7 +21,7 @@ urlpatterns = [
     path('dgjs_upload/', DgjsUpload.as_view(), name='dgjs_upload'),
     path('page_lock/', include('garpix_admin_lock.urls')),
     re_path(r'{}/page_models_list/$'.format(settings.API_URL), PageApiListView.as_view()),
-    re_path(r'{}/page/(?P<slugs>.*)$'.format(settings.API_URL), PageApiView.as_view()),
+    re_path(r'{}/page/(?P<slugs>.*)/$'.format(settings.API_URL), PageApiView.as_view()),
     path('sitemap.xml', sitemap, sitemap_view(), name='django.contrib.sitemaps.views.sitemap'),
     path('robots.txt', robots_txt),
 ]
@@ -31,7 +31,6 @@ urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + s
 urlpatterns += i18n_patterns(
     multiurl(
         path('', PageView.as_view()),
-        re_path(r'^(?P<url>.*?)$', PageView.as_view(), name='page'),
         re_path(r'^(?P<url>.*?)/$', PageView.as_view(), name='page'),
         path('', IndexView.as_view()),
         catch=(Http404, ContinueResolving),

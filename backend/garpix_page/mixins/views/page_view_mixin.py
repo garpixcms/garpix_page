@@ -10,7 +10,7 @@ class PageViewMixin:
     def get_absolute_url_from_request(slug_list, slug):
         current_language_code_url_prefix = get_current_language_code_url_prefix()
         if slug != '':
-            return "{}/{}".format(current_language_code_url_prefix, '/'.join(slug_list))
+            return "{}/{}/".format(current_language_code_url_prefix, '/'.join(slug_list))
         return "{}".format(current_language_code_url_prefix) if len(current_language_code_url_prefix) > 1 else '/'
 
     @classmethod

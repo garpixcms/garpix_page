@@ -58,6 +58,14 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
     def __str__(self):
         return self.title
 
+    def get_seo_template_keys(self):
+        return self.__dict__
+
+    @classmethod
+    def seo_template_keys_list(cls):
+        return [(f.name, f.verbose_name) for f in cls._meta.fields if hasattr(f, 'verbose_name') and (
+                isinstance(f, models.CharField) or isinstance(f, models.TextField))]
+
     def get_verbose_model_name(self):
         return self._meta.verbose_name
 
@@ -90,7 +98,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
                 if obj.slug:
                     url_arr.insert(0, obj.slug)
             url = '/'.join(url_arr)
-            result = "{}/{}".format(current_language_code_url_prefix, url)
+            result = "{}/{}/".format(current_language_code_url_prefix, url)
             cache_service.set_url(self.pk, result)
             return result
 
@@ -203,23 +211,20 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
         if seo_value_cache is not None:
             return seo_value_cache
 
-        if value := getattr(self, field_name, ''):
-            seo_value = value
-        else:
-            seo_templates = SeoTemplate.active_objects.filter(sites__in=[site]).all()
+        seo_templates = SeoTemplate.active_objects.filter(sites__in=[site]).all()
 
-            for temp in seo_templates:
-                if temp.rule_field == SeoTemplateForm.RULE_FIELD.MODEL_NAME and self.__class__.__name__ == temp.model_rule_value or str(
-                        getattr(self, temp.rule_field, None)) == temp.rule_value:
-                    try:
-                        seo_value = getattr(temp, field_name, '').format(**self.__dict__)
-                    except (AttributeError, KeyError) as e:
-                        # ToDo: добавить предупреждение в админке
-                        print(f'{field_name}: {e}')
-                        seo_value = getattr(temp, field_name, '')
-                    break
-            else:
-                seo_value = ''
+        for temp in seo_templates:
+            if temp.rule_field == SeoTemplateForm.RULE_FIELD.MODEL_NAME and self.__class__.__name__ == temp.model_rule_value or str(
+                    temp.rule_value in getattr(self, temp.rule_field, None)):
+                try:
+                    seo_value = getattr(temp, field_name, '').format(**self.get_seo_template_keys())
+                except (AttributeError, KeyError) as e:
+                    # ToDo: добавить предупреждение в админке
+                    print(f'{field_name}: {e}')
+                    seo_value = getattr(temp, field_name, '')
+                break
+        else:
+            seo_value = getattr(self, field_name, '')
 
         cache_service.set_seo_by_page(self.pk, field_name, seo_value, site)
         return seo_value or ''

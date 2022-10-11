@@ -656,6 +656,23 @@ In other cases the template will be used for pages with the `value` of the `fiel
 
 You can also specify the sites the template will be used on.
 
+You can add fields which will be used for template keys, using `get_seo_template_keys` method and `seo_template_keys_list` class method.
+
+```python
+class Page(BasePage):
+    #...
+    def get_seo_template_keys(self):
+        seo_keys = super().get_seo_template_keys()
+        seo_keys.update({
+            'yourfield': self.yourfield
+        })
+        return seo_keys
+
+    @classmethod
+    def seo_template_keys_list(cls):
+        return [('yourfield', 'your field title')]
+```
+
 ## Important!
 
 Also, see this project for additional features (`BaseListPage`, `BaseSearchPage`, `sitemap.xml`, etc).
