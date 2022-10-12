@@ -3,7 +3,7 @@
 {% with id=widget.attrs.id %}
 <ul{% if id %} id="{{ id }}"{% endif %} class="js-components-list {{ widget.attrs.class }}">
     <label>
-        <img class="component-search" src="../../../../static/garpix_page/images/admin/search.svg" alt="Search">
+        <img class="component-search" src="{% static 'garpix_page/images/admin/search.svg'%}" alt="Search">
         <input class="js-search" placeholder="Поиск">
     </label>
 

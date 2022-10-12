@@ -98,7 +98,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
                 if obj.slug:
                     url_arr.insert(0, obj.slug)
             url = '/'.join(url_arr)
-            result = "{}/{}/".format(current_language_code_url_prefix, url)
+            result = "{}/{}".format(current_language_code_url_prefix, url)
             cache_service.set_url(self.pk, result)
             return result
 
@@ -214,8 +214,9 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
         seo_templates = SeoTemplate.active_objects.filter(sites__in=[site]).all()
 
         for temp in seo_templates:
-            if temp.rule_field == SeoTemplateForm.RULE_FIELD.MODEL_NAME and self.__class__.__name__ == temp.model_rule_value or str(
-                    temp.rule_value in getattr(self, temp.rule_field, None)):
+            is_model_rule = temp.rule_field == SeoTemplateForm.RULE_FIELD.MODEL_NAME and self.__class__.__name__ == temp.model_rule_value
+            is_field_rule = str(temp.rule_value in getattr(self, temp.rule_field, None))
+            if is_model_rule or is_field_rule:
                 try:
                     seo_value = getattr(temp, field_name, '').format(**self.get_seo_template_keys())
                 except (AttributeError, KeyError) as e:
