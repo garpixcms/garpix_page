@@ -1,6 +1,7 @@
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.utils.functional import cached_property
 from polymorphic.admin import PolymorphicModelChoiceForm
 from django.contrib.contenttypes.models import ContentType
 from django.apps import apps
@@ -87,7 +88,7 @@ class PageForm(PolymorpicMPTTAdminForm):
                     obj = obj.parent
                     if obj.slug:
                         url_arr.insert(0, obj.slug)
-            absolute_url = "{}/{}".format(current_language_code_url_prefix, '/'.join(url_arr))
+            absolute_url = "{}/{}/".format(current_language_code_url_prefix, '/'.join(url_arr))
         else:
             absolute_url = "{}".format(current_language_code_url_prefix) if len(current_language_code_url_prefix) > 1 else '/'
 
@@ -115,10 +116,15 @@ def get_rule_fields_values():
     rule_fields_values = []
     for page_model in get_garpix_page_models():
         for f in page_model._meta.get_fields():
-            if hasattr(f, 'verbose_name') and (isinstance(f, CharField) or isinstance(f, TextField)) and 'seo_' not in f.name:
+            if hasattr(f, 'verbose_name') and (isinstance(f, CharField) or isinstance(f, TextField)) and 'seo_' not in f.name and f.name != 'slug':
                 prop_field = (f.name, f.verbose_name)
                 if prop_field not in rule_fields_values:
                     rule_fields_values.append(prop_field)
+
+        for f in [f for name in dir(page_model) if isinstance(f := getattr(page_model, name), cached_property)]:
+            prop_field = (f.name, f.short_description)
+            if prop_field not in rule_fields_values:
+                rule_fields_values.append(prop_field)
     return rule_fields_values
 
 
