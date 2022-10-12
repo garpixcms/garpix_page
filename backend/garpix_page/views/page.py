@@ -51,7 +51,14 @@ class PageView(PageViewMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         from django.shortcuts import render
+
+        url = self.kwargs.get('url', None)
+
+        if url and url[-1] == '/':
+            return redirect(f"/{url.rstrip('/')}")
+
         self.object = self.get_object()
+
         if not self.object:
             try:
                 response = render(request, "404.html", context={})
