@@ -215,7 +215,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
 
         for temp in seo_templates:
             is_model_rule = temp.rule_field == SeoTemplateForm.RULE_FIELD.MODEL_NAME and self.__class__.__name__ == temp.model_rule_value
-            is_field_rule = str(temp.rule_value in getattr(self, temp.rule_field, None))
+            is_field_rule = temp.rule_field != SeoTemplateForm.RULE_FIELD.MODEL_NAME and str(temp.rule_value) in str(getattr(self, temp.rule_field, None))
             if is_model_rule or is_field_rule:
                 try:
                     seo_value = getattr(temp, field_name, '').format(**self.get_seo_template_keys())
