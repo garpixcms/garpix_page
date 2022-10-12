@@ -656,6 +656,51 @@ In other cases the template will be used for pages with the `value` of the `fiel
 
 You can also specify the sites the template will be used on.
 
+## Grapesjs
+
+Grapesjs component implementation example:
+
+```js
+const Grapesjs = ({ data }): React.ReactElement => {
+  const {css, js, object} = data;
+  useEffect(() => {
+    const jsId = `js_${object.id}`
+    const nodeScript = document.getElementById(jsId)
+    if(nodeScript === null) {
+      const script = document.createElement('script')
+      script.id = jsId
+      script.type = 'text/javascript'
+      script.src = js
+      document.body.appendChild(script)
+    }
+
+    const cssId = `css_${object.id}`
+    const nodeStyle = document.getElementById(cssId)
+    if(nodeStyle === null) {
+      const link = document.createElement('link')
+      link.id = cssId
+      link.rel = 'stylesheet'
+      link.href = css
+      document.body.appendChild(link)
+    }
+  }, [css, js])
+  const html = data.object.html
+  return (
+    <div dangerouslySetInnerHTML={{__html: html}}></div>
+  )
+}
+```
+Сomponent usage
+```js
+...
+{components.map((component) => {
+    return (
+        <Grapesjs data={component} key={component.object.id} />
+    )
+})}
+...
+```
+
 ## Important!
 
 Also, see this project for additional features (`BaseListPage`, `BaseSearchPage`, `sitemap.xml`, etc).
