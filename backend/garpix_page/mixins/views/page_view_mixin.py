@@ -15,7 +15,6 @@ class PageViewMixin:
 
     @classmethod
     def get_instance_by_slug(cls, slugs, languages_list):
-        print(slugs)
         slug_list = slugs.split('/')
 
         if slug_list[0] in languages_list:
