@@ -63,7 +63,7 @@ class BasePageApiTest(APITestCase):
                     self.check_response_status(responses, 403)
                 else:
                     self.check_response_status(responses)
-                    self.check_response_status(responses, 404)
+                    self.check_response_status(responses, 404, equal=False)
                 self.client.logout()
 
     def user_login(self):
@@ -81,15 +81,19 @@ class BasePageApiTest(APITestCase):
             cache_service.clear_all()
         return responses
 
-    def check_response_status(self, responses, status_code=None):
+    def check_response_status(self, responses, status_code=None, equal=True):
         if not status_code:
             for response in responses:
                 self.assertNotRegex(str(response[0].status_code), r'^5\d{2}$',
                                     f'Error in page api of {response[1]} ({response[1].model_name()})')
         else:
             for response in responses:
-                self.assertNotEqual(response[0].status_code, status_code,
-                                    f'Error in page api of {response[1]} ({response[1].model_name()})')
+                if equal:
+                    self.assertEqual(response[0].status_code, status_code,
+                                     f'Error in page api of {response[1]} ({response[1].model_name()})')
+                else:
+                    self.assertNotEqual(response[0].status_code, status_code,
+                                        f'Error in page api of {response[1]} ({response[1].model_name()})')
 
     @staticmethod
     def update_baker_default_mapping():
