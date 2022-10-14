@@ -55,15 +55,16 @@ class PageView(PageViewMixin, DetailView):
 
         if getattr(self.object, 'login_required', False):
             if not user.is_authenticated:
-                return redirect(settings.LOGIN_URL)
+                return False
         if not self.object.has_permission_required(request):
-            return redirect(settings.LOGIN_URL)
+            return False
 
         if getattr(self.object, 'query_parameters_required', None) is not None:
             request_get = set(request.GET.keys())
             parameters = set(self.object.query_parameters_required)
             if request_get != parameters:
-                return redirect(settings.LOGIN_URL)
+                return False
+        return True
 
     def get(self, request, *args, **kwargs):
         from django.shortcuts import render
@@ -83,7 +84,8 @@ class PageView(PageViewMixin, DetailView):
             except Exception:
                 raise Http404
 
-        self._check_permissions(request)
+        if not self._check_permissions(request):
+            return redirect(settings.LOGIN_URL)
 
         context = self.get_context_data(object=self.object)
         redir = check_redirect(request, context)
