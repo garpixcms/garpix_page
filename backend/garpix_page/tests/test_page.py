@@ -45,6 +45,8 @@ class BasePageApiTest(APITestCase):
             else:
                 self.assertNotRegex(str(response.status_code), r'^5\d{2}$',
                                     f'Error in page {page} ({page.model_name()})')
+                self.assertNotEqual(response.status_code, 404,
+                                    f'Error in page {page} ({page.model_name()})')
             self.client.logout()
 
     def test_page_api(self):
@@ -61,6 +63,7 @@ class BasePageApiTest(APITestCase):
                     self.check_response_status(responses, 403)
                 else:
                     self.check_response_status(responses)
+                    self.check_response_status(responses, 404)
                 self.client.logout()
 
     def user_login(self):
@@ -69,11 +72,11 @@ class BasePageApiTest(APITestCase):
 
     def generate_responses_list(self, page):
         responses = [
-            (self.client.get(f'/{settings.API_URL}/page/{page.slug}'), page),
+            # (self.client.get(f'/{settings.API_URL}/page/{page.slug}'), page),
             (self.client.get(f'/{settings.API_URL}/page/{page.slug}/'), page)
         ]
         for language in self.languages_list:
-            responses.append((self.client.get(f'/{settings.API_URL}/page/{language}/{page.slug}'), page))
+            # responses.append((self.client.get(f'/{settings.API_URL}/page/{language}/{page.slug}'), page))
             responses.append((self.client.get(f'/{settings.API_URL}/page/{language}/{page.slug}/'), page))
             cache_service.clear_all()
         return responses
@@ -85,8 +88,8 @@ class BasePageApiTest(APITestCase):
                                     f'Error in page api of {response[1]} ({response[1].model_name()})')
         else:
             for response in responses:
-                self.assertEqual(response[0].status_code, status_code,
-                                 f'Error in page api of {response[1]} ({response[1].model_name()})')
+                self.assertNotEqual(response[0].status_code, status_code,
+                                    f'Error in page api of {response[1]} ({response[1].model_name()})')
 
     @staticmethod
     def update_baker_default_mapping():
