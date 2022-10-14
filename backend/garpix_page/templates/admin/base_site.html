@@ -1,0 +1,6 @@
+{% extends "admin/base_site.html" %}
+
+{% block userlinks %}
+    <a href="{% url 'garpix_page:admin_clear_cache' %}">Clear cache</a> /
+    {{ block.super }}
+{% endblock %}

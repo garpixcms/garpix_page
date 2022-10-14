@@ -21,14 +21,11 @@ body {
 
 .gx-admin-toolbar__start {
     display: flex;
+    gap: 15px;
 }
 
 .gx-admin-toolbar * {
     box-sizing: border-box;
-}
-
-.gx-admin-toolbar__user {
-    margin-right: 15px;
 }
 
 .gx-admin-toolbar a {
@@ -59,6 +56,27 @@ body {
     box-shadow: orange inset 0 0px 0px 1px;
 }
 
+ul.messagelist {
+    padding: 0px;
+    margin: 0;
+}
+
+ul.messagelist li {
+    display: block;
+    font-weight: 400;
+    font-size: 13px;
+    padding: 10px 10px 10px 65px;
+    margin: 0 0 10px 0;
+    background: #dfd url('static-backend/admin/img/icon-yes.svg') 40px 12px no-repeat;
+    background-size: 16px auto;
+    color: #333;
+}
+
+ul.messagelist li.error {
+    background: #ffefef url('static-backend/admin/img/icon-no.svg') 40px 12px no-repeat;
+    background-size: 16px auto;
+}
+
 </style>
 
 <script defer src="{% static 'garpix_page/js/gx-admin-edit-component.js' %}"></script>
@@ -69,9 +87,20 @@ body {
         <div>
             <a target="_blank" href="{{ object.get_admin_url_edit_object }}">Изменить страницу</a>
         </div>
+        <div>
+            <a href="{% url 'garpix_page:admin_clear_cache' %}">Очистить кэш</a>
+        </div>
+
     </div>
     <div class="gx-admin-toolbar__end">
         <a target="_blank" href="{% url 'admin:index' %}">Админ панель</a>
     </div>
 </div>
+{% if messages %}
+<ul class="messagelist">
+    {% for message in messages %}
+    <li  {% if message.tags %} class="{{ message.tags }}" {% endif %}> {{ message }} </li>
+    {% endfor %}
+</ul>
+{% endif %}
 {% endif %}
