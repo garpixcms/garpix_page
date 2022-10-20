@@ -68,7 +68,7 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
         pages = obj.pages.all()
         pages_str = ', '.join(pages[:6].values_list('title', flat=True))
         if (more_count := pages.count() - 6) > 0:
-            pages_str += f'...еще {more_count}'
+            pages_str += f' ...еще {more_count}'
         return pages_str
 
     pages_list.short_description = 'Страницы для отображения'
