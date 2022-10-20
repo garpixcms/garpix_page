@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'polymorphic_tree',
     'polymorphic',
     'mptt',
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -54,6 +53,7 @@ INSTALLED_APPS = [
     'app',
     'eqator',
     'garpix_admin_lock',
+    'django.contrib.admin',
 ]
 
 MIDDLEWARE = [
@@ -154,6 +154,7 @@ LANGUAGES = (
     ('en', 'English'),
     ('de', 'German'),
     ('ru', 'Russian'),
+    ('zh-hans', 'Chinese'),
 )
 
 # migrations

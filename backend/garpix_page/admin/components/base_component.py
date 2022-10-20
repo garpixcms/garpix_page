@@ -14,7 +14,7 @@ from ..forms import PolymorphicModelPreviewChoiceForm
 
 class BaseComponentAdmin(PolymorphicChildModelAdmin, TabbedTranslationAdmin):
     base_model = BaseComponent
-    list_display = ('title', 'model_name',)
+    list_display = ('title', 'model_name')
     search_fields = ('title', 'pages__title')
 
     filter_horizontal = (
@@ -57,12 +57,21 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
     child_models = get_garpix_page_component_models()
     base_model = BaseComponent
     list_filter = (PolymorphicChildModelFilter, 'pages')
-    list_display = ('title', 'model_name')
     add_type_form = PolymorphicModelPreviewChoiceForm
     save_on_top = True
+    list_display = ('title', 'pages_list', 'model_name', 'is_active')
     search_fields = ('title', 'pages__title')
-
+    list_editable = ('is_active',)
     actions = ('clone_object', )
+
+    def pages_list(self, obj):
+        pages = obj.pages.all()
+        pages_str = ', '.join(pages[:6].values_list('title', flat=True))
+        if (more_count := pages.count() - 6) > 0:
+            pages_str += f' ...еще {more_count}'
+        return pages_str
+
+    pages_list.short_description = 'Страницы для отображения'
 
     def clone_object(self, request, queryset):
         """Копирование(клонирование) выбранных объектов - action"""

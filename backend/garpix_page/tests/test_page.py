@@ -72,11 +72,11 @@ class BasePageApiTest(APITestCase):
 
     def generate_responses_list(self, page):
         responses = [
-            # (self.client.get(f'/{settings.API_URL}/page/{page.slug}'), page),
+            (self.client.get(f'/{settings.API_URL}/page/{page.slug}'), page),
             (self.client.get(f'/{settings.API_URL}/page/{page.slug}/'), page)
         ]
         for language in self.languages_list:
-            # responses.append((self.client.get(f'/{settings.API_URL}/page/{language}/{page.slug}'), page))
+            responses.append((self.client.get(f'/{settings.API_URL}/page/{language}/{page.slug}'), page))
             responses.append((self.client.get(f'/{settings.API_URL}/page/{language}/{page.slug}/'), page))
             cache_service.clear_all()
         return responses

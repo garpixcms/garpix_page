@@ -8,6 +8,7 @@ from django.shortcuts import redirect
 from django.views.generic import DetailView
 
 from ..utils.get_languages import get_languages
+from urllib.parse import urlencode
 
 languages_list = get_languages()
 
@@ -72,7 +73,8 @@ class PageView(PageViewMixin, DetailView):
         url = self.kwargs.get('url', None)
 
         if url and url[-1] == '/':
-            return redirect(f"/{url.rstrip('/')}")
+            parameters = f'?{urlencode(request.GET)}' if urlencode(request.GET) else ''
+            return redirect(f"/{url.rstrip('/')}{parameters}")
 
         self.object = self.get_object()
 

@@ -21,14 +21,11 @@ body {
 
 .gx-admin-toolbar__start {
     display: flex;
+    gap: 15px;
 }
 
 .gx-admin-toolbar * {
     box-sizing: border-box;
-}
-
-.gx-admin-toolbar__user {
-    margin-right: 15px;
 }
 
 .gx-admin-toolbar a {
@@ -69,9 +66,23 @@ body {
         <div>
             <a target="_blank" href="{{ object.get_admin_url_edit_object }}">Изменить страницу</a>
         </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                {% if 'cache_cleared' in message.tags %}
+                    <span style="color: lightgreen">{{ message }}</span>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <div>
+                <a href="{% url 'garpix_page:admin_clear_cache' %}">Clear cache</a>
+            </div>
+        {% endif %}
+
     </div>
     <div class="gx-admin-toolbar__end">
         <a target="_blank" href="{% url 'admin:index' %}">Админ панель</a>
     </div>
 </div>
+
 {% endif %}
