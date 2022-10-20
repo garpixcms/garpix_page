@@ -69,6 +69,7 @@ class PageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildMo
 
             for field in lang_seo_fields:
                 for lang in get_languages():
+                    lang = lang.replace('-', '_')
                     form.base_fields[f'{field}_{lang}'].help_text = "Итоговое значение:"
                     for site in sites:
                         form.base_fields[f'{field}_{lang}'].help_text += f"<br> для сайта {site.name} - {obj.get_seo_value(field_name=f'{field}_{lang}', site=site)}"

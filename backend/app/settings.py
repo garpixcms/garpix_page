@@ -154,6 +154,7 @@ LANGUAGES = (
     ('en', 'English'),
     ('de', 'German'),
     ('ru', 'Russian'),
+    ('zh-hans', 'Chinese'),
 )
 
 # migrations
