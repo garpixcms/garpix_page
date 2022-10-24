@@ -19,5 +19,5 @@ urlpatterns = [
     re_path(r'{}/page/(?P<slugs>.*)$'.format(settings.API_URL), PageApiView.as_view()),
     path('sitemap.xml', sitemap, sitemap_view(), name='django.contrib.sitemaps.views.sitemap'),
     path('robots.txt', robots_txt),
-    path('admin/clear_cache', clear_cache, name='admin_clear_cache'),
+    path('admin_clear_cache', clear_cache, name='admin_clear_cache'),
 ]

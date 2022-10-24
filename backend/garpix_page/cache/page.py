@@ -14,8 +14,8 @@ class PageCacheService:
             return url_cache
         return None
 
-    def set_url(self, pk, result):
-        cache_key = f'{self.cache_url_prefix}{pk}'
+    def set_url(self, pk, current_language_code_url_prefix, result):
+        cache_key = f'{self.cache_url_prefix}{pk}_{current_language_code_url_prefix}'
         cache.set(cache_key, result)
 
     def get_instance_by_url(self, url):
