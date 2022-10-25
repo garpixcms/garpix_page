@@ -99,11 +99,11 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
                     url_arr.insert(0, obj.slug)
             url = '/'.join(url_arr)
             result = "{}/{}".format(current_language_code_url_prefix, url)
-            cache_service.set_url(self.pk, result)
+            cache_service.set_url(self.pk, current_language_code_url_prefix, result)
             return result
 
         result = "{}".format(current_language_code_url_prefix) if len(current_language_code_url_prefix) > 1 else '/'
-        cache_service.set_url(self.pk, result)
+        cache_service.set_url(self.pk, current_language_code_url_prefix, result)
         return result
 
     absolute_url.short_description = 'URL'
