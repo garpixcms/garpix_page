@@ -21,6 +21,7 @@ from mptt.admin import DraggableMPTTAdmin
 from garpix_admin_lock.mixins import PageLockAdminMixin
 
 from ..utils.get_languages import get_languages
+from ..views.clear_cache import clear_cache
 
 
 class ComponentsTabularInline(admin.TabularInline):
@@ -217,6 +218,7 @@ class RealPageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicMPTTP
 
         my_urls = [
             path('<int:pk>/change/full_clone/', self.full_clone, name='full_clone/'),
+            path('admin_clear_cache', clear_cache, name='admin_clear_cache')
         ]
 
         return my_urls + urls

@@ -94,7 +94,7 @@
         editor = this["editor_"+ postfixId];
 
         django.jQuery.ajax({
-            url: "{% url 'garpix_page:dgjs_get_template' %}",
+            url: "{% url 'admin:dgjs_get_template' %}",
             data: {
                 "template_name": t.value,
                 "apply_django_tag": applyDjangoTag
