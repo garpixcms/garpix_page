@@ -40,6 +40,20 @@
         }
         return value;
     }
+
+    function setFilesStatic(grapesjs, name) {
+        if({% get_settings_value "GRAPESJS_SAVE_ASSETS_TO_FILE" %} && {{ original.id|yesno:"1,0" }}) {
+            const id = "{{ original.id }}";
+            const scriptTagName = 'script'
+            const script = `<${scriptTagName} src="/media/grapesjs/${name}_${id}_js.js"></${scriptTagName}>`
+            const linkHref = `/media/grapesjs/${name}_${id}_css.css`
+            grapesjs.addComponents([script]);
+            fetch(linkHref)
+            .then(response => response.text())
+            .then(response => grapesjs.addStyle(response))
+            .catch(err => console.log(err))
+        }
+    }
 </script>
 {% endblock %}
 
@@ -53,7 +67,7 @@
     function setHtmlInTheField() {
         all_id = document.getElementsByName("get-all-id");
 
-        for (i=0; i<all_id.length; i++){
+        for (i=0; i < all_id.length; i++) {
             field = document.getElementById(all_id[i].textContent);
 
             htmlGrapesjs = replaceTag(
@@ -65,13 +79,14 @@
 
             if({% get_settings_value "GRAPESJS_SAVE_ASSETS_TO_FILE" %}) {
                 const fieldName = all_id[i].textContent;
-                console.log(fieldName, 'fieldName')
                 const css = this["editor_" + fieldName].getCss()
                 const js = this["editor_" + fieldName].getJs()
                 document.querySelector(`#${fieldName}_js`).value = js
                 document.querySelector(`#${fieldName}_css`).value = css
                 htmlGrapesjs = htmlGrapesjs.replace(script_regex, "")
                 htmlGrapesjs = htmlGrapesjs.replace(style_regex, "")
+                htmlGrapesjs = htmlGrapesjs.replace('<body>', "")
+                htmlGrapesjs = htmlGrapesjs.replace('</body>', "")
                 window.onbeforeunload = function() {
                     return true;
                 };

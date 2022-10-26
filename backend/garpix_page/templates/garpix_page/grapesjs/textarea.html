@@ -13,7 +13,13 @@
     <textarea hidden name="{{ widget.name }}_css" id="id_{{ widget.name }}_css"></textarea>
     <textarea hidden name="{{ widget.name }}_js" id="id_{{ widget.name }}_js"></textarea>
     <div hidden name='get-all-id'>{{ widget.attrs.id }}</div>
-    <div id="gjs-{{ widget.attrs.id }}"></div>
+    <div id="gjs-{{ widget.attrs.id }}">
+        {% if widget.value %}
+            {{ widget.value }}
+        {% else %}
+            <div>{{ widget.get_render_html_value }}</div>
+        {% endif %}
+    </div>
     
     {% include widget.html_name_init_conf %}
     
@@ -29,6 +35,7 @@
                         replaceTagsInit
                     )
                 )
+                setFilesStatic(editor_{{ widget.attrs.id }}, "{{ widget.name }}");
             } catch (e) {
                 editor_{{ widget.attrs.id }}.setComponents(
                     "Error in the template: <br>name: " + e.name + "<br>message: " + e.message + "<br>"

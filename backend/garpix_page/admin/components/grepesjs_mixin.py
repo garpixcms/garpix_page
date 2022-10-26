@@ -1,4 +1,5 @@
 import os
+import re
 from django.conf import settings
 from django.contrib import admin
 
@@ -10,6 +11,7 @@ class GrapesJsAdminMixin(admin.ModelAdmin):
 
     def save_form(self, request, form, change):
         obj = super().save_form(request, form, change)
+        obj.save()
         css = request.POST.get('html_css')
         js = request.POST.get('html_js')
         field_name = 'html'
