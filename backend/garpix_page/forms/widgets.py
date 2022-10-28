@@ -38,6 +38,9 @@ class GrapesJsWidget(forms.Textarea):
             'garpix_page/js/grapesjs/grapesjs-tui-image-editor.js',
             'garpix_page/js/grapesjs/grapesjs-typed.js',
             'garpix_page/js/grapesjs/grapesjs-style-bg.js',
+            'garpix_page/js/grapesjs/ckeditor.js',
+            'garpix_page/js/grapesjs/grapesjs-plugin-ckeditor.js',
+            'garpix_page/js/grapesjs/grapesjs-preset-newsletter.js', # custom build
         ]
 
     def get_formatted_id_value(self, value_id):
