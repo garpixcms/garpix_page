@@ -5,6 +5,11 @@ from django.contrib import admin
 
 __all__ = ('GrapesJsAdminMixin', )
 
+from django.urls import path
+
+from garpix_page.views.get_template import GetTemplate
+from garpix_page.views.upload import DgjsUpload
+
 
 class GrapesJsAdminMixin(admin.ModelAdmin):
     change_form_template = 'grapesjs/change_form.html'
@@ -25,3 +30,13 @@ class GrapesJsAdminMixin(admin.ModelAdmin):
         with open(filename_js, "w") as f:
             f.write(js)
         return obj
+
+    def get_urls(self):
+        urls = super().get_urls()
+
+        my_urls = [
+            path('get_template/', GetTemplate.as_view(), name='dgjs_get_template'),
+            path('dgjs_upload/', DgjsUpload.as_view(), name='dgjs_upload'),
+        ]
+
+        return my_urls + urls
