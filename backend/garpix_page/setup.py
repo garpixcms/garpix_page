@@ -41,6 +41,7 @@ setup(
         'django-tabbed-admin >= 1.0.4',
         'model-bakery >= 1.4.0',
         'garpix-admin-lock >= 1.0.0',
-        'psycopg2-binary >=2.9.3'
+        'psycopg2-binary >=2.9.3',
+        'celery >= 5.2.7'
     ],
 )

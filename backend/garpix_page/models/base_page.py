@@ -17,6 +17,8 @@ from ..cache import cache_service
 from ..mixins import CloneMixin
 from garpix_admin_lock.mixins import PageLockViewMixin
 
+from ..tasks import clear_child_cache
+
 
 class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
     """
@@ -215,7 +217,8 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
 
         for temp in seo_templates:
             is_model_rule = temp.rule_field == SeoTemplateForm.RULE_FIELD.MODEL_NAME and self.__class__.__name__ == temp.model_rule_value
-            is_field_rule = temp.rule_field != SeoTemplateForm.RULE_FIELD.MODEL_NAME and str(temp.rule_value) in str(getattr(self, temp.rule_field, None))
+            is_field_rule = temp.rule_field != SeoTemplateForm.RULE_FIELD.MODEL_NAME and str(temp.rule_value) in str(
+                getattr(self, temp.rule_field, None))
             if is_model_rule or is_field_rule:
                 try:
                     seo_value = getattr(temp, field_name, '').format(**self.get_seo_template_keys())
@@ -261,6 +264,10 @@ def reset_cache(sender, instance: BasePage, update_fields, **kwargs):
         old_instance = BasePage.objects.get(pk=instance.pk)
         cache_service.clear_all_by_page(instance, get_current_language_code_url_prefix())
 
-        if (instance.parent != old_instance.parent or instance.slug != old_instance.slug) and (children := instance.get_children()):
-            for child in children:
-                cache_service.clear_all_by_page(child, get_current_language_code_url_prefix())
+        if (instance.parent != old_instance.parent or instance.slug != old_instance.slug) and (
+            children := BasePage.objects.get_queryset_descendants(instance.get_children(), include_self=True)):
+            if len(children) > getattr(settings, 'GARPIX_PAGE_CHILDREN_LEN', 10):
+                clear_child_cache.delay(list(children.values_list('id', flat=True)))
+            else:
+                for child in children:
+                    cache_service.clear_all_by_page(child, get_current_language_code_url_prefix())

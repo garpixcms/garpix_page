@@ -90,6 +90,12 @@ Migrate:
 python manage.py migrate
 ```
 
+Add celery settings path to `settings.py`:
+
+```python
+GARPIXCMS_CELERY_SETTINGS = 'app.celery.app'
+```
+
 Now, you can create your models from `BasePage` and set template and context. See example below.
 
 ### Important
