@@ -22,6 +22,7 @@ django-redis = "*"
 django-rest-polymorphic = "*"
 eqator = ">=2.2.1"
 garpix-admin-lock = "*"
+celery = "*"
 
 [dev-packages]
 

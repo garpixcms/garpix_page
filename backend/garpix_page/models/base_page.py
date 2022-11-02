@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.utils import translation
 from django.utils.functional import cached_property
@@ -16,6 +16,8 @@ from garpix_utils.managers import GCurrentSiteManager, GPolymorphicCurrentSiteMa
 from ..cache import cache_service
 from ..mixins import CloneMixin
 from garpix_admin_lock.mixins import PageLockViewMixin
+
+from ..tasks import clear_child_cache
 
 
 class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
@@ -215,7 +217,8 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
 
         for temp in seo_templates:
             is_model_rule = temp.rule_field == SeoTemplateForm.RULE_FIELD.MODEL_NAME and self.__class__.__name__ == temp.model_rule_value
-            is_field_rule = temp.rule_field != SeoTemplateForm.RULE_FIELD.MODEL_NAME and str(temp.rule_value) in str(getattr(self, temp.rule_field, None))
+            is_field_rule = temp.rule_field != SeoTemplateForm.RULE_FIELD.MODEL_NAME and str(temp.rule_value) in str(
+                getattr(self, temp.rule_field, None))
             if is_model_rule or is_field_rule:
                 try:
                     seo_value = getattr(temp, field_name, '').format(**self.get_seo_template_keys())
@@ -254,13 +257,17 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
 
 
 @receiver(pre_save)
-def uncache_page(sender, instance: BasePage, update_fields, **kwargs):
-    if type(sender) == type(BasePage) and instance.id:
-        old_instance_url = BasePage.objects.get(id=instance.id).get_absolute_url()
-        instance_url = instance.get_absolute_url()
-        if old_instance_url != instance_url:
-            cache_service.clear_all_by_page(instance.pk, old_instance_url)
-        else:
-            cache_service.clear_all_by_page(instance.pk, instance_url)
-        if instance.is_root_node():
-            cache_service.clear_all()
+def reset_cache(sender, instance: BasePage, update_fields, **kwargs):
+
+    if type(sender) == type(BasePage):
+        if instance.seo_title is None:
+            instance.seo_title = instance.title
+
+        if instance.pk:
+
+            cache_service.clear_seo_data(instance.pk)
+            old_instance = BasePage.objects.get(pk=instance.pk)
+
+            if instance.pk and instance.parent != old_instance.parent or instance.slug != old_instance.slug:
+                cache_service.reset_url_info_by_page(instance, get_current_language_code_url_prefix())
+                clear_child_cache.delay(instance.pk)
