@@ -263,9 +263,11 @@ def reset_cache(sender, instance: BasePage, update_fields, **kwargs):
         if instance.seo_title is None:
             instance.seo_title = instance.title
 
-        cache_service.clear_seo_data(instance.pk)
-        old_instance = BasePage.objects.get(pk=instance.pk)
+        if instance.pk:
 
-        if instance.pk and instance.parent != old_instance.parent or instance.slug != old_instance.slug:
-            cache_service.reset_url_info_by_page(instance, get_current_language_code_url_prefix())
-            clear_child_cache.delay(instance.pk)
+            cache_service.clear_seo_data(instance.pk)
+            old_instance = BasePage.objects.get(pk=instance.pk)
+
+            if instance.pk and instance.parent != old_instance.parent or instance.slug != old_instance.slug:
+                cache_service.reset_url_info_by_page(instance, get_current_language_code_url_prefix())
+                clear_child_cache.delay(instance.pk)
