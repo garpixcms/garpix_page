@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.utils import translation
 from django.utils.functional import cached_property
@@ -254,13 +254,13 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
 
 
 @receiver(pre_save)
-def uncache_page(sender, instance: BasePage, update_fields, **kwargs):
-    if type(sender) == type(BasePage) and instance.id:
-        old_instance_url = BasePage.objects.get(id=instance.id).get_absolute_url()
-        instance_url = instance.get_absolute_url()
-        if old_instance_url != instance_url:
-            cache_service.clear_all_by_page(instance.pk, old_instance_url)
-        else:
-            cache_service.clear_all_by_page(instance.pk, instance_url)
-        if instance.is_root_node():
-            cache_service.clear_all()
+def reset_cache(sender, instance: BasePage, update_fields, **kwargs):
+    if type(sender) == type(BasePage):
+        if not instance.seo_title:
+            instance.seo_title = instance.title
+        old_instance = BasePage.objects.get(pk=instance.pk)
+        cache_service.clear_all_by_page(instance, get_current_language_code_url_prefix())
+
+        if (instance.parent != old_instance.parent or instance.slug != old_instance.slug) and (children := instance.get_children()):
+            for child in children:
+                cache_service.clear_all_by_page(child, get_current_language_code_url_prefix())

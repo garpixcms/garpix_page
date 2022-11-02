@@ -8,9 +8,9 @@ def get_exclude_fields(model):
 
     for field in model_fields:
         for lang in langs:
-            if f'{field}_{lang}' not in model_fields:
+            if f'{field}_{lang.replace("-", "_")}' not in model_fields:
                 break
         else:
             for lang in langs:
-                exclude_fields.append(f'{field}_{lang}')
+                exclude_fields.append(f'{field}_{lang.replace("-", "_")}')
     return exclude_fields
