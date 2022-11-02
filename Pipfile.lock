@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f8a5a70ab2e63334a9d8d68ceceb30469be91805c4b4a3c9300a8e2b47e76e23"
+            "sha256": "1601b20be9b5ea21e9e9ecaa11d746ca5a47a7784dcda4db699f25921cac97ba"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -100,7 +100,7 @@
                 "sha256:a0713dc7a1de3f06bc0df5a9567ad19ead2d3d5689b434768a6145bff77c0667",
                 "sha256:f184f0d851d96b6d29297354ed981b7dd71df7ff500d82fa6d11f0856bee8035"
             ],
-            "markers": "python_full_version >= '3.6.2' and python_full_version < '4.0.0'",
+            "markers": "python_version < '4' and python_full_version >= '3.6.2'",
             "version": "==0.3.0"
         },
         "click-plugins": {
@@ -338,11 +338,11 @@
         },
         "garpix-admin-lock": {
             "hashes": [
-                "sha256:6d6992343562827abc361e662cf4477f4167ff5c8eace47ac9ea210281ba91e7",
-                "sha256:cd8226e1c75a8040eab0de7a2125ae30c017407db23a3f4c2ddf6870ab78e690"
+                "sha256:5a0df1abf53e605e6d5d5802d9333af66f4d459da2c5281fd79a5059739cbb52",
+                "sha256:afdb60590600741e2781415b6131614b6ad3f8e19621d0be2b345b6b4ea152c6"
             ],
             "index": "pypi",
-            "version": "==1.0.0"
+            "version": "==1.1.0"
         },
         "garpix-package": {
             "hashes": [
@@ -705,7 +705,7 @@
                 "sha256:7c5599b102feddaa661c826c56ab4fee28bfd17f5abca1ebbe3e7f19d7c97983",
                 "sha256:8fefa2a1a1365bf5520aac41836fbee479da67864514bdb821f31ce07ce65349"
             ],
-            "markers": "python_version >= '3.7' and python_full_version < '4.0.0'",
+            "markers": "python_version >= '3.7' and python_version < '4'",
             "version": "==2.28.1"
         },
         "requests-toolbelt": {
@@ -784,7 +784,7 @@
                 "sha256:3fa96cf423e6987997fc326ae8df396db2a8b7c667747d47ddd8ecba91f4a74e",
                 "sha256:b930dd878d5a8afb066a637fbb35144fe7901e3b209d1cd4f524bd0e9deee997"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5' and python_full_version < '4.0.0'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5' and python_version < '4'",
             "version": "==1.26.12"
         },
         "vine": {

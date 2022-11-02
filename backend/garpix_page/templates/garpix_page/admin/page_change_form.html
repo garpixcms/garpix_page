@@ -1,5 +1,16 @@
 {% extends 'tabbed_admin/change_form.html' %}
 
+{% block extrahead %}
+<script>
+    const PAGE_LOCK_URL = {
+        'close_page_connection': "{% url 'page_lock_close_page_connection' %}",
+        'get_page_connection': "{% url 'page_lock_get_page_connection' %}",
+        'open_page_connection': "{% url 'page_lock_open_page_connection' %}"
+    }
+</script>
+{{ block.super }}
+{% endblock %}
+
 {% load static %}
 {% load page_lock_bar %}
 
