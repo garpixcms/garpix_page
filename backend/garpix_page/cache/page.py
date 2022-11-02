@@ -62,6 +62,14 @@ class PageCacheService:
         cache.delete(f'{self.cache_instance_prefix}{url}')
         self.clear_seo_data(pk)
 
+    def reset_url_info_by_page(self, instance, current_language_code_url_prefix):
+        pk, old_url = instance.pk,  instance.get_absolute_url()
+        cache.delete(f'{self.cache_instance_prefix}{old_url}')
+        cache.delete(f'{self.cache_url_prefix}{pk}_{current_language_code_url_prefix}')
+
+        new_url = instance.get_absolute_url()
+        self.set_instance_by_url(new_url, instance)
+
     def clear_all(self):
         cache.clear()
 

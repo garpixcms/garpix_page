@@ -258,16 +258,14 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
 
 @receiver(pre_save)
 def reset_cache(sender, instance: BasePage, update_fields, **kwargs):
-    if type(sender) == type(BasePage):
-        if not instance.seo_title:
-            instance.seo_title = instance.title
-        old_instance = BasePage.objects.get(pk=instance.pk)
-        cache_service.clear_all_by_page(instance, get_current_language_code_url_prefix())
 
-        if (instance.parent != old_instance.parent or instance.slug != old_instance.slug) and (
-            children := BasePage.objects.get_queryset_descendants(instance.get_children(), include_self=True)):
-            if len(children) > getattr(settings, 'GARPIX_PAGE_CHILDREN_LEN', 10):
-                clear_child_cache.delay(list(children.values_list('id', flat=True)))
-            else:
-                for child in children:
-                    cache_service.clear_all_by_page(child, get_current_language_code_url_prefix())
+    if type(sender) == type(BasePage):
+        if instance.seo_title is None:
+            instance.seo_title = instance.title
+
+        cache_service.clear_seo_data(instance.pk)
+        old_instance = BasePage.objects.get(pk=instance.pk)
+
+        if instance.pk and instance.parent != old_instance.parent or instance.slug != old_instance.slug:
+            cache_service.reset_url_info_by_page(instance, get_current_language_code_url_prefix())
+            clear_child_cache.delay(instance.pk)

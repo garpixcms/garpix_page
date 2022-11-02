@@ -8,8 +8,12 @@ celery_app = import_string(settings.GARPIXCMS_CELERY_SETTINGS)
 
 
 @celery_app.task()
-def clear_child_cache(children_ids):
+def clear_child_cache(instance_pk):
     from garpix_page.models import BasePage
-    pages = BasePage.objects.filter(id__in=children_ids)
+
+    instance = BasePage.objects.get(pk=instance_pk)
+
+    pages = BasePage.objects.get_queryset_descendants(instance.get_children(), include_self=True)
+
     for page in pages:
-        cache_service.clear_all_by_page(page, get_current_language_code_url_prefix())
+        cache_service.reset_url_info_by_page(page, get_current_language_code_url_prefix())
