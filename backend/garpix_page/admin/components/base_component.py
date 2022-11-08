@@ -84,6 +84,8 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
 
             new_obj = obj.clone_object(title=title)
 
+            new_obj.pages.set([])
+
             new_obj.save()
 
     clone_object.short_description = 'Клонировать объект'
