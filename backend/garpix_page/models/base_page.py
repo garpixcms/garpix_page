@@ -6,6 +6,7 @@ from django.utils.functional import cached_property
 from django.db import models
 from django.urls import reverse
 from django.contrib.sites.models import Site
+from garpix_utils.models import PolymorphicAvailableMixin
 from rest_framework.views import APIView
 from garpix_page.utils.all_sites import get_all_sites
 from garpix_page.utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
@@ -20,12 +21,11 @@ from garpix_admin_lock.mixins import PageLockViewMixin
 from ..tasks import clear_child_cache
 
 
-class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
+class BasePage(PolymorphicAvailableMixin, CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
     """
     Базовая страница, на основе которой создаются все прочие страницы.
     """
     title = models.CharField(max_length=255, verbose_name='Название')
-    is_active = models.BooleanField(default=True, verbose_name='Включено')
     display_on_sitemap = models.BooleanField(default=True, verbose_name='Отображать в карте сайта')
     slug = models.SlugField(max_length=150, verbose_name='ЧПУ', blank=True, default='')
     sites = models.ManyToManyField(Site, default=get_all_sites, verbose_name='Сайты для отображения')

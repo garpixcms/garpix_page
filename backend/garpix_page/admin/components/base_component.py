@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.utils.text import format_lazy
+from garpix_utils.models import AdminDeleteMixin
 from modeltranslation.admin import TabbedTranslationAdmin
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelFilter, PolymorphicChildModelAdmin
 
@@ -53,16 +54,16 @@ class BaseComponentAdmin(PolymorphicChildModelAdmin, TabbedTranslationAdmin):
 
 
 @admin.register(BaseComponent)
-class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin):
+class RealBaseComponentAdmin(AdminDeleteMixin, PolymorphicParentModelAdmin, TabbedTranslationAdmin):
     child_models = get_garpix_page_component_models()
     base_model = BaseComponent
     list_filter = (PolymorphicChildModelFilter, 'pages')
     add_type_form = PolymorphicModelPreviewChoiceForm
     save_on_top = True
-    list_display = ('title', 'pages_list', 'model_name', 'is_active')
+    list_display = ('title', 'pages_list', 'model_name', 'is_active', 'is_deleted')
     search_fields = ('title', 'pages__title')
     list_editable = ('is_active',)
-    actions = ('clone_object', )
+    actions = ('clone_object', 'hard_delete_queryset')
 
     def pages_list(self, obj):
         pages = obj.pages.all()

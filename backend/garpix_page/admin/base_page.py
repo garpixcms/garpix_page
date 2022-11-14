@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from garpix_utils.models import AdminDeleteMixin
 
 from .forms import PageForm
 from ..models.base_page import BasePage
@@ -31,7 +32,7 @@ class ComponentsTabularInline(admin.TabularInline):
     extra = 0
 
 
-class PageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
+class PageAdmin(AdminDeleteMixin, TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
     base_model = BasePage
     list_per_page = settings.GARPIX_PAGE_ADMIN_LIST_PER_PAGE if hasattr(settings,
                                                                         'GARPIX_PAGE_ADMIN_LIST_PER_PAGE') else 25
@@ -48,13 +49,19 @@ class PageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildMo
 
     search_fields = ('title',)
     list_filter = ('is_active', 'created_at', 'updated_at')
-    actions = ('clone_object', 'rebuild')
+    actions = ('clone_object', 'rebuild', 'hard_delete_queryset')
 
-    list_display = ('title', 'created_at', 'is_active', 'get_absolute_url',)
+    list_display = ('title', 'created_at', 'is_active', 'get_absolute_url', 'is_deleted')
     list_editable = ('is_active',)
     raw_id_fields = ('parent',)
 
-    readonly_fields = ('get_absolute_url', 'created_at', 'updated_at')
+    readonly_fields = ('get_absolute_url', 'created_at', 'updated_at',)
+
+    def hard_delete_queryset(self, request, queryset):
+        super().hard_delete_queryset(request, queryset)
+        self.model.objects.rebuild()
+
+    hard_delete_queryset.short_description = 'Удалить из базы данных'
 
     def get_form(self, request, *args, **kwargs):
         form = super().get_form(request, *args, **kwargs)
@@ -78,20 +85,6 @@ class PageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildMo
 
         # form.current_user = request.user
         return form
-
-    def delete_queryset(self, request, queryset):
-        self.model.objects.delete(id__in=queryset.values_list('id', flat=True))
-        self.model.objects.rebuild()
-
-    def get_actions(self, request):
-        actions = super().get_actions(request)
-        if actions is not None and "delete_selected" in actions:
-            actions["delete_selected"] = (
-                self.delete_queryset,
-                "delete_selected",
-                _("Delete selected %(verbose_name_plural)s"),
-            )
-        return actions
 
     def has_module_permission(self, request):
         return False
@@ -140,7 +133,7 @@ class PageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildMo
 
 
 @admin.register(BasePage)
-class RealPageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin):
+class RealPageAdmin(AdminDeleteMixin, DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin):
     """
     Стандартные настройки для базовых страниц.
     """
@@ -159,10 +152,10 @@ class RealPageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicMPTTP
 
     search_fields = ('title',)
     list_filter = (PolymorphicChildModelFilter, 'is_active', 'created_at', 'updated_at', 'sites')
-    actions = ('clone_object', 'rebuild')
+    actions = ('clone_object', 'rebuild', 'hard_delete_queryset',)
 
     list_display = ('tree_actions', 'indented_title', 'created_at', 'is_active',
-                    'get_absolute_url_html_admin', 'model_name')
+                    'get_absolute_url_html_admin', 'model_name', 'is_deleted')
     list_editable = ('is_active',)
 
     readonly_fields = ('created_at', 'updated_at', 'model_name')
@@ -198,11 +191,17 @@ class RealPageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicMPTTP
 
     clone_object.short_description = 'Клонировать объект'
 
+    def hard_delete_queryset(self, request, queryset):
+        super().hard_delete_queryset(request, queryset)
+        self.model.objects.rebuild()
+
+    hard_delete_queryset.short_description = 'Удалить из базы данных'
+
     def _rebuild(self):
         try:
             self.model.objects.rebuild()
         except:  # noqa
-            print('[ERROR]: Ошибка при перезагрузки древовидной структуры')
+            print('[ERROR]: Ошибка при перезагрузке древовидной структуры')
 
     def rebuild(self, request, queryset):
         """Пересорбать МПТТ модель. Иногда требуется для перезагрузки дерева."""

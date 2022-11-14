@@ -23,6 +23,8 @@ django-rest-polymorphic = "*"
 eqator = ">=2.2.1"
 garpix-admin-lock = "==1.1.0"
 celery = "*"
+django-polymorphic = "==3.1.0"
+django-mptt = "*"
 
 [dev-packages]
 

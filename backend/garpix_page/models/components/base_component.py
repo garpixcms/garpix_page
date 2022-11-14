@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
+from garpix_utils.models import PolymorphicAvailableMixin, AvailableMixin
 from polymorphic.managers import PolymorphicManager
 
 from ...mixins import CloneMixin
@@ -24,12 +25,11 @@ class PageComponent(models.Model):
         verbose_name_plural = 'Компоненты страницы'
 
 
-class BaseComponent(CloneMixin, PolymorphicModel):
+class BaseComponent(AvailableMixin, CloneMixin, PolymorphicModel):
     """
     Базовый компонент
     """
     title = models.CharField(max_length=255, verbose_name='Название')
-    is_active = models.BooleanField(default=True, verbose_name='Включено')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
 
