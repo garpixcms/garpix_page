@@ -21,7 +21,7 @@ model-bakery = "*"
 django-redis = "*"
 django-rest-polymorphic = "*"
 eqator = ">=2.2.1"
-garpix-admin-lock = "==1.1.0"
+garpix-admin-lock = "==1.1.1"
 celery = "*"
 
 [dev-packages]
