@@ -56,7 +56,7 @@ class BaseComponentAdmin(PolymorphicChildModelAdmin, TabbedTranslationAdmin):
 class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin):
     child_models = get_garpix_page_component_models()
     base_model = BaseComponent
-    list_filter = (PolymorphicChildModelFilter, 'pages')
+    list_filter = (PolymorphicChildModelFilter,)
     add_type_form = PolymorphicModelPreviewChoiceForm
     save_on_top = True
     list_display = ('title', 'pages_list', 'model_name', 'is_active')
