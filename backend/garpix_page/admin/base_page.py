@@ -28,6 +28,7 @@ class ComponentsTabularInline(admin.TabularInline):
     model = PageComponent
     fields = ('component', 'view_order')
     extra = 0
+    raw_id_fields = ["component"]
 
 
 class PageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
