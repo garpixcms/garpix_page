@@ -10,7 +10,7 @@ from django.http import Http404
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('page_lock/', include('garpix_admin_lock.urls')),
+    path('admin/page_lock/', include('garpix_admin_lock.urls')),
     path('', include(('garpix_page.urls', 'garpix_page'), namespace='garpix_page')),
 ]
 
