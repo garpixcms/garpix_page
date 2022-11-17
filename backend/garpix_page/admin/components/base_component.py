@@ -93,8 +93,10 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
     def get_urls(self):
         urls = super().get_urls()
 
+        info = self.model._meta.app_label, self.model._meta.model_name
+
         my_urls = [
-            path('<int:pk>/change/full_clone/', self.full_clone, name='full_clone/'),
+            path('<path:pk>/full_clone/', self.full_clone, name='%s_%s_full_clone' % info),
         ]
 
         return my_urls + urls

@@ -217,8 +217,10 @@ class RealPageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicMPTTP
     def get_urls(self):
         urls = super().get_urls()
 
+        info = self.model._meta.app_label, self.model._meta.model_name
+
         my_urls = [
-            path('<int:pk>/change/full_clone/', self.full_clone, name='full_clone'),
+            path('<path:pk>/full_clone/', self.full_clone, name='%s_%s_full_clone' % info),
             path('admin_clear_cache', clear_cache, name='admin_clear_cache')
         ]
 
