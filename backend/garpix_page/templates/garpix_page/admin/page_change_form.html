@@ -38,7 +38,7 @@
                 <a href="#modal-close" title="Close" class="modal-close">×</a>
             </div>
             <div class="modal-body">
-                <form action="full_clone/" method="POST" enctype="multipart/form-data">
+                <form action="{% url 'admin:garpix_page_basepage_full_clone' original.id %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="component__title">Введите новое название (опционально):</label><br>
