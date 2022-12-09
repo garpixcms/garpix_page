@@ -163,6 +163,7 @@
                 <h3 class="modal-title">Клонирование</h3>
                 <a href="#modal-close" title="Close" class="modal-close">×</a>
             </div>
+            {% if original %}
             <div class="modal-body">
                 <form action="{% url 'admin:garpix_page_basecomponent_full_clone' original.id %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
@@ -173,6 +174,7 @@
                     <input type="submit" class="default submit-row-new_choice" value="Клонировать">
                 </form>
             </div>
+            {% endif %}
         </div>
     </div>
 </div>
