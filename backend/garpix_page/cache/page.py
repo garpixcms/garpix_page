@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.cache import cache
 
 from garpix_page.utils.all_sites import get_all_sites
@@ -8,25 +9,29 @@ class PageCacheService:
     cache_instance_prefix = 'instance_page_'
 
     def get_url(self, pk, current_language_code_url_prefix):
-        cache_key = f'{self.cache_url_prefix}{pk}_{current_language_code_url_prefix}'
+        current_site = getattr(settings, 'SITE_ID', 1)
+        cache_key = f'{self.cache_url_prefix}{pk}_{current_site}_{current_language_code_url_prefix}'
         url_cache = cache.get(cache_key)
         if url_cache is not None:
             return url_cache
         return None
 
     def set_url(self, pk, current_language_code_url_prefix, result):
-        cache_key = f'{self.cache_url_prefix}{pk}_{current_language_code_url_prefix}'
+        current_site = getattr(settings, 'SITE_ID', 1)
+        cache_key = f'{self.cache_url_prefix}{pk}_{current_site}_{current_language_code_url_prefix}'
         cache.set(cache_key, result)
 
     def get_instance_by_url(self, url):
-        cache_key = f'{self.cache_instance_prefix}{url}'
+        current_site = getattr(settings, 'SITE_ID', 1)
+        cache_key = f'{self.cache_instance_prefix}_{current_site}_{url}'
         url_cache = cache.get(cache_key)
         if url_cache is not None:
             return url_cache
         return None
 
     def set_instance_by_url(self, url, result):
-        cache_key = f'{self.cache_instance_prefix}{url}'
+        current_site = getattr(settings, 'SITE_ID', 1)
+        cache_key = f'{self.cache_instance_prefix}_{current_site}_{url}'
         cache.set(cache_key, result)
 
     def set_seo_by_page(self, pk, field_name, result, site):

@@ -56,7 +56,7 @@ class BaseComponentAdmin(PolymorphicChildModelAdmin, TabbedTranslationAdmin):
 class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin):
     child_models = get_garpix_page_component_models()
     base_model = BaseComponent
-    list_filter = (PolymorphicChildModelFilter,)
+    list_filter = (PolymorphicChildModelFilter, )
     add_type_form = PolymorphicModelPreviewChoiceForm
     save_on_top = True
     list_display = ('title', 'pages_list', 'model_name', 'is_active')
@@ -84,6 +84,8 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
 
             new_obj = obj.clone_object(title=title)
 
+            new_obj.pages.set([])
+
             new_obj.save()
 
     clone_object.short_description = 'Клонировать объект'
@@ -91,8 +93,10 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
     def get_urls(self):
         urls = super().get_urls()
 
+        info = self.model._meta.app_label, self.model._meta.model_name
+
         my_urls = [
-            path('<int:pk>/change/full_clone/', self.full_clone, name='full_clone/'),
+            path('<path:pk>/full_clone/', self.full_clone, name='%s_%s_full_clone' % info),
         ]
 
         return my_urls + urls
