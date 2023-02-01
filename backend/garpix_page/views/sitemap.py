@@ -7,7 +7,7 @@ from garpix_page.models.base_page import BasePage
 
 def sitemap_view():
     pages = {
-        'queryset': BasePage.on_site.filter(is_active=True).order_by('title'),
+        'queryset': BasePage.on_site.filter(is_active=True, display_on_sitemap=True).order_by('title'),
         'date_field': 'created_at'
     }
     extra_data = {
