@@ -12,7 +12,7 @@ from garpix_page.utils.get_current_language_code_url_prefix import get_current_l
 from garpix_page.utils.get_file_path import get_file_path
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey, PolymorphicMPTTModelManager
 from django.utils.html import format_html
-from garpix_utils.managers import GCurrentSiteManager, GPolymorphicCurrentSiteManager
+from garpix_utils.managers import GCurrentSiteManager, GPolymorphicCurrentSiteManager, ActiveOnSiteManager
 from ..cache import cache_service
 from ..mixins import CloneMixin
 from garpix_admin_lock.mixins import PageLockViewMixin
@@ -46,6 +46,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
     objects = PolymorphicMPTTModelManager()
     on_site = GCurrentSiteManager()
     polymorphic_on_site = GPolymorphicCurrentSiteManager()
+    active_on_site = ActiveOnSiteManager()
 
     template = 'garpix_page/default.html'
     searchable_fields = ('title',)

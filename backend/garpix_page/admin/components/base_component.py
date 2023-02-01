@@ -115,6 +115,8 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
 
             new_obj = obj.clone_object(title=title)
 
+            new_obj.pages.set([])
+
             new_obj.save()
         link = reverse("admin:garpix_page_basecomponent_changelist")
         return HttpResponseRedirect(link)
