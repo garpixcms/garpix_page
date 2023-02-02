@@ -16,7 +16,18 @@ def get_serializer(model):
         'seo_og_type': ReadOnlyField(source='get_seo_og_type'),
         'Meta': type('Meta', (object,), {
             'model': model,
-            'exclude': ('sites', 'lft', 'rght', 'tree_id', 'level', 'polymorphic_ctype', 'parent',) + tuple(get_exclude_fields(model))
+            'exclude': (
+                'sites',
+                'lft',
+                'rght',
+                'tree_id',
+                'level',
+                'polymorphic_ctype',
+                'parent',
+                'display_on_sitemap',
+                'slug',
+                'is_active'
+            ) + tuple(get_exclude_fields(model))
             # 'fields': '__all__'
         })
     })

@@ -52,6 +52,9 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
     serializer = None  # default is generator of serializers: garpix_page.serializers.serializer.get_serializer
     permissions = None
 
+    def get_model_name(self):
+        return self.__class__.__name__
+
     class Meta(PolymorphicMPTTModel.Meta):
         verbose_name = 'Структура страниц'
         verbose_name_plural = 'Структура страниц'

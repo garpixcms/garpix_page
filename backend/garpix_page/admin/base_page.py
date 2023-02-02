@@ -27,6 +27,7 @@ from ..views.clear_cache import clear_cache
 class ComponentsTabularInline(admin.TabularInline):
     model = PageComponent
     fields = ('component', 'view_order')
+    raw_id_fields = ('component',)
     extra = 0
     raw_id_fields = ["component"]
 

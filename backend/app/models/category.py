@@ -7,10 +7,10 @@ class Category(BasePage):
 
     def get_context(self, request=None, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)
-        posts = Post.on_site.filter(is_active=True, parent=kwargs['object'])
-        context.update({
-            'posts': posts
-        })
+        # posts = Post.on_site.filter(is_active=True, parent=kwargs['object'])
+        # context.update({
+        #     'posts': posts
+        # })
         return context
 
     class Meta:

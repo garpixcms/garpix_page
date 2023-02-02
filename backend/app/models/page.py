@@ -23,3 +23,10 @@ class Page(BasePage):
     @classmethod
     def seo_template_keys_list(cls):
         return [('absolute_url', 'URL')]
+
+    def get_context(self, request=None, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+        context.update({
+            'posts': ['test', 'test']
+        })
+        return context

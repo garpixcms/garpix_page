@@ -55,7 +55,6 @@ class PageApiView(PageViewMixin, views.APIView):
         return None
 
     def get_object(self, slugs):
-
         obj = self.get_instance_by_slug(slugs, languages_list)
         return obj
 
@@ -68,10 +67,11 @@ class PageApiView(PageViewMixin, views.APIView):
 
         page = self.get_object(slugs)
 
-        errors = self.check_errors(page, request)
-        if errors is not None:
-            return errors
+        error_response = self.check_errors(page, request)
+        if error_response is not None:
+            return error_response
 
+        print(type(page))
         page_context = page.get_context(request, object=page, user=request.user, api=True)
         for k, v in page_context.items():
             if hasattr(v, 'is_for_page_view'):
@@ -92,11 +92,8 @@ class PageApiView(PageViewMixin, views.APIView):
             page_context.pop('paginator')
 
         page_context['global'] = import_string(settings.GARPIX_PAGE_GLOBAL_CONTEXT)(request, page)
-        page_context['object'].update({
-            'components': page.get_components_context(request, api=True)
-        })
         data = {
-            'page_model': page.__class__.__name__,
+            'page_model': page.get_model_name(),
             'init_state': page_context,
         }
         return Response(data)

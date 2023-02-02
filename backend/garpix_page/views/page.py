@@ -46,7 +46,7 @@ class PageView(PageViewMixin, DetailView):
         if url is None or url == '':
             return self._get_home_page()
 
-        obj = self.get_instance_by_slug(url, languages_list)
+        obj, _, _ = self.get_instance_by_slug(url, languages_list)
 
         return obj
 
