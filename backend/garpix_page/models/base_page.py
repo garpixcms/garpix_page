@@ -52,8 +52,11 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
     searchable_fields = ('title',)
     serializer = None  # default is generator of serializers: garpix_page.serializers.serializer.get_serializer
     permissions = None
+    subpage_url = None
 
     def get_model_name(self):
+        if self.subpage_url:
+            return str(self.subpage_url.model_name).format(model_name=self.__class__.__name__)
         return self.__class__.__name__
 
     class Meta(PolymorphicMPTTModel.Meta):

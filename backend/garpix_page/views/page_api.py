@@ -7,6 +7,7 @@ from django.utils.module_loading import import_string
 from django.conf import settings
 
 from garpix_page.mixins.views import PageViewMixin
+from ..models import SubPageUrl
 from ..serializers.serializer import get_serializer
 from ..utils.get_languages import get_languages
 
@@ -17,7 +18,6 @@ for model in django.apps.apps.get_models():
             model_list.append(model)
     except:  # noqa
         pass
-
 
 languages_list = get_languages()
 
@@ -41,16 +41,19 @@ class PageApiView(PageViewMixin, views.APIView):
 
         if getattr(page, 'login_required', False):
             if not request.user.is_authenticated:
-                return Response(self.get_error_page_response_data(page, request, 'Page401'), status=status.HTTP_401_UNAUTHORIZED)
+                return Response(self.get_error_page_response_data(page, request, 'Page401'),
+                                status=status.HTTP_401_UNAUTHORIZED)
 
         if not page.has_permission_required(request):
-            return Response(self.get_error_page_response_data(page, request, 'Page403'), status=status.HTTP_403_FORBIDDEN)
+            return Response(self.get_error_page_response_data(page, request, 'Page403'),
+                            status=status.HTTP_403_FORBIDDEN)
 
         if getattr(page, 'query_parameters_required', None) is not None:
             request_get = set(request.GET.keys())
             parameters = set(page.query_parameters_required)
             if request_get != parameters:
-                return Response(self.get_error_page_response_data(page, request, 'Page404'), status=status.HTTP_404_NOT_FOUND)
+                return Response(self.get_error_page_response_data(page, request, 'Page404'),
+                                status=status.HTTP_404_NOT_FOUND)
 
         return None
 
@@ -71,7 +74,6 @@ class PageApiView(PageViewMixin, views.APIView):
         if error_response is not None:
             return error_response
 
-        print(type(page))
         page_context = page.get_context(request, object=page, user=request.user, api=True)
         for k, v in page_context.items():
             if hasattr(v, 'is_for_page_view'):
@@ -106,4 +108,11 @@ class PageApiListView(views.APIView):
         data = {}
         for model in models_list:
             data.update({model.__name__: model._meta.verbose_name})
+
+        subpage_urls = SubPageUrl.objects.all()
+        for obj in subpage_urls:
+            for page_type in obj.page_types.all():
+                model_type = page_type.model_class()
+                data.update({str(obj.model_name).format(model_name=model_type.__name__): str(obj.model_title).format(
+                    model_title=model_type._meta.verbose_name)})
         return Response(data)
