@@ -52,11 +52,18 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
     searchable_fields = ('title',)
     serializer = None  # default is generator of serializers: garpix_page.serializers.serializer.get_serializer
     permissions = None
+    subpage_params = None
+    subpage_key = None
 
     class Meta(PolymorphicMPTTModel.Meta):
         verbose_name = 'Структура страниц'
         verbose_name_plural = 'Структура страниц'
         ordering = ('created_at', 'title',)
+
+    def get_model_class_name(self):
+        if self.subpage_key:
+            return str(self.subpage_key).format(model_name=self.__class__.__name__)
+        return self.__class__.__name__
 
     def __str__(self):
         return self.title
@@ -256,6 +263,14 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
     def get_seo_image(self):
         return self.get_seo_value('seo_image')
 
+    @classmethod
+    def url_patterns(cls):
+        return {
+            '{model_name}': {
+                'verbose_name': '{model_title}',
+                'pattern': ''
+            },
+        }
 
 @receiver(pre_save)
 def reset_cache(sender, instance: BasePage, update_fields, **kwargs):

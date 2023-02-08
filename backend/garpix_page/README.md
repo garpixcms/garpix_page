@@ -518,7 +518,7 @@ class TextComponentTranslationOptions(TranslationOptions):
 ```
 
 BaseComponent has m2m field `pages` to specify on which pages the component should be displayed. Through table also has `view_order` field to specify the ordering of components at the page (ascending order).
-You can override `get_contex_datat` method to add some info to component context.
+You can override `get_contex_data` method to add some info to component context.
 
 Example answer with some components:
 
