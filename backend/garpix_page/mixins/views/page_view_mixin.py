@@ -3,7 +3,6 @@ import re
 from django.urls.resolvers import RoutePattern, _route_to_regex
 
 from garpix_page.cache import cache_service
-from garpix_page.models import BasePage
 from garpix_page.utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
 from django.utils.translation import activate
 

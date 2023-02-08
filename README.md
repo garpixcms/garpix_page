@@ -679,6 +679,70 @@ class Page(BasePage):
         return [('yourfield', 'your field title')]
 ```
 
+### Subpage url patterns
+
+Sometimes we need to add static subpages like `create`, `update` etc. and it's not very convenient to create separate model/instance for each of them.
+For these purposes you can use subpage url patterns.
+Override `url_patterns` class method of `BasePage` model to add sub urls:
+Method `url_patterns` must return dict, which keys are names for models, which will be sent to api result; values are dicts with two keys: `verbose_name` - humanize model name, `pattern` - url pattern.
+
+Example:
+
+```python
+class Category(BasePage):
+    # ...
+    
+    @classmethod
+    def url_patterns(cls):
+        patterns = super().url_patterns()
+        patterns.update(
+            {
+                '{model_name}Create': {
+                    'verbose_name': 'Создание {model_title}',
+                    'pattern': '/create'
+                },
+                '{model_name}Reports': {
+                    'verbose_name': 'Отчеты для {model_title}',
+                    'pattern': '/reports'
+                }
+            }
+        )
+        return patterns
+
+```
+Now, if your project has `Category` page with url `category`, the project will also has two extra pages: `category/create` and `category/reports`.
+
+If you need to use some query parameters in you urls, you can add them like any url parameters:
+
+```python
+class Category(BasePage):
+    # ...
+    
+    @classmethod
+    def url_patterns(cls):
+        patterns = super().url_patterns()
+        patterns.update(
+            {
+                '{model_name}Create': {
+                    'verbose_name': 'Создание {model_title}',
+                    'pattern': '/create'
+                },
+                '{model_name}Reports': {
+                    'verbose_name': 'Отчеты для {model_title}',
+                    'pattern': '/reports'
+                },
+                '{model_name}Update': {
+                    'verbose_name': 'Редактирование {model_title}',
+                    'pattern': '/update/<id>'
+                }
+            }
+        )
+        return patterns
+
+```
+
+The given parameters will be stored in `subpage_params` field of page model.
+
 ## Grapesjs
 
 Grapesjs component implementation example:

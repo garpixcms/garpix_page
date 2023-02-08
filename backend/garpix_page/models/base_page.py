@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils import translation
 from django.utils.functional import cached_property
@@ -271,6 +271,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
                 'pattern': ''
             },
         }
+
 
 @receiver(pre_save)
 def reset_cache(sender, instance: BasePage, update_fields, **kwargs):
