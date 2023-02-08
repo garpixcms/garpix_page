@@ -268,7 +268,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
         return {
             '{model_name}': {
                 'verbose_name': '{model_title}',
-                'pattern': ''
+                'pattern': '',
             },
         }
 

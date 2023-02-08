@@ -716,7 +716,73 @@ class Category(BasePage):
 
 ```
 
-The given parameters will be stored in `subpage_params` field of page model.
+The given parameters will be stored in `subpage_params` field of page model, the key of pattern will be stored in `subpage_key`.
+Now you can use them in `get_context` to return some specific info depending on `subpage_key`:
+
+```python
+class Category(BasePage):
+    template = 'pages/category.html'
+
+    def get_context(self, request=None, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+        if self.subpage_key == '{model_name}Create':
+            context.update({
+                'some key': 'some text'
+            })
+        return context
+
+    @classmethod
+    def url_patterns(cls):
+        patterns = super().url_patterns()
+        patterns.update(
+            {
+                '{model_name}Create': {
+                    'verbose_name': 'Создание {model_title}',
+                    'pattern': '/create'
+                },
+                '{model_name}Update': {
+                    'verbose_name': 'Редактирование {model_title}',
+                    'pattern': '/update/<id>'
+                }
+            }
+        )
+        return patterns
+
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категория"
+        ordering = ('-created_at',)
+
+```
+
+Api result:
+
+```json
+
+{
+    "page_model": "CategoryCreate",
+    "init_state": {
+        "object": {
+            "id": 16,
+            "seo_title": "title-1",
+            "seo_keywords": "",
+            "seo_description": "",
+            "seo_author": "",
+            "seo_og_type": "website",
+            "title": "title-1",
+            "is_active": true,
+            "display_on_sitemap": true,
+            "slug": "title",
+            "created_at": "2022-10-11T14:13:31.214166Z",
+            "updated_at": "2023-02-07T06:07:43.179306Z",
+            "seo_image": null
+        },
+        "components": [],
+        "some key": "some text",
+        "global": {}
+    }
+}
+```
 
 ## Important!
 

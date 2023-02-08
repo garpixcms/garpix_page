@@ -7,10 +7,10 @@ class Category(BasePage):
 
     def get_context(self, request=None, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)
-        posts = Post.on_site.filter(is_active=True, parent=kwargs['object'])
-        context.update({
-            'posts': posts
-        })
+        if self.subpage_key == '{model_name}Create':
+            context.update({
+                'some key': 'some text'
+            })
         return context
 
     @classmethod
