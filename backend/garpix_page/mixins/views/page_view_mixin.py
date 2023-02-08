@@ -1,7 +1,12 @@
+import re
+
+from django.urls.resolvers import RoutePattern, _route_to_regex
+
 from garpix_page.cache import cache_service
-from garpix_page.models import BasePage
 from garpix_page.utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
 from django.utils.translation import activate
+
+from garpix_page.utils.get_garpix_page_models import get_garpix_page_models
 
 
 class PageViewMixin:
@@ -36,12 +41,33 @@ class PageViewMixin:
         if instance_cache is not None:
             return instance_cache
 
-        instances = BasePage.on_site.filter(slug=slug, is_active=True).all()
+        page_models = get_garpix_page_models()
+        active_models = []
+        for el in page_models:
+            for key, value in el.url_patterns().items():
+                pattern = RoutePattern(r'(<url>){}'.format(value['pattern']))
+                pattern.regex = re.compile('^/(?P<url>.*){}$'.format(_route_to_regex(value['pattern'], pattern._is_endpoint)[0][1:]))
+                match = pattern.match(url)
+                if match is not None:
+                    last, _, params = match
+                    el_url = f"/{params['url']}" if params.get('url', None) else url
+                    el_slug = el_url.split('/')[-1]
+                    active_models.append({
+                        'model': el,
+                        'params': params,
+                        'pattern': key,
+                        'url': el_url,
+                        'slug': el_slug
+                    })
 
-        for instance in instances:
-            if instance.absolute_url == url:
-                instance = instance.get_real_instance()
-                cache_service.set_instance_by_url(url, instance)
-                return instance
+        for model in active_models:
+            instances = model['model'].active_on_site.filter(slug=model['slug']).all()
+
+            for instance in instances:
+                if instance.absolute_url == model['url']:
+                    instance.subpage_params = model['params']
+                    instance.subpage_key = model['pattern']
+                    cache_service.set_instance_by_url(url, instance)
+                    return instance
 
         return None

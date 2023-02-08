@@ -96,7 +96,7 @@ class PageApiView(PageViewMixin, views.APIView):
             'components': page.get_components_context(request, api=True)
         })
         data = {
-            'page_model': page.__class__.__name__,
+            'page_model': page.get_model_class_name(),
             'init_state': page_context,
         }
         return Response(data)
@@ -108,5 +108,6 @@ class PageApiListView(views.APIView):
         models_list = get_garpix_page_models()
         data = {}
         for model in models_list:
-            data.update({model.__name__: model._meta.verbose_name})
+            for key, value in model.url_patterns().items():
+                data.update({str(key).format(model_name=model.__name__): str(value['verbose_name']).format(model_title=model._meta.verbose_name)})
         return Response(data)
