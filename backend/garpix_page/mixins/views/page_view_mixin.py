@@ -22,9 +22,11 @@ class PageViewMixin:
     def get_instance_by_slug(cls, slugs, languages_list):
         slug_list = slugs.split('/')
 
+        lang = None
+
         if slug_list[0] in languages_list:
-            activate(slug_list[0])
-            slug_list.pop(0)
+            lang = slug_list.pop(0)
+            activate(lang)
 
         if len(slug_list) == 0:
             slug_list.append('')
@@ -50,8 +52,10 @@ class PageViewMixin:
                 match = pattern.match(url)
                 if match is not None:
                     last, _, params = match
-                    el_url = f"/{params['url']}" if params.get('url', None) else url
-                    el_slug = el_url.split('/')[-1]
+
+                    el_url = f"/{params['url']}"
+                    el_slug = '' if lang and params['url'] == lang else el_url.split('/')[-1]
+
                     active_models.append({
                         'model': el,
                         'params': params,
@@ -64,6 +68,7 @@ class PageViewMixin:
             instances = model['model'].active_on_site.filter(slug=model['slug']).all()
 
             for instance in instances:
+
                 if instance.absolute_url == model['url']:
                     instance.subpage_params = model['params']
                     instance.subpage_key = model['pattern']
