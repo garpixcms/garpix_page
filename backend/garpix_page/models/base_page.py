@@ -134,14 +134,10 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
 
     def get_context(self, request=None, *args, **kwargs):
 
-        if kwargs.get('api', False):
-            return {
-                'object': self,
-                'components': self.get_components_context(request, api=True)
-            }
         return {
             'object': self,
-            'components': self.get_components_context(request)
+            'subpages': self.get_subpages_list(),
+            'components': self.get_components_context(request, api=kwargs.get('api', False))
         }
 
     @classmethod
@@ -271,6 +267,14 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
                 'pattern': '',
             },
         }
+
+    def get_subpages_list(self):
+        patterns = self.url_patterns()
+        patterns.pop('{model_name}')
+        subpages = {}
+        for key, pattern in patterns.items():
+            subpages[key] = {'title': pattern['verbose_name'], 'absolute_url': f"{self.absolute_url}{pattern['pattern']}"}
+        return subpages
 
 
 @receiver(pre_save)

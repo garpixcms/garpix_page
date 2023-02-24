@@ -88,7 +88,7 @@ class PageForm(PolymorpicMPTTAdminForm):
                     obj = obj.parent
                     if obj.slug:
                         url_arr.insert(0, obj.slug)
-            absolute_url = "{}/{}/".format(current_language_code_url_prefix, '/'.join(url_arr))
+            absolute_url = "{}/{}".format(current_language_code_url_prefix, '/'.join(url_arr))
         else:
             absolute_url = "{}".format(current_language_code_url_prefix) if len(current_language_code_url_prefix) > 1 else '/'
 
