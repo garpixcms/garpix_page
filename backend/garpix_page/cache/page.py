@@ -69,8 +69,11 @@ class PageCacheService:
 
     def reset_url_info_by_page(self, instance, current_language_code_url_prefix):
         pk, old_url = instance.pk, instance.get_absolute_url()
-        cache.delete(f'{self.cache_instance_prefix}{old_url}')
-        cache.delete(f'{self.cache_url_prefix}{pk}_{current_language_code_url_prefix}')
+        current_site = getattr(settings, 'SITE_ID', 1)
+        url_cache_key = f'{self.cache_url_prefix}{pk}_{current_site}_{current_language_code_url_prefix}'
+        instance_cache_key = f'{self.cache_instance_prefix}_{current_site}_{old_url}'
+        cache.delete(url_cache_key)
+        cache.delete(instance_cache_key)
 
         new_url = instance.get_absolute_url()
         self.set_instance_by_url(new_url, instance)
