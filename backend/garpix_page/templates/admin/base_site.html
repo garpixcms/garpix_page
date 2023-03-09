@@ -1,6 +1,0 @@
-{% extends "admin/base_site.html" %}
-
-{% block userlinks %}
-    <a href="{% url 'admin:admin_clear_cache' %}">Clear cache</a> /
-    {{ block.super }}
-{% endblock %}

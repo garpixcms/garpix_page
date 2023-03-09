@@ -8,7 +8,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='garpix_page',
-    version='2.42.0',
+    version='2.43.0',
     description='',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -40,7 +40,7 @@ setup(
         'garpix_utils >= 1.8.0',
         'django-tabbed-admin >= 1.0.4',
         'model-bakery >= 1.4.0',
-        'garpix-admin-lock == 1.1.1',
+        'garpix-admin-lock == 1.2.0',
         'psycopg2-binary >=2.9.3',
         'celery >= 5.2.7'
     ],
