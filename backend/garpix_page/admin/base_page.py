@@ -1,4 +1,8 @@
-from django.contrib import admin
+import json
+
+from django.contrib import admin, messages
+from django.contrib.admin.options import IS_POPUP_VAR
+from django.template.response import TemplateResponse
 from django.utils.html import format_html
 
 from .forms import PageForm
@@ -246,6 +250,14 @@ class BasePageAdmin(PageLockAdminMixin, PageAdmin):
     lock_change_view = True
     change_form_template = 'garpix_page/admin/page_change_form.html'
 
+    def get_model_perms(self, request):
+        return {
+            'add': self.has_add_permission(request),
+            'change': self.has_change_permission(request),
+            'delete': self.has_delete_permission(request),
+            'view': self.has_view_permission(request),
+        }
+
     def has_change_permission(self, req, *args):
         can_add = super().has_change_permission(req, *args)
 
@@ -253,6 +265,60 @@ class BasePageAdmin(PageLockAdminMixin, PageAdmin):
             return True
 
         return False
+
+    def _response_post_save_page(self, request):
+        url = request.build_absolute_uri()
+        _meta = self.model._meta
+        model_name = _meta.model_name
+        if model_name in url:
+            return True, HttpResponseRedirect(reverse(f'admin:{_meta.app_label}_{_meta.model_name}_changelist'))
+        return False, None
+
+    def response_post_save_add(self, request, obj):
+        res, response = self._response_post_save_page(request)
+        if res:
+            return response
+        return self._get_parent_admin().response_post_save_add(request, obj)
+
+    def response_post_save_change(self, request, obj):
+        res, response = self._response_post_save_page(request)
+        if res:
+            return response
+        return self._get_parent_admin().response_post_save_change(request, obj)
+
+    def response_delete(self, request, obj_display, obj_id):
+
+        opts = self.model._meta
+
+        if IS_POPUP_VAR in request.POST:
+            popup_response_data = json.dumps({
+                'action': 'delete',
+                'value': str(obj_id),
+            })
+            return TemplateResponse(request, self.popup_response_template or [
+                'admin/%s/%s/popup_response.html' % (opts.app_label, opts.model_name),
+                'admin/%s/popup_response.html' % opts.app_label,
+                'admin/popup_response.html',
+            ], {
+                'popup_response_data': popup_response_data,
+            })
+
+        self.message_user(
+            request,
+            _('The %(name)s “%(obj)s” was deleted successfully.') % {
+                'name': opts.verbose_name,
+                'obj': obj_display,
+            },
+            messages.SUCCESS,
+        )
+
+        res, response = self._response_post_save_page(request)
+        if res:
+            return response
+        return self._get_parent_admin().response_delete(request, obj_display, obj_id)
+
+    def delete_queryset(self, cls, request, queryset):
+        super(BasePageAdmin, self).delete_queryset(request, queryset)
 
 
 class RealBasePageAdmin(PageLockAdminMixin, RealPageAdmin):
