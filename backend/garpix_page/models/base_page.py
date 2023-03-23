@@ -69,6 +69,11 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
     def __str__(self):
         return self.title
 
+    @cached_property
+    def _default_site(self):
+        return Site.objects.get(pk=getattr(settings, 'SITE_ID', 1))
+    _default_site.short_description = 'Default Site'
+
     def get_seo_template_keys(self):
         return self.__dict__
 
@@ -203,7 +208,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
         from garpix_page.admin.settings.seo_template import SeoTemplateForm
         from garpix_page.models.settings import SeoTemplate
 
-        site = site or Site.objects.get(pk=getattr(settings, 'SITE_ID', 1))
+        site = site or self._default_site
 
         seo_value_cache = cache_service.get_seo_by_page(self.pk, field_name, site)
 
