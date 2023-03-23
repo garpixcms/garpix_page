@@ -8,7 +8,6 @@ from django.urls import reverse
 from django.contrib.sites.models import Site
 from rest_framework.views import APIView
 from garpix_page.utils.all_sites import get_all_sites
-from garpix_page.utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
 from garpix_page.utils.get_file_path import get_file_path
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey, PolymorphicMPTTModelManager
 from django.utils.html import format_html
@@ -17,7 +16,8 @@ from ..cache import cache_service
 from ..mixins import CloneMixin
 from garpix_admin_lock.mixins import PageLockViewMixin
 
-from ..tasks import clear_child_cache
+from ..tasks import update_child_urls
+from ..utils.set_children_urls import set_children_url
 
 
 class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
@@ -41,6 +41,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
     parent = PolymorphicTreeForeignKey('self', null=True, blank=True, related_name='children',
                                        db_index=True, verbose_name='Родительская страница', on_delete=models.SET_NULL,
                                        limit_choices_to={})
+    url = models.CharField(max_length=255, default='', blank=True, verbose_name='Полный URL страницы')
 
     # objects = models.Manager()
     objects = PolymorphicMPTTModelManager()
@@ -94,29 +95,21 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
 
     @cached_property
     def absolute_url(self):
-        current_language_code_url_prefix = get_current_language_code_url_prefix()
-        url_cache = cache_service.get_url(self.pk, current_language_code_url_prefix)
-
-        if url_cache is not None:
-            return url_cache
-
-        if self.slug:
-            obj = self
-            url_arr = [self.slug]
-            while obj.parent is not None:
-                obj = obj.parent
-                if obj.slug:
-                    url_arr.insert(0, obj.slug)
-            url = '/'.join(url_arr)
-            result = "{}/{}".format(current_language_code_url_prefix, url)
-            cache_service.set_url(self.pk, current_language_code_url_prefix, result)
-            return result
-
-        result = "{}".format(current_language_code_url_prefix) if len(current_language_code_url_prefix) > 1 else '/'
-        cache_service.set_url(self.pk, current_language_code_url_prefix, result)
-        return result
+        return self.url
 
     absolute_url.short_description = 'URL'
+
+    def set_url(self, parent=None):
+
+        parent = parent or self.parent
+
+        self.url = ''
+
+        if parent:
+            self.url = parent.url
+
+        if self.slug:
+            self.url += f"/{self.slug}"
 
     @cached_property
     def get_sites(self):
@@ -278,7 +271,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
 
 
 @receiver(pre_save)
-def reset_cache(sender, instance: BasePage, update_fields, **kwargs):
+def reset_url(sender, instance: BasePage, update_fields, **kwargs):
 
     if type(sender) == type(BasePage):
         if instance.seo_title is None:
@@ -289,6 +282,13 @@ def reset_cache(sender, instance: BasePage, update_fields, **kwargs):
             cache_service.clear_seo_data(instance.pk)
             old_instance = BasePage.objects.get(pk=instance.pk)
 
-            if instance.pk and instance.parent != old_instance.parent or instance.slug != old_instance.slug:
-                cache_service.reset_url_info_by_page(instance, get_current_language_code_url_prefix())
-                clear_child_cache.delay(instance.pk)
+            if instance.parent != old_instance.parent or instance.slug != old_instance.slug:
+                instance.set_url()
+                children = instance.get_children()
+                if len(BasePage.objects.get_queryset_descendants(children, include_self=True)) > getattr(settings, 'GARPIX_PAGE_CHILDREN_LEN'):
+                    update_child_urls.delay(instance.id)
+                else:
+                    pages_to_update = []
+                    set_children_url(instance, children, pages_to_update)
+
+                    BasePage.objects.bulk_update(pages_to_update, ['url'])
