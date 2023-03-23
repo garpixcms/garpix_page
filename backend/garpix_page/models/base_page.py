@@ -17,6 +17,7 @@ from ..mixins import CloneMixin
 from garpix_admin_lock.mixins import PageLockViewMixin
 
 from ..tasks import update_child_urls
+from ..utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
 from ..utils.set_children_urls import set_children_url
 
 
@@ -100,7 +101,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
 
     @cached_property
     def absolute_url(self):
-        return self.url
+        return "{}/{}".format(get_current_language_code_url_prefix(), self.url)
 
     absolute_url.short_description = 'URL'
 
