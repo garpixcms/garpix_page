@@ -71,7 +71,6 @@ class PageView(PageViewMixin, DetailView):
         from django.shortcuts import render
 
         url = self.kwargs.get('url', None)
-        print(url)
 
         if url and url[-1] == '/':
             parameters = f'?{urlencode(request.GET)}' if urlencode(request.GET) else ''
