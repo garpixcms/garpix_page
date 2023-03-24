@@ -16,7 +16,7 @@ from ..cache import cache_service
 from ..mixins import CloneMixin
 from garpix_admin_lock.mixins import PageLockViewMixin
 
-from ..tasks import update_child_urls
+from ..tasks import clear_child_cache
 from ..utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
 from ..utils.set_children_urls import set_children_url
 
@@ -73,6 +73,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
     @cached_property
     def _default_site(self):
         return Site.objects.get(pk=getattr(settings, 'SITE_ID', 1))
+
     _default_site.short_description = 'Default Site'
 
     def get_seo_template_keys(self):
@@ -101,7 +102,9 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
 
     @cached_property
     def absolute_url(self):
-        return "{}/{}".format(get_current_language_code_url_prefix(), self.url)
+        current_language_code_url_prefix = get_current_language_code_url_prefix()
+        return "{}/{}".format(current_language_code_url_prefix,
+                              self.url) if current_language_code_url_prefix else self.url
 
     absolute_url.short_description = 'URL'
 
@@ -272,13 +275,13 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
         patterns.pop('{model_name}')
         subpages = {}
         for key, pattern in patterns.items():
-            subpages[key] = {'title': pattern['verbose_name'], 'absolute_url': f"{self.absolute_url}{pattern['pattern']}"}
+            subpages[key] = {'title': pattern['verbose_name'],
+                             'absolute_url': f"{self.absolute_url}{pattern['pattern']}"}
         return subpages
 
 
 @receiver(pre_save)
 def reset_url(sender, instance: BasePage, update_fields, **kwargs):
-
     if type(sender) == type(BasePage):
         if instance.seo_title is None:
             instance.seo_title = instance.title
@@ -291,10 +294,12 @@ def reset_url(sender, instance: BasePage, update_fields, **kwargs):
             if instance.parent != old_instance.parent or instance.slug != old_instance.slug:
                 instance.set_url()
                 children = instance.get_children()
-                if len(BasePage.objects.get_queryset_descendants(children, include_self=True)) > getattr(settings, 'GARPIX_PAGE_CHILDREN_LEN'):
-                    update_child_urls.delay(instance.id)
-                else:
-                    pages_to_update = []
-                    set_children_url(instance, children, pages_to_update)
+                if children:
+                    if len(BasePage.objects.get_queryset_descendants(children, include_self=True)) > getattr(settings,
+                                                                                                             'GARPIX_PAGE_CHILDREN_LEN'):
+                        clear_child_cache.delay(instance.id)
+                    else:
+                        pages_to_update = []
+                        set_children_url(instance, children, pages_to_update)
 
-                    BasePage.objects.bulk_update(pages_to_update, ['url'])
+                        BasePage.objects.bulk_update(pages_to_update, ['url'])

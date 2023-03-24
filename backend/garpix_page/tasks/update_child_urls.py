@@ -7,7 +7,7 @@ celery_app = import_string(settings.GARPIXCMS_CELERY_SETTINGS)
 
 
 @celery_app.task()
-def update_child_urls(id):
+def clear_child_cache(id):
     from garpix_page.models import BasePage
 
     instance = BasePage.objects.get(pk=id)
