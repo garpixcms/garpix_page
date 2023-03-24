@@ -54,11 +54,13 @@ class PageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildMo
     list_filter = ('is_active', 'created_at', 'updated_at')
     actions = ('clone_object', 'rebuild')
 
-    list_display = ('title', 'created_at', 'is_active', 'get_absolute_url',)
+    list_display = ('title', 'created_at', 'is_active', 'url',)
     list_editable = ('is_active',)
     raw_id_fields = ('parent',)
 
-    readonly_fields = ('get_absolute_url', 'created_at', 'updated_at')
+    readonly_fields = ('url', 'created_at', 'updated_at')
+
+    extra_tabs = []
 
     def get_form(self, request, *args, **kwargs):
         form = super().get_form(request, *args, **kwargs)
@@ -105,41 +107,43 @@ class PageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildMo
         Если в модели страницы определены табы, будут отображаться они.
         Если не определены - все доступные филдсеты/поля будут помещены в таб "Основное", сео теги - в таб "Сео"
         """
-        if self.tabs is None:
-            fields = self.get_fields(request, obj)
-            tab_seo_fields = []
-            tab_main_fields = []
-            for field in fields:
-                if field[:4] == 'seo_':
-                    tab_seo_fields.append(field)
-                else:
-                    tab_main_fields.append(field)
-            tab_seo = (
+        # if self.tabs is None:
+        fields = self.get_fields(request, obj)
+        tab_seo_fields = []
+        tab_main_fields = []
+        for field in fields:
+            if field[:4] == 'seo_':
+                tab_seo_fields.append(field)
+            else:
+                tab_main_fields.append(field)
+        tab_seo = (
+            (None, {
+                'fields': tab_seo_fields
+            }),
+        )
+
+        if self.fieldsets:
+            tab_main = self.fieldsets
+        else:
+            tab_main = (
                 (None, {
-                    'fields': tab_seo_fields
+                    'fields': tab_main_fields
                 }),
             )
 
-            if self.fieldsets:
-                tab_main = self.fieldsets
-            else:
-                tab_main = (
-                    (None, {
-                        'fields': tab_main_fields
-                    }),
-                )
+        if self.inlines:
+            tab_main += tuple(self.inlines)
 
-            if self.inlines:
-                tab_main += tuple(self.inlines)
+        self.tabs = [
+            ('Основное', tab_main),
+            ('SEO', tab_seo),
+            ('Компоненты', (ComponentsTabularInline,))
+        ] + self.extra_tabs
 
-            self.tabs = [
-                ('Основное', tab_main),
-                ('SEO', tab_seo),
-                ('Компоненты', (ComponentsTabularInline,))
-            ]
         tabs_fieldsets = self.get_formatted_tabs(request, obj)['fieldsets']
         self.fieldsets = ()
         self.fieldsets = self.add_tabbed_item(tabs_fieldsets, self.fieldsets)
+
         return super().get_fieldsets(request, obj)
 
 
