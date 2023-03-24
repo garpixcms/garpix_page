@@ -10,9 +10,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         pages = BasePage.objects.filter(parent__isnull=True)
 
-        pages_to_update = []
+        pages_to_update = list(pages)
 
         for page in pages:
+            page.set_url()
+
             children = page.get_children()
 
             set_children_url(page, children, pages_to_update)
