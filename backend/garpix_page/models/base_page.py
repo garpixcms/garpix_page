@@ -103,8 +103,8 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
     @cached_property
     def absolute_url(self):
         current_language_code_url_prefix = get_current_language_code_url_prefix()
-        return "{}/{}".format(current_language_code_url_prefix,
-                              self.url) if current_language_code_url_prefix else self.url
+        return "{}{}".format(current_language_code_url_prefix,
+                             self.url) if current_language_code_url_prefix else self.url
 
     absolute_url.short_description = 'URL'
 
@@ -117,8 +117,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
         if parent:
             self.url = parent.url
 
-        if self.slug:
-            self.url += f"/{self.slug}"
+        self.url += f"/{self.slug}"
 
     @cached_property
     def get_sites(self):
@@ -290,8 +289,8 @@ def reset_url(sender, instance: BasePage, update_fields, **kwargs):
 
             cache_service.clear_seo_data(instance.pk)
             old_instance = BasePage.objects.get(pk=instance.pk)
-
             if instance.parent != old_instance.parent or instance.slug != old_instance.slug:
+
                 instance.set_url()
                 children = instance.get_children()
                 if children:
@@ -303,3 +302,7 @@ def reset_url(sender, instance: BasePage, update_fields, **kwargs):
                         set_children_url(instance, children, pages_to_update)
 
                         BasePage.objects.bulk_update(pages_to_update, ['url'])
+                        BasePage.objects.rebuild()
+
+        else:
+            instance.set_url()

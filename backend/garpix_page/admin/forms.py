@@ -8,7 +8,6 @@ from django.apps import apps
 from polymorphic_tree.admin import PolymorpicMPTTAdminForm
 
 from garpix_page.models import BasePage
-from garpix_page.utils.get_current_language_code_url_prefix import get_current_language_code_url_prefix
 
 from django.db.models import CharField, TextField
 from garpix_page.utils.get_garpix_page_models import get_garpix_page_models

@@ -17,3 +17,4 @@ def clear_child_cache(id):
     set_children_url(instance, children, pages_to_update)
 
     BasePage.objects.bulk_update(pages_to_update, ['url'])
+    BasePage.objects.rebuild()

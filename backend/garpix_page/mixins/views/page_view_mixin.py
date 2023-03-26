@@ -37,7 +37,7 @@ class PageViewMixin:
                 if match is not None:
                     last, _, params = match
 
-                    el_url = f"/{params['url']}"
+                    el_url = f"/{params.pop('url')}"
 
                     active_models.append({
                         'model': el,

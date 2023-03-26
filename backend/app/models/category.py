@@ -1,5 +1,4 @@
 from garpix_page.models import BasePage
-from .post import Post
 
 
 class Category(BasePage):
