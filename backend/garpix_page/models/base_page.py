@@ -295,7 +295,8 @@ def reset_url(sender, instance: BasePage, update_fields, **kwargs):
                 children = instance.get_children()
                 if children:
                     if len(BasePage.objects.get_queryset_descendants(children, include_self=True)) > getattr(settings,
-                                                                                                             'GARPIX_PAGE_CHILDREN_LEN'):
+                                                                                                             'GARPIX_PAGE_CHILDREN_LEN',
+                                                                                                             10):
                         clear_child_cache.delay(instance.id)
                     else:
                         pages_to_update = []
