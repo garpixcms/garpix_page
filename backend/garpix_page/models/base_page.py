@@ -114,7 +114,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
 
         self.url = ''
 
-        if parent:
+        if parent and parent.url != '/':
             self.url = parent.url
 
         self.url += f"/{self.slug}"

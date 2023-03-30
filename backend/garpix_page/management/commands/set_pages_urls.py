@@ -8,6 +8,7 @@ class Command(BaseCommand):
     help = 'Set old pages urls'
 
     def handle(self, *args, **options):
+        BasePage.objects.rebuild()
         pages = BasePage.objects.filter(parent__isnull=True)
 
         pages_to_update = list(pages)

@@ -35,11 +35,11 @@ class BasePageApiTest(APITestCase):
 
     def test_page(self):
         for page in self.pages:
-            response = self.client.get(f'/{page.slug}')
+            response = self.client.get(f'{page.url}')
             if getattr(page, 'login_required', False):
                 self.assertEqual(response.status_code, 302, f'Error in page {page} ({page.model_name()})')
                 self.user_login()
-                response = self.client.get(f'/{page.slug}')
+                response = self.client.get(f'{page.url}')
             if not page.has_permission_required(response.wsgi_request):
                 self.assertEqual(response.status_code, 302, f'Error in page {page} ({page.model_name()})')
             else:
@@ -72,12 +72,12 @@ class BasePageApiTest(APITestCase):
 
     def generate_responses_list(self, page):
         responses = [
-            (self.client.get(f'/{settings.API_URL}/page/{page.slug}'), page),
-            (self.client.get(f'/{settings.API_URL}/page/{page.slug}/'), page)
+            (self.client.get(f'/{settings.API_URL}/page{page.url}'), page),
+            (self.client.get(f'/{settings.API_URL}/page{page.url}/'), page)
         ]
         for language in self.languages_list:
-            responses.append((self.client.get(f'/{settings.API_URL}/page/{language}/{page.slug}'), page))
-            responses.append((self.client.get(f'/{settings.API_URL}/page/{language}/{page.slug}/'), page))
+            responses.append((self.client.get(f'/{settings.API_URL}/page/{language}{page.url}'), page))
+            responses.append((self.client.get(f'/{settings.API_URL}/page/{language}{page.url}/'), page))
             cache_service.clear_all()
         return responses
 
