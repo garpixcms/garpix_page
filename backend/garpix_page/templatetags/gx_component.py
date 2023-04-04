@@ -6,7 +6,7 @@ register = template.Library()
 @register.simple_tag(takes_context=True)
 def gx_component(context, component):
     user = context['user']
-    if not user.is_authenticated and not user.is_staff:
+    if not user.is_authenticated or not user.is_staff:
         return ''
 
     component_path = None
