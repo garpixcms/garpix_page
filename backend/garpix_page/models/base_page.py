@@ -279,6 +279,16 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
         return subpages
 
 
+    def get_subpage_url(self, subpage_key=None, subpage_params=None):
+        subpage_key = subpage_key or self.subpage_key
+        if subpage_key:
+            parameters = subpage_params or self.subpage_params
+            sub_page_url = self.url_patterns()[subpage_key]['pattern'].replace('<', '%(').replace('>',
+                                                                                                  ')s') % parameters
+            return f"{self.get_absolute_url()}{sub_page_url}"
+        return ''
+
+
 @receiver(pre_save)
 def reset_url(sender, instance: BasePage, update_fields, **kwargs):
     if type(sender) == type(BasePage):
