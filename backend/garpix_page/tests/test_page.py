@@ -35,11 +35,11 @@ class BasePageApiTest(APITestCase):
 
     def test_page(self):
         for page in self.pages:
-            response = self.client.get(f'{page.url}')
+            response = self.client.get(page.url)
             if getattr(page, 'login_required', False):
                 self.assertEqual(response.status_code, 302, f'Error in page {page} ({page.model_name()})')
                 self.user_login()
-                response = self.client.get(f'{page.url}')
+                response = self.client.get(page.url)
             if not page.has_permission_required(response.wsgi_request):
                 self.assertEqual(response.status_code, 302, f'Error in page {page} ({page.model_name()})')
             else:
