@@ -646,17 +646,26 @@ In html you can use `component` object:
 <h1>{{ component.title }}</h1>
 ```
 
-You can use `gx_component` tag in section with the component to add edit functionality for admin in template:
+You can use `gx_component` template tag to add the url for the editing any object for stuff users.
+After hovering over this block any stuff user can click on the showed icon and open edit page in the admin panel.
+
+_This object must be an instance of the `dict` or have `admin_edit_url` attribute._
+
+For example:
 ```html
 {% load gx_component %}
 <section class="text-component" {% gx_component component %}>
+    ...
+    {% for article in component.articles %}
+        <article {% gx_component article %}>...</article>
+    {% endfor %}
     ...
 </section>
 ```
 
 # Seo-templates
 
-You can create seo-template from admin panel. 
+You can create seo-template from admin panel.
 If you set `field` value to `Model title`, the template will be used for pages only for those model.
 In other cases the template will be used for pages with the `value` of the `field`.
 
@@ -690,7 +699,7 @@ Example:
 ```python
 class Category(BasePage):
     # ...
-    
+
     @classmethod
     def url_patterns(cls):
         patterns = super().url_patterns()
@@ -716,7 +725,7 @@ If you need to use some query parameters in you urls, you can add them like any 
 ```python
 class Category(BasePage):
     # ...
-    
+
     @classmethod
     def url_patterns(cls):
         patterns = super().url_patterns()
