@@ -278,7 +278,6 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
                              'absolute_url': f"{self.absolute_url}{pattern['pattern']}"}
         return subpages
 
-
     def get_subpage_url(self, subpage_key=None, subpage_params=None):
         subpage_key = subpage_key or self.subpage_key
         if subpage_key:
