@@ -43,7 +43,8 @@ class PageViewMixin:
                         'model': el,
                         'params': params,
                         'pattern': key,
-                        'url': el_url
+                        'url': el_url,
+                        'permissions': value.get('permissions', el.permissions)
                     })
 
         for model in active_models:
@@ -52,6 +53,7 @@ class PageViewMixin:
             if instance:
                 instance.subpage_params = model['params']
                 instance.subpage_key = model['pattern']
+                instance.permissions = model['permissions']
                 return instance
 
         return None
