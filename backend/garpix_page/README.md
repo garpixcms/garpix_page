@@ -784,6 +784,47 @@ Api result:
 }
 ```
 
+You also can add extra key `permissions` to your url pattern to override permissions for subpage:
+
+```python
+from rest_framework.permissions import IsAuthenticated
+
+class Category(BasePage):
+    template = 'pages/category.html'
+
+    def get_context(self, request=None, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+        if self.subpage_key == '{model_name}Create':
+            context.update({
+                'some key': 'some text'
+            })
+        return context
+
+    @classmethod
+    def url_patterns(cls):
+        patterns = super().url_patterns()
+        patterns.update(
+            {
+                '{model_name}Create': {
+                    'verbose_name': 'Создание {model_title}',
+                    'pattern': '/create'
+                },
+                '{model_name}Update': {
+                    'verbose_name': 'Редактирование {model_title}',
+                    'pattern': '/update/<id>',
+                    'permissions': [IsAuthenticated]
+                }
+            }
+        )
+        return patterns
+
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категория"
+        ordering = ('-created_at',)
+
+```
+
 ## Important!
 
 Also, see this project for additional features (`BaseListPage`, `BaseSearchPage`, `sitemap.xml`, etc).
