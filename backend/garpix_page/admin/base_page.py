@@ -84,7 +84,7 @@ class PageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildMo
         return form
 
     def delete_queryset(self, request, queryset):
-        self.model.objects.delete(id__in=queryset.values_list('id', flat=True))
+        self.model.objects.filter(id__in=queryset.values_list('id', flat=True)).delete()
         self.model.objects.rebuild()
 
     def get_actions(self, request):
