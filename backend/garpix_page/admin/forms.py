@@ -146,9 +146,11 @@ class SeoTemplateForm(forms.ModelForm):
                 lang = lang.replace('-', '_')
                 seo_fields.append(f"{field_name}_{lang}")
 
+        models_fields_values = {field[0]: 'value' for field in get_rule_fields_values()}
+
         for field_name in seo_fields:
             try:
                 seo_value = str(_data.get(field_name, '')).format(
-                    **{field[0]: 'value' for field in get_rule_fields_values()})
+                    **models_fields_values)
             except (AttributeError, KeyError, ValueError) as e:
                 raise ValidationError({field_name: _("Некорректный шаблон")})
