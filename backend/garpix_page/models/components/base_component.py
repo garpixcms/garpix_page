@@ -2,7 +2,6 @@ from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
 from garpix_utils.managers import AvailableManager
-from garpix_utils.models import DeleteMixin
 from polymorphic.managers import PolymorphicManager
 
 from ...mixins import CloneMixin
@@ -26,11 +25,12 @@ class PageComponent(models.Model):
         verbose_name_plural = 'Компоненты страницы'
 
 
-class BaseComponent(DeleteMixin, CloneMixin, PolymorphicModel):
+class BaseComponent(CloneMixin, PolymorphicModel):
     """
     Базовый компонент
     """
     title = models.CharField(max_length=255, verbose_name='Название')
+    is_deleted = models.BooleanField(default=False, verbose_name='Запись удалена')
     is_active = models.BooleanField(default=True, verbose_name='Включено')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
@@ -105,3 +105,10 @@ class BaseComponent(DeleteMixin, CloneMixin, PolymorphicModel):
     def get_admin_url_edit_object(self):
         url = reverse(f'admin:{self._meta.app_label}_{self._meta.model_name}_change', args=[self.id])
         return url
+
+    def delete(self, using=None, keep_parents=False):
+        self.is_deleted = True
+        self.save()
+
+    def hard_delete(self):
+        super().delete()
