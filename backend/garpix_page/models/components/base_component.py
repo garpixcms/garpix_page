@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
+from garpix_utils.managers import AvailableManager
+from garpix_utils.models import DeleteMixin
 from polymorphic.managers import PolymorphicManager
 
 from ...mixins import CloneMixin
@@ -24,7 +26,7 @@ class PageComponent(models.Model):
         verbose_name_plural = 'Компоненты страницы'
 
 
-class BaseComponent(CloneMixin, PolymorphicModel):
+class BaseComponent(DeleteMixin, CloneMixin, PolymorphicModel):
     """
     Базовый компонент
     """
@@ -42,6 +44,7 @@ class BaseComponent(CloneMixin, PolymorphicModel):
     searchable_fields = ('title',)
     serializer = None
     objects = PolymorphicManager()
+    active_objects = AvailableManager()
 
     class Meta:
         verbose_name = 'Компонент'

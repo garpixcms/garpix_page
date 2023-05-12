@@ -182,7 +182,8 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
 
     def get_components_context(self, request, api=False):
         context = []
-        components = self.pagecomponent_set.filter(component__is_active=True).order_by('view_order')
+        components = self.pagecomponent_set.filter(component__is_active=True, component__is_deleted=False).order_by(
+            'view_order')
         for component in components:
             component_context = {
                 'view_order': component.view_order
@@ -196,7 +197,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
 
     def get_components(self):
         context = []
-        components = self.pagecomponent_set.filter(component__is_active=True)
+        components = self.pagecomponent_set.filter(component__is_active=True, component__is_deleted=False)
         for component in components:
             context.append(component.component)
         return context
@@ -227,7 +228,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
             if is_model_rule or is_field_rule:
                 try:
                     seo_value = getattr(temp, field_name, '').format(**self.get_seo_template_keys())
-                except (AttributeError, KeyError) as e:
+                except (AttributeError, KeyError, ValueError) as e:
                     # ToDo: добавить предупреждение в админке
                     print(f'{field_name}: {e}')
                     seo_value = getattr(temp, field_name, '')
