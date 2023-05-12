@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.utils.text import format_lazy
+from garpix_utils.models import AdminDeleteMixin
 from modeltranslation.admin import TabbedTranslationAdmin
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelFilter, PolymorphicChildModelAdmin
 
@@ -12,7 +13,7 @@ from garpix_page.utils.get_garpix_page_models import get_garpix_page_component_m
 from ..forms import PolymorphicModelPreviewChoiceForm
 
 
-class BaseComponentAdmin(PolymorphicChildModelAdmin, TabbedTranslationAdmin):
+class BaseComponentAdmin(AdminDeleteMixin, PolymorphicChildModelAdmin, TabbedTranslationAdmin):
     base_model = BaseComponent
     list_display = ('title', 'model_name')
     search_fields = ('title', 'pages__title')
@@ -53,7 +54,7 @@ class BaseComponentAdmin(PolymorphicChildModelAdmin, TabbedTranslationAdmin):
 
 
 @admin.register(BaseComponent)
-class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin):
+class RealBaseComponentAdmin(AdminDeleteMixin, PolymorphicParentModelAdmin, TabbedTranslationAdmin):
     child_models = get_garpix_page_component_models()
     base_model = BaseComponent
     list_filter = (PolymorphicChildModelFilter, )
@@ -62,7 +63,7 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
     list_display = ('title', 'pages_list', 'model_name', 'is_active')
     search_fields = ('title', 'pages__title')
     list_editable = ('is_active',)
-    actions = ('clone_object', )
+    actions = ('clone_object', 'hard_delete_queryset', )
 
     def pages_list(self, obj):
         pages = obj.pages.all()
