@@ -228,7 +228,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
             if is_model_rule or is_field_rule:
                 try:
                     seo_value = getattr(temp, field_name, '').format(**self.get_seo_template_keys())
-                except (AttributeError, KeyError) as e:
+                except (AttributeError, KeyError, ValueError) as e:
                     # ToDo: добавить предупреждение в админке
                     print(f'{field_name}: {e}')
                     seo_value = getattr(temp, field_name, '')
