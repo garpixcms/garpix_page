@@ -182,7 +182,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
 
     def get_components_context(self, request, api=False):
         context = []
-        components = self.pagecomponent_set.filter(component__is_active=True, component__deleted=False).order_by(
+        components = self.pagecomponent_set.filter(component__is_active=True, component__is_deleted=False).order_by(
             'view_order')
         for component in components:
             component_context = {
@@ -197,7 +197,7 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
 
     def get_components(self):
         context = []
-        components = self.pagecomponent_set.filter(component__is_active=True, component__deleted=False)
+        components = self.pagecomponent_set.filter(component__is_active=True, component__is_deleted=False)
         for component in components:
             context.append(component.component)
         return context
