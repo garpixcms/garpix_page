@@ -75,9 +75,10 @@ class PageForm(PolymorpicMPTTAdminForm):
 
         sites = cleaned_data.get('sites')
         slug = cleaned_data.get('slug')
+        parent = cleaned_data.get('parent')
 
         self.instance.slug = slug
-        self.instance.set_url()
+        self.instance.set_url(parent)
 
         languages = [x[0] for x in settings.LANGUAGES]
 
