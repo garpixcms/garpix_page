@@ -63,7 +63,7 @@ class RealBaseComponentAdmin(AdminDeleteMixin, PolymorphicParentModelAdmin, Tabb
     list_display = ('title', 'pages_list', 'model_name', 'is_active')
     search_fields = ('title', 'pages__title')
     list_editable = ('is_active',)
-    actions = ('clone_object', 'hard_delete_queryset', )
+    actions = ('clone_object', 'hard_delete_queryset', 'restore_queryset')
 
     def pages_list(self, obj):
         pages = obj.pages.all()
@@ -121,3 +121,8 @@ class RealBaseComponentAdmin(AdminDeleteMixin, PolymorphicParentModelAdmin, Tabb
             new_obj.save()
         link = reverse("admin:garpix_page_basecomponent_changelist")
         return HttpResponseRedirect(link)
+
+    def restore_queryset(self, request, queryset):
+        queryset.update(is_deleted=False)
+
+    restore_queryset.short_description = 'Восстановить выбранные компоненты'
