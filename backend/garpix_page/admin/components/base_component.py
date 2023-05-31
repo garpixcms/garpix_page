@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.utils.text import format_lazy
-from garpix_utils.models import AdminDeleteMixin
 from modeltranslation.admin import TabbedTranslationAdmin
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelFilter, PolymorphicChildModelAdmin
 
@@ -13,7 +12,7 @@ from garpix_page.utils.get_garpix_page_models import get_garpix_page_component_m
 from ..forms import PolymorphicModelPreviewChoiceForm
 
 
-class BaseComponentAdmin(AdminDeleteMixin, PolymorphicChildModelAdmin, TabbedTranslationAdmin):
+class BaseComponentAdmin(PolymorphicChildModelAdmin, TabbedTranslationAdmin):
     base_model = BaseComponent
     list_display = ('title', 'model_name')
     search_fields = ('title', 'pages__title')
@@ -54,7 +53,7 @@ class BaseComponentAdmin(AdminDeleteMixin, PolymorphicChildModelAdmin, TabbedTra
 
 
 @admin.register(BaseComponent)
-class RealBaseComponentAdmin(AdminDeleteMixin, PolymorphicParentModelAdmin, TabbedTranslationAdmin):
+class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin):
     child_models = get_garpix_page_component_models()
     base_model = BaseComponent
     list_filter = (PolymorphicChildModelFilter, )
@@ -63,7 +62,19 @@ class RealBaseComponentAdmin(AdminDeleteMixin, PolymorphicParentModelAdmin, Tabb
     list_display = ('title', 'pages_list', 'model_name', 'is_active')
     search_fields = ('title', 'pages__title')
     list_editable = ('is_active',)
-    actions = ('clone_object', 'hard_delete_queryset', 'restore_queryset')
+    actions = ('clone_object', 'restore_queryset', 'delete_queryset', 'hard_delete_queryset')
+
+    def _get_base_actions(self):
+        """Return the list of actions, prior to any request-based filtering."""
+        actions = []
+        base_actions = (self.get_action(action) for action in self.actions or [])
+        # get_action might have returned None, so filter any of those out.
+        base_actions = [action for action in base_actions if action]
+
+        actions.extend(base_actions)
+
+        super()._get_base_actions()
+        return actions
 
     def pages_list(self, obj):
         pages = obj.pages.all()
@@ -73,23 +84,6 @@ class RealBaseComponentAdmin(AdminDeleteMixin, PolymorphicParentModelAdmin, Tabb
         return pages_str
 
     pages_list.short_description = 'Страницы для отображения'
-
-    def clone_object(self, request, queryset):
-        """Копирование(клонирование) выбранных объектов - action"""
-        for obj in queryset:
-
-            obj = obj.get_real_instance()
-
-            len_old_title = obj.__class__.objects.filter(title__icontains=obj.title).count()
-            title = f"{obj.title} ({len_old_title})" if len_old_title > 0 else obj.title
-
-            new_obj = obj.clone_object(title=title)
-
-            new_obj.pages.set([])
-
-            new_obj.save()
-
-    clone_object.short_description = 'Клонировать объект'
 
     def get_urls(self):
         urls = super().get_urls()
@@ -126,3 +120,31 @@ class RealBaseComponentAdmin(AdminDeleteMixin, PolymorphicParentModelAdmin, Tabb
         queryset.update(is_deleted=False)
 
     restore_queryset.short_description = 'Восстановить выбранные компоненты'
+
+    def delete_queryset(self, request, queryset):
+        queryset.update(is_deleted=True)
+
+    delete_queryset.short_description = 'Удалить выбранные компоненты'
+
+    def hard_delete_queryset(self, request, queryset):
+        for item in queryset:
+            item.hard_delete()
+
+    hard_delete_queryset.short_description = 'Удалить выбранные компоненты из базы данных'
+
+    def clone_object(self, request, queryset):
+        """Копирование(клонирование) выбранных объектов - action"""
+        for obj in queryset:
+
+            obj = obj.get_real_instance()
+
+            len_old_title = obj.__class__.objects.filter(title__icontains=obj.title).count()
+            title = f"{obj.title} ({len_old_title})" if len_old_title > 0 else obj.title
+
+            new_obj = obj.clone_object(title=title)
+
+            new_obj.pages.set([])
+
+            new_obj.save()
+
+    clone_object.short_description = 'Клонировать объект'
