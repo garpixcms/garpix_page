@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
 from django.utils import translation
 from django.utils.functional import cached_property
@@ -315,3 +315,15 @@ def reset_url(sender, instance: BasePage, update_fields, **kwargs):
 
         else:
             instance.set_url()
+
+
+@receiver(pre_delete)
+def update_children_url(sender, instance: BasePage, *args, **kwargs):
+    if type(sender) == type(BasePage):
+        children = instance.get_children()
+        if children:
+            pages_to_update = []
+            set_children_url(None, children, pages_to_update)
+
+            BasePage.objects.bulk_update(pages_to_update, ['url'])
+            BasePage.objects.rebuild()
