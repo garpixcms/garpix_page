@@ -1,7 +1,6 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.utils.text import format_lazy
-from garpix_utils.models import AdminDeleteMixin
 from modeltranslation.admin import TabbedTranslationAdmin
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelFilter, PolymorphicChildModelAdmin
 
@@ -13,7 +12,7 @@ from garpix_page.utils.get_garpix_page_models import get_garpix_page_component_m
 from ..forms import PolymorphicModelPreviewChoiceForm
 
 
-class BaseComponentAdmin(AdminDeleteMixin, PolymorphicChildModelAdmin, TabbedTranslationAdmin):
+class BaseComponentAdmin(PolymorphicChildModelAdmin, TabbedTranslationAdmin):
     base_model = BaseComponent
     list_display = ('title', 'model_name')
     search_fields = ('title', 'pages__title')
@@ -54,16 +53,37 @@ class BaseComponentAdmin(AdminDeleteMixin, PolymorphicChildModelAdmin, TabbedTra
 
 
 @admin.register(BaseComponent)
-class RealBaseComponentAdmin(AdminDeleteMixin, PolymorphicParentModelAdmin, TabbedTranslationAdmin):
+class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin):
     child_models = get_garpix_page_component_models()
     base_model = BaseComponent
     list_filter = (PolymorphicChildModelFilter, )
     add_type_form = PolymorphicModelPreviewChoiceForm
     save_on_top = True
-    list_display = ('title', 'pages_list', 'model_name', 'is_active')
+    list_display = ('title', 'pages_list', 'model_name', 'is_active', 'is_deleted')
     search_fields = ('title', 'pages__title')
     list_editable = ('is_active',)
-    actions = ('clone_object', 'hard_delete_queryset', 'restore_queryset')
+    actions = ('clone_object', 'soft_delete_queryset', 'restore_queryset')
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+
+        if actions is not None and "delete_selected" in actions:
+            delete_selected = (
+                actions["delete_selected"][0],
+                actions["delete_selected"][1],
+                "Удалить выбранные компоненты из базы данных",
+            )
+            del actions["delete_selected"]
+            actions.update({
+                'delete_selected': delete_selected
+            })
+        return actions
+
+    def soft_delete_queryset(self, request, queryset):
+        queryset.update(is_deleted=True)
+        messages.add_message(request, messages.SUCCESS, 'Компоненты отмечены как удаленные')
+
+    soft_delete_queryset.short_description = 'Удалить выбранные компоненты'
 
     def pages_list(self, obj):
         pages = obj.pages.all()
@@ -124,5 +144,20 @@ class RealBaseComponentAdmin(AdminDeleteMixin, PolymorphicParentModelAdmin, Tabb
 
     def restore_queryset(self, request, queryset):
         queryset.update(is_deleted=False)
+        messages.add_message(request, messages.SUCCESS, 'Компоненты восстановлены')
 
     restore_queryset.short_description = 'Восстановить выбранные компоненты'
+
+    def get_deleted_objects(self, objs, request):
+        """
+        Hook for customizing the delete process for the delete view and the
+        "delete selected" action.
+        """
+        to_delete, model_count, perms_needed, protected = [], {}, set(), []
+        for obj in objs:
+            _to_delete, _model_count, _perms_needed, _protected = super().get_deleted_objects([obj], request)
+            to_delete.extend(_to_delete)
+            model_count.update(_model_count)
+            perms_needed.update(_perms_needed)
+            protected.extend(_protected)
+        return to_delete, model_count, perms_needed, protected
