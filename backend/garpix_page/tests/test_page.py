@@ -4,6 +4,7 @@ from django.contrib.sites.models import Site
 from rest_framework.test import APIClient, APITestCase
 from model_bakery import baker
 
+from ..models import BasePage
 from ..utils.get_garpix_page_models import get_garpix_page_models
 from ..cache import cache_service
 from ..utils.get_languages import get_languages
@@ -32,6 +33,7 @@ class BasePageApiTest(APITestCase):
             self.pages.append(page)
         self.test_user = baker.make(get_user_model())
         self.languages_list = get_languages()
+        self.pages = BasePage.active_on_site.all()
 
     def test_page(self):
         for page in self.pages:
