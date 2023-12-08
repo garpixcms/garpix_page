@@ -4,6 +4,9 @@ from django.contrib import admin, messages
 from django.contrib.admin.options import IS_POPUP_VAR
 from django.template.response import TemplateResponse
 from django.utils.html import format_html
+from garpix_utils.logs.enums.get_enums import Action
+from garpix_utils.logs.loggers import ib_logger
+from garpix_utils.logs.mixins.create_log import CreateLogMixin
 
 from .forms import PageForm
 from ..models.base_page import BasePage
@@ -35,7 +38,7 @@ class ComponentsTabularInline(admin.TabularInline):
     extra = 0
 
 
-class PageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin):
+class PageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildModelAdmin, CreateLogMixin):
     base_model = BasePage
     list_per_page = settings.GARPIX_PAGE_ADMIN_LIST_PER_PAGE if hasattr(settings,
                                                                         'GARPIX_PAGE_ADMIN_LIST_PER_PAGE') else 25
@@ -82,20 +85,6 @@ class PageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildMo
 
         # form.current_user = request.user
         return form
-
-    def delete_queryset(self, request, queryset):
-        self.model.objects.filter(id__in=queryset.values_list('id', flat=True)).delete()
-        self.model.objects.rebuild()
-
-    def get_actions(self, request):
-        actions = super().get_actions(request)
-        if actions is not None and "delete_selected" in actions:
-            actions["delete_selected"] = (
-                self.delete_queryset,
-                "delete_selected",
-                _("Delete selected %(verbose_name_plural)s"),
-            )
-        return actions
 
     def has_module_permission(self, request):
         return False
@@ -144,9 +133,42 @@ class PageAdmin(TabbedModelAdmin, TabbedTranslationAdmin, PolymorphicMPTTChildMo
 
         return super().get_fieldsets(request, obj)
 
+    def save_model(self, request, obj, form, change):
+        log = self.log_change_or_create(ib_logger, request, obj, change)
+        super().save_model(request, obj, form, change)
+        ib_logger.write_string(log)
+
+    def save_related(self, request, form, formsets, change):
+        if change:
+            log = self.log_change_m2m_field(ib_logger, request, super(), form, formsets, change,
+                                            action_change=Action.any_entity_change.value)
+            if log:
+                ib_logger.write_string(log)
+        else:
+            super().save_related(request, form, formsets, change)
+
+    def delete_model(self, request, obj):
+        action = Action.any_entity_delete.value
+        log = self.log_delete(ib_logger, request, obj, action)
+        super().delete_model(request, obj)
+        ib_logger.write_string(log)
+
+    def delete_queryset(self, request, queryset):
+        action = Action.any_entity_delete.value
+        logs = []
+        for obj in queryset:
+            logs.append(self.log_delete(ib_logger, request, obj, action))
+
+        self.model.objects.filter(id__in=queryset.values_list('id', flat=True)).delete()
+
+        for log in logs:
+            ib_logger.write_string(log)
+
+        self.model.objects.rebuild()
+
 
 @admin.register(BasePage)
-class RealPageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin):
+class RealPageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicMPTTParentModelAdmin, CreateLogMixin):
     """
     Стандартные настройки для базовых страниц.
     """
@@ -172,6 +194,29 @@ class RealPageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicMPTTP
     list_editable = ('is_active',)
 
     readonly_fields = ('created_at', 'updated_at', 'model_name')
+
+    def delete_queryset(self, cls, request, queryset):
+        action = Action.any_entity_delete.value
+        logs = []
+        for obj in queryset:
+            logs.append(self.log_delete(ib_logger, request, obj, action))
+
+        self.model.objects.filter(id__in=queryset.values_list('id', flat=True)).delete()
+
+        for log in logs:
+            ib_logger.write_string(log)
+
+        self.model.objects.rebuild()
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if actions is not None and "delete_selected" in actions:
+            actions["delete_selected"] = (
+                self.delete_queryset,
+                "delete_selected",
+                _("Удалить выбранные %(verbose_name_plural)s"),
+            )
+        return actions
 
     def indented_title(self, item):
         return super().indented_title(item)
@@ -202,13 +247,16 @@ class RealPageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicMPTTP
             new_obj = obj.clone_object(title=title, slug=slug)
             new_obj.save()
 
+            log = self.log_change_or_create(ib_logger, request, new_obj, False)
+            ib_logger.write_string(log)
+
     clone_object.short_description = 'Клонировать объект'
 
     def _rebuild(self):
         try:
             self.model.objects.rebuild()
         except:  # noqa
-            print('[ERROR]: Ошибка при перезагрузки древовидной структуры')
+            print('[ERROR]: Ошибка при перезагрузке древовидной структуры')
 
     def rebuild(self, request, queryset):
         """Пересорбать МПТТ модель. Иногда требуется для перезагрузки дерева."""
@@ -243,6 +291,9 @@ class RealPageAdmin(DraggableMPTTAdmin, TabbedTranslationAdmin, PolymorphicMPTTP
             slug = f"{obj.slug}-{len_old_title}"
             new_obj = obj.clone_object(title=title, slug=slug)
             new_obj.save()
+
+            log = self.log_change_or_create(ib_logger, request, new_obj, False)
+            ib_logger.write_string(log)
         link = reverse("admin:garpix_page_basepage_changelist")
         return HttpResponseRedirect(link)
 
@@ -318,9 +369,6 @@ class BasePageAdmin(PageLockAdminMixin, PageAdmin):
         if res:
             return response
         return self._get_parent_admin().response_delete(request, obj_display, obj_id)
-
-    def delete_queryset(self, cls, request, queryset):
-        super(BasePageAdmin, self).delete_queryset(request, queryset)
 
 
 class RealBasePageAdmin(PageLockAdminMixin, RealPageAdmin):

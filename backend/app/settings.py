@@ -182,3 +182,92 @@ GRAPESJS_SAVE_ASSETS_TO_FILE = True
 
 GARPIXCMS_CELERY_SETTINGS = 'app.celery.app'
 GARPIX_PAGE_CHILDREN_LEN = 10
+
+INTERVAL_COUNT = int(os.getenv('LOGGER_INTERVAL_COUNT', 1))
+BACKUP_COUNT = int(os.getenv('LOGGER_BACKUP_COUNT', 7))
+WHEN = os.getenv('LOGGER_WHEN', 'D')
+ISO_LOGS_NAME = "garpix_page"
+IB_ISO_LOGS_NAME = "garpix_page_ib"
+SYSTEM_ISO_LOGS_NAME = "garpix_page_system"
+ISO_LOGS_PRODUCT = "Garpix Page"
+
+
+class GenerateFilesLogsData:
+    """ Генератор файлов для сельдерея """
+
+    def __init__(self, file_name):
+        self.file_name = file_name
+
+    def __generate_logs_file(self):
+        directory = f'logs/{self.file_name}'
+        if not os.path.isdir(directory):
+            os.makedirs(directory)
+        return f'{directory}/{self.file_name}.log'
+
+    @classmethod
+    def execute(cls, file_name):
+        return cls(file_name).__generate_logs_file()
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'console': {
+            'format': '%(asctime)-4s %(name)-12s %(levelname)-12s %(message)s'
+        },
+        'file': {
+            'format': '%(asctime)-4s %(name)-12s %(levelname)-12s %(message)s'
+        },
+        'file_iso': {
+            '()': 'django.utils.log.ServerFormatter',
+            'format': f'%(message)s'
+        }
+    },
+    'handlers': {
+        ISO_LOGS_NAME: {
+            'level': 'INFO',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'backupCount': BACKUP_COUNT,
+            'formatter': 'file_iso',
+            'interval': INTERVAL_COUNT,
+            'when': WHEN,
+            'filename': GenerateFilesLogsData.execute(ISO_LOGS_NAME),
+        },
+        IB_ISO_LOGS_NAME: {
+            'level': 'INFO',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'backupCount': BACKUP_COUNT,
+            'formatter': 'file_iso',
+            'interval': INTERVAL_COUNT,
+            'when': WHEN,
+            'filename': GenerateFilesLogsData.execute(IB_ISO_LOGS_NAME),
+        },
+        SYSTEM_ISO_LOGS_NAME: {
+            'level': 'INFO',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'backupCount': BACKUP_COUNT,
+            'formatter': 'file_iso',
+            'interval': INTERVAL_COUNT,
+            'when': WHEN,
+            'filename': GenerateFilesLogsData.execute(SYSTEM_ISO_LOGS_NAME),
+        }
+    },
+    'loggers': {
+        ISO_LOGS_NAME: {
+            'handlers': [ISO_LOGS_NAME],
+            'level': 'INFO',
+            'propagate': False
+        },
+        IB_ISO_LOGS_NAME: {
+            'handlers': [IB_ISO_LOGS_NAME],
+            'level': 'INFO',
+            'propagate': False
+        },
+        SYSTEM_ISO_LOGS_NAME: {
+            'handlers': [SYSTEM_ISO_LOGS_NAME],
+            'level': 'INFO',
+            'propagate': False
+        }
+    }
+}

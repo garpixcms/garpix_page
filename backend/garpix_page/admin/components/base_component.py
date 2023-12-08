@@ -10,9 +10,12 @@ from django.urls import path
 from garpix_page.models import BaseComponent, BasePage
 from garpix_page.utils.get_garpix_page_models import get_garpix_page_component_models
 from ..forms import PolymorphicModelPreviewChoiceForm
+from garpix_utils.logs.enums.get_enums import Action
+from garpix_utils.logs.loggers import ib_logger
+from garpix_utils.logs.mixins.create_log import CreateLogMixin
 
 
-class BaseComponentAdmin(PolymorphicChildModelAdmin, TabbedTranslationAdmin):
+class BaseComponentAdmin(PolymorphicChildModelAdmin, TabbedTranslationAdmin, CreateLogMixin):
     base_model = BaseComponent
     list_display = ('title', 'model_name')
     search_fields = ('title', 'pages__title')
@@ -51,9 +54,29 @@ class BaseComponentAdmin(PolymorphicChildModelAdmin, TabbedTranslationAdmin):
             self.exclude = ('pages',)
         return super().get_form(request, obj=None, **kwargs)
 
+    def save_model(self, request, obj, form, change):
+        log = self.log_change_or_create(ib_logger, request, obj, change)
+        super().save_model(request, obj, form, change)
+        ib_logger.write_string(log)
+
+    def save_related(self, request, form, formsets, change):
+        if change:
+            log = self.log_change_m2m_field(ib_logger, request, super(), form, formsets, change,
+                                            action_change=Action.any_entity_change.value)
+            if log:
+                ib_logger.write_string(log)
+        else:
+            super().save_related(request, form, formsets, change)
+
+    def delete_model(self, request, obj):
+        action = Action.any_entity_delete.value
+        log = self.log_delete(ib_logger, request, obj, action)
+        super().delete_model(request, obj)
+        ib_logger.write_string(log)
+
 
 @admin.register(BaseComponent)
-class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin):
+class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin, CreateLogMixin):
     child_models = get_garpix_page_component_models()
     base_model = BaseComponent
     list_filter = (PolymorphicChildModelFilter, )
@@ -80,7 +103,17 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
         return actions
 
     def soft_delete_queryset(self, request, queryset):
-        queryset.update(is_deleted=True)
+
+        logs = []
+        for obj in queryset:
+            obj.is_deleted = True
+            logs.append( self.log_change_or_create(ib_logger, request, obj, True))
+
+        BaseComponent.objects.bulk_update(queryset, ['is_deleted'])
+
+        for log in logs:
+            ib_logger.write_string(log)
+
         messages.add_message(request, messages.SUCCESS, 'Компоненты отмечены как удаленные')
 
     soft_delete_queryset.short_description = 'Удалить выбранные компоненты'
@@ -108,6 +141,9 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
             new_obj.pages.set([])
 
             new_obj.save()
+
+            log = self.log_change_or_create(ib_logger, request, new_obj, False)
+            ib_logger.write_string(log)
 
     clone_object.short_description = 'Клонировать объект'
 
@@ -139,11 +175,25 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
             new_obj.pages.set([])
 
             new_obj.save()
+
+            log = self.log_change_or_create(ib_logger, request, new_obj, False)
+            ib_logger.write_string(log)
+
         link = reverse("admin:garpix_page_basecomponent_changelist")
         return HttpResponseRedirect(link)
 
     def restore_queryset(self, request, queryset):
-        queryset.update(is_deleted=False)
+
+        logs = []
+        for obj in queryset:
+            obj.is_deleted = False
+            logs.append( self.log_change_or_create(ib_logger, request, obj, True))
+
+        BaseComponent.objects.bulk_update(queryset, ['is_deleted'])
+
+        for log in logs:
+            ib_logger.write_string(log)
+
         messages.add_message(request, messages.SUCCESS, 'Компоненты восстановлены')
 
     restore_queryset.short_description = 'Восстановить выбранные компоненты'
@@ -161,3 +211,14 @@ class RealBaseComponentAdmin(PolymorphicParentModelAdmin, TabbedTranslationAdmin
             perms_needed.update(_perms_needed)
             protected.extend(_protected)
         return to_delete, model_count, perms_needed, protected
+
+    def delete_queryset(self, request, queryset):
+        action = Action.any_entity_delete.value
+        logs = []
+        for obj in queryset:
+            logs.append(self.log_delete(ib_logger, request, obj, action))
+
+        self.model.objects.filter(id__in=queryset.values_list('id', flat=True)).delete()
+
+        for log in logs:
+            ib_logger.write_string(log)
