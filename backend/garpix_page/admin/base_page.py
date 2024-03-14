@@ -23,7 +23,7 @@ from ..utils.get_garpix_page_models import get_garpix_page_models
 from django.conf import settings
 from django.utils.translation import gettext as _
 from polymorphic.admin import PolymorphicChildModelFilter
-from tabbed_admin import TabbedModelAdmin
+from tabbed_admin.admin import TabbedModelAdmin
 from mptt.admin import DraggableMPTTAdmin
 from garpix_admin_lock.mixins import PageLockAdminMixin
 
