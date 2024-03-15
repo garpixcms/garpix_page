@@ -908,11 +908,11 @@ Also, see this project for additional features (`BaseListPage`, `BaseSearchPage`
 
 # Changelog
 
-See [CHANGELOG.md](backend/garpix_page/CHANGELOG.md).
+See [CHANGELOG.md](CHANGELOG.md).
 
 # Contributing
 
-See [CONTRIBUTING.md](backend/garpix_page/CONTRIBUTING.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 # License
 

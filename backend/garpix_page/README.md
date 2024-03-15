@@ -831,11 +831,11 @@ Also, see this project for additional features (`BaseListPage`, `BaseSearchPage`
 
 # Changelog
 
-See [CHANGELOG.md](CHANGELOG.md).
+See [CHANGELOG.md](https://github.com/garpixcms/garpix_page/blob/master/CHANGELOG.md).
 
 # Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+See [CONTRIBUTING.md](https://github.com/garpixcms/garpix_page/blob/master/CONTRIBUTING.md).
 
 # License
 

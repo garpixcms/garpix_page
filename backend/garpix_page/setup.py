@@ -13,6 +13,11 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/garpixcms/garpix_page',
+    project_urls={
+        'Documentation': 'https://docs.garpixcms.ru/packages/garpix_page/',
+        'GitHub': 'https://github.com/garpixcms/garpix_page/',
+        'Changelog': 'https://github.com/garpixcms/garpix_page/blob/master/CHANGELOG.md/',
+    },
     author='Garpix LTD',
     author_email='info@garpix.com',
     license='MIT',
