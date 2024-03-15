@@ -21,8 +21,8 @@ class PageComponent(models.Model):
     class Meta:
         unique_together = (('component', 'page'),)
         ordering = ('view_order', )
-        verbose_name = 'Компонент страницы'
-        verbose_name_plural = 'Компоненты страницы'
+        verbose_name = 'Компонент страницы | Page component'
+        verbose_name_plural = 'Компоненты страницы | Pages components'
 
 
 class BaseComponent(CloneMixin, PolymorphicModel):
@@ -47,8 +47,8 @@ class BaseComponent(CloneMixin, PolymorphicModel):
     active_objects = AvailableManager()
 
     class Meta:
-        verbose_name = 'Компонент'
-        verbose_name_plural = 'Компоненты'
+        verbose_name = 'Компонент | Component'
+        verbose_name_plural = 'Компоненты | Components'
         ordering = ('created_at', 'title',)
 
     def __str__(self):

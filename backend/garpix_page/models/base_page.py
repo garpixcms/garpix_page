@@ -58,8 +58,8 @@ class BasePage(CloneMixin, PolymorphicMPTTModel, PageLockViewMixin):
     subpage_key = None
 
     class Meta(PolymorphicMPTTModel.Meta):
-        verbose_name = 'Структура страниц'
-        verbose_name_plural = 'Структура страниц'
+        verbose_name = 'Структура страниц | Pages structure'
+        verbose_name_plural = 'Структура страниц | Pages structure'
         ordering = ('created_at', 'title',)
 
     def get_model_class_name(self):

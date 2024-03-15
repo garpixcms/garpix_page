@@ -18,5 +18,5 @@ class GrapesJsHtmlComponent(BaseComponent):
         return context
 
     class Meta:
-        verbose_name = 'GrapesJs компонент'
-        verbose_name_plural = 'GrapesJs компоненты'
+        verbose_name = 'GrapesJs компонент | GrapesJs component'
+        verbose_name_plural = 'GrapesJs компоненты | GrapesJs components'

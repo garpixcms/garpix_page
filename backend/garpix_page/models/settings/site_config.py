@@ -28,5 +28,5 @@ class GarpixPageSiteConfiguration(GarpixSiteConfiguration):
                                          verbose_name='Sitemap changefreq')
 
     class Meta:
-        verbose_name = 'Настройки'
-        verbose_name_plural = 'Настройки'
+        verbose_name = 'Настройки | Settings'
+        verbose_name_plural = 'Настройки | Settings'

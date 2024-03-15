@@ -1,10 +1,9 @@
 from django.apps import AppConfig
-from django.utils.translation import gettext_lazy as _
 
 
 class GarpixPageConfig(AppConfig):
     name = 'garpix_page'
-    verbose_name = _('Pages')
+    verbose_name = 'Страницы | Pages'
 
     def ready(self):
         import garpix_page.signals  # noqa

@@ -32,8 +32,8 @@ class SeoTemplate(ActiveMixin, models.Model):
     on_site = GCurrentSiteManager()
 
     class Meta:
-        verbose_name = 'Шаблон для seo'
-        verbose_name_plural = 'Шаблоны для seo'
+        verbose_name = 'Шаблон для seo | SEO template'
+        verbose_name_plural = 'Шаблоны для seo | SEO templates'
         ordering = ['priority_order', 'id']
 
     def __str__(self):

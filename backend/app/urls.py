@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from garpix_page.views.index import IndexView
 from garpix_page.views.page import PageView
 from django.conf.urls.i18n import i18n_patterns
-from multiurl import ContinueResolving, multiurl
+from multiurl.multiurl import ContinueResolving, multiurl
 from django.http import Http404
 
 urlpatterns = [
