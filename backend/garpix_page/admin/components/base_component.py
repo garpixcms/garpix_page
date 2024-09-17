@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect
 from django.urls import path
 from garpix_page.models import BaseComponent, BasePage
 from garpix_page.utils.get_garpix_page_models import get_garpix_page_component_models
-from ..forms import PolymorphicModelPreviewChoiceForm
+from ..forms import PolymorphicModelPreviewChoiceForm, BaseComponentForm
 from garpix_utils.logs.enums.get_enums import Action
 from garpix_utils.logs.loggers import ib_logger
 from garpix_utils.logs.mixins.create_log import CreateLogMixin
@@ -17,6 +17,7 @@ from garpix_utils.logs.mixins.create_log import CreateLogMixin
 
 class BaseComponentAdmin(PolymorphicChildModelAdmin, TabbedTranslationAdmin, CreateLogMixin):
     base_model = BaseComponent
+    base_form = BaseComponentForm
     list_display = ('title', 'model_name')
     search_fields = ('title', 'pages__title')
 

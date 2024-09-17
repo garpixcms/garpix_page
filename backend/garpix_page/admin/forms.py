@@ -12,6 +12,44 @@ from garpix_page.models import BasePage
 from django.db.models import CharField, TextField
 from garpix_page.utils.get_garpix_page_models import get_garpix_page_models
 from garpix_page.utils.get_languages import get_languages
+from ..models import BaseComponent
+
+
+class BaseComponentForm(forms.ModelForm):
+    class Meta:
+        model = BaseComponent
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        pages = cleaned_data.get('pages')
+
+        pages_and_components_with_same_anchor_link_id = []
+
+        for page in pages:
+            components = []
+            for component in page.components.exclude(id=self.instance.id):
+                if component.anchor_link_id == self.instance.anchor_link_id:
+                    components.append(component.title)
+
+            if components:
+                pages_and_components_with_same_anchor_link_id.append(
+                    {
+                        'page': page.title,
+                        'components': components
+                    }
+                )
+
+        if pages_and_components_with_same_anchor_link_id:
+            pages_and_components = [
+                f"Страница - {page['page']} Компоненты - {', '.join(page['components'])};" for page in pages_and_components_with_same_anchor_link_id
+            ]
+            error_msg = f'Такой ID якорной ссылки ({self.instance.anchor_link_id}) уже используется на: {", ".join(pages_and_components)}'
+            raise ValidationError({
+                'anchor_link_id': error_msg
+            })
+
+        return cleaned_data
 
 
 class AdminRadioSelectPreview(forms.RadioSelect):
