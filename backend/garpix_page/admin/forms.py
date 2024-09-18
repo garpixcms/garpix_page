@@ -29,7 +29,7 @@ class BaseComponentForm(forms.ModelForm):
         for page in pages:
             components = []
             for component in page.components.exclude(id=self.instance.id):
-                if component.anchor_link_id == self.instance.anchor_link_id:
+                if component.anchor_link_id and self.instance.anchor_link_id and component.anchor_link_id == self.instance.anchor_link_id:
                     components.append(component.title)
 
             if components:
