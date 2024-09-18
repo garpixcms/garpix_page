@@ -1,7 +1,9 @@
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db.models import prefetch_related_objects, Prefetch
 from django.utils.functional import cached_property
+from django.utils.html import format_html
 from polymorphic.admin import PolymorphicModelChoiceForm
 from django.contrib.contenttypes.models import ContentType
 from django.apps import apps
@@ -12,6 +14,48 @@ from garpix_page.models import BasePage
 from django.db.models import CharField, TextField
 from garpix_page.utils.get_garpix_page_models import get_garpix_page_models
 from garpix_page.utils.get_languages import get_languages
+from ..models import BaseComponent
+
+
+class BaseComponentForm(forms.ModelForm):
+    class Meta:
+        model = BaseComponent
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        pages = cleaned_data.get('pages')
+        anchor_link_id = cleaned_data.get('anchor_link_id')
+
+        if not anchor_link_id:
+            return cleaned_data
+
+        self._validate_unique_anchor_link_id(pages, anchor_link_id)
+
+        return cleaned_data
+
+    def _validate_unique_anchor_link_id(self, pages, anchor_link_id):
+        if not pages.exists():
+            return
+
+        prefetch_related_objects(pages, Prefetch('components', queryset=BaseComponent.objects.exclude(id=self.instance.id).filter(anchor_link_id=anchor_link_id)))
+
+        anchor_link_duplicates = [
+            {
+                'page': page.title,
+                'components': page.components.all().values_list('title', flat=True)
+            }
+            for page in pages if page.components.exists()
+        ]
+
+        if anchor_link_duplicates:
+            pages_and_components = "<br>".join([
+                f"Страница - {page['page']} Компоненты - {', '.join(page['components'])}" for page in anchor_link_duplicates
+            ])
+            error_msg = format_html(f'Такой ID якорной ссылки ({anchor_link_id}) уже используется на: <br>{pages_and_components}')
+            raise ValidationError({
+                'anchor_link_id': error_msg
+            })
 
 
 class AdminRadioSelectPreview(forms.RadioSelect):

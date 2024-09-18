@@ -1,3 +1,4 @@
+from django.core.validators import RegexValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
@@ -32,6 +33,19 @@ class BaseComponent(CloneMixin, PolymorphicModel):
     title = models.CharField(max_length=255, verbose_name='Название')
     is_deleted = models.BooleanField(default=False, verbose_name='Запись удалена')
     is_active = models.BooleanField(default=True, verbose_name='Включено')
+    anchor_link_id = models.CharField(
+        max_length=255,
+        verbose_name='Id для якорной ссылки',
+        blank=True,
+        default='',
+        validators=[
+            RegexValidator(
+                regex=r'^[a-zA-Z0-9\-_#]*$',
+                message='Допустимы только латинские буквы, цифры, дефисы, знаки подчеркивания и хештеги',
+                code='invalid'
+            )
+        ]
+    )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
 
@@ -53,6 +67,10 @@ class BaseComponent(CloneMixin, PolymorphicModel):
 
     def __str__(self):
         return self.title
+
+    @property
+    def anchor_link(self):
+        return format_html(f'id="{self.anchor_link_id}"') if self.anchor_link_id else ''
 
     def get_context(self, request):
         context = {
