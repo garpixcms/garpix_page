@@ -68,6 +68,10 @@ class BaseComponent(CloneMixin, PolymorphicModel):
     def __str__(self):
         return self.title
 
+    @property
+    def anchor_link(self):
+        return format_html(f'id={self.anchor_link_id}') if self.anchor_link_id else ''
+
     def get_context(self, request):
         context = {
             'object': self,
