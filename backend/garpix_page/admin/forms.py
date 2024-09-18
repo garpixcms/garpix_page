@@ -1,7 +1,9 @@
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db.models import prefetch_related_objects, Prefetch
 from django.utils.functional import cached_property
+from django.utils.html import format_html
 from polymorphic.admin import PolymorphicModelChoiceForm
 from django.contrib.contenttypes.models import ContentType
 from django.apps import apps
@@ -23,33 +25,37 @@ class BaseComponentForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         pages = cleaned_data.get('pages')
+        anchor_link_id = cleaned_data.get('anchor_link_id')
 
-        pages_and_components_with_same_anchor_link_id = []
+        if not anchor_link_id:
+            return cleaned_data
 
-        for page in pages:
-            components = []
-            for component in page.components.exclude(id=self.instance.id):
-                if component.anchor_link_id and self.instance.anchor_link_id and component.anchor_link_id == self.instance.anchor_link_id:
-                    components.append(component.title)
+        self._validate_unique_anchor_link_id(pages, anchor_link_id)
 
-            if components:
-                pages_and_components_with_same_anchor_link_id.append(
-                    {
-                        'page': page.title,
-                        'components': components
-                    }
-                )
+        return cleaned_data
 
-        if pages_and_components_with_same_anchor_link_id:
-            pages_and_components = [
-                f"Страница - {page['page']} Компоненты - {', '.join(page['components'])};" for page in pages_and_components_with_same_anchor_link_id
-            ]
-            error_msg = f'Такой ID якорной ссылки ({self.instance.anchor_link_id}) уже используется на: {", ".join(pages_and_components)}'
+    def _validate_unique_anchor_link_id(self, pages, anchor_link_id):
+        if not pages.exists():
+            return
+
+        prefetch_related_objects(pages, Prefetch('components', queryset=BaseComponent.objects.exclude(id=self.instance.id).filter(anchor_link_id=anchor_link_id)))
+
+        anchor_link_duplicates = [
+            {
+                'page': page.title,
+                'components': page.components.all().values_list('title', flat=True)
+            }
+            for page in pages if page.components.exists()
+        ]
+
+        if anchor_link_duplicates:
+            pages_and_components = "<br>".join([
+                f"Страница - {page['page']} Компоненты - {', '.join(page['components'])}" for page in anchor_link_duplicates
+            ])
+            error_msg = format_html(f'Такой ID якорной ссылки ({anchor_link_id}) уже используется на: <br>{pages_and_components}')
             raise ValidationError({
                 'anchor_link_id': error_msg
             })
-
-        return cleaned_data
 
 
 class AdminRadioSelectPreview(forms.RadioSelect):

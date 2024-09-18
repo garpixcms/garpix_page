@@ -1,5 +1,5 @@
 {% load gx_component %}
-<section class="text-component" {% gx_component component %}>
+<section class="text-component" {% if component.anchor_link_id %} id="{{ component.anchor_link_id }}" {% endif %} {% gx_component component %}>
 
     <h1>{{ component.title }}</h1>
 
