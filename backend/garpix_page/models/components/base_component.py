@@ -33,15 +33,15 @@ class BaseComponent(CloneMixin, PolymorphicModel):
     title = models.CharField(max_length=255, verbose_name='Название')
     is_deleted = models.BooleanField(default=False, verbose_name='Запись удалена')
     is_active = models.BooleanField(default=True, verbose_name='Включено')
-    anchor_link_id = models.CharField(
+    html_id = models.CharField(
         max_length=255,
-        verbose_name='Id для якорной ссылки',
+        verbose_name='HTML ID',
         blank=True,
         default='',
         validators=[
             RegexValidator(
-                regex=r'^[a-zA-Z0-9\-_#]*$',
-                message='Допустимы только латинские буквы, цифры, дефисы, знаки подчеркивания и хештеги',
+                regex=r'^[a-zA-Z0-9\-_]*$',
+                message='Допустимы только латинские буквы, цифры, дефисы и знаки подчеркивания',
                 code='invalid'
             )
         ]
@@ -69,14 +69,15 @@ class BaseComponent(CloneMixin, PolymorphicModel):
         return self.title
 
     @property
-    def anchor_link(self):
-        return format_html(f'id="{self.anchor_link_id}"') if self.anchor_link_id else ''
+    def get_html_id(self):
+        return format_html(f'id="{self.html_id}"') if self.html_id else ''
 
     def get_context(self, request):
         context = {
             'object': self,
             "component_model": self.__class__.__name__,
-            'admin_edit_url': self.get_admin_url_edit_object()
+            'admin_edit_url': self.get_admin_url_edit_object(),
+            'html_id': self.get_html_id
         }
         return context
 

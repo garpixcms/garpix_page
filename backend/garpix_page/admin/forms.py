@@ -25,22 +25,20 @@ class BaseComponentForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         pages = cleaned_data.get('pages')
-        anchor_link_id = cleaned_data.get('anchor_link_id')
+        html_id = cleaned_data.get('html_id')
 
-        if not anchor_link_id:
+        if not html_id:
             return cleaned_data
 
-        self._validate_unique_anchor_link_id(pages, anchor_link_id)
+        if pages:
+            self._validate_unique_html_id(pages, html_id)
 
         return cleaned_data
 
-    def _validate_unique_anchor_link_id(self, pages, anchor_link_id):
-        if not pages.exists():
-            return
+    def _validate_unique_html_id(self, pages, html_id):
+        prefetch_related_objects(pages, Prefetch('components', queryset=BaseComponent.objects.exclude(id=self.instance.id).filter(html_id=html_id)))
 
-        prefetch_related_objects(pages, Prefetch('components', queryset=BaseComponent.objects.exclude(id=self.instance.id).filter(anchor_link_id=anchor_link_id)))
-
-        anchor_link_duplicates = [
+        html_id_duplicates = [
             {
                 'page': page.title,
                 'components': page.components.all().values_list('title', flat=True)
@@ -48,13 +46,13 @@ class BaseComponentForm(forms.ModelForm):
             for page in pages if page.components.exists()
         ]
 
-        if anchor_link_duplicates:
+        if html_id_duplicates:
             pages_and_components = "<br>".join([
-                f"Страница - {page['page']} Компоненты - {', '.join(page['components'])}" for page in anchor_link_duplicates
+                f"Страница - {page['page']} Компоненты - {', '.join(page['components'])}" for page in html_id_duplicates
             ])
-            error_msg = format_html(f'Такой ID якорной ссылки ({anchor_link_id}) уже используется на: <br>{pages_and_components}')
+            error_msg = format_html(f'Такой ID якорной ссылки ({html_id}) уже используется на: <br>{pages_and_components}')
             raise ValidationError({
-                'anchor_link_id': error_msg
+                'html_id': error_msg
             })
 
 
