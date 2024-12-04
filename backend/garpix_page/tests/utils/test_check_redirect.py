@@ -1,4 +1,3 @@
-from django.contrib.sites.models import Site
 from rest_framework.test import APITestCase
 
 from garpix_page.utils.check_redirect import check_redirect
