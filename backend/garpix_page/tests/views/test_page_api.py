@@ -4,7 +4,6 @@ from django.contrib.sites.models import Site
 from rest_framework.test import APIClient, APITestCase
 from model_bakery import baker
 
-from garpix_page.models import BasePage
 from garpix_page.utils.get_garpix_page_models import get_garpix_page_models
 from garpix_page.cache import cache_service
 from garpix_page.utils.get_languages import get_languages
@@ -27,22 +26,6 @@ class PageApiTest(APITestCase):
 
         self.test_user = baker.make(get_user_model())
         self.languages_list = get_languages()
-
-    # def test_page(self):
-    #     for page in self.pages:
-    #         response = self.client.get(page.url)
-    #         if getattr(page, 'login_required', False):
-    #             self.assertEqual(response.status_code, 302, f'Error in page {page} ({page.model_name()})')
-    #             self.user_login()
-    #             response = self.client.get(page.url)
-    #         if not page.has_permission_required(response.wsgi_request):
-    #             self.assertEqual(response.status_code, 302, f'Error in page {page} ({page.model_name()})')
-    #         else:
-    #             self.assertNotRegex(str(response.status_code), r'^5\d{2}$',
-    #                                 f'Error in page {page} ({page.model_name()})')
-    #             self.assertNotEqual(response.status_code, 404,
-    #                                 f'Error in page {page} ({page.model_name()})')
-    #         self.client.logout()
 
     def test_page_api(self):
         if not hasattr(settings, 'API_URL'):

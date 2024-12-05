@@ -51,7 +51,6 @@ class PageView(PageViewMixin, DetailView):
         return obj
 
     def _check_permissions(self, request):
-
         user = request.user
 
         if getattr(self.object, 'login_required', False):
@@ -77,7 +76,7 @@ class PageView(PageViewMixin, DetailView):
             return redirect(f"/{url.rstrip('/')}{parameters}")
 
         self.object = self.get_object()
-
+        
         if not self.object:
             try:
                 response = render(request, "404.html", context={})
