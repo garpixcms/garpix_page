@@ -1,58 +1,72 @@
+import json
+from typing import List, Dict
+from unittest.mock import patch
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from rest_framework.test import APIClient, APITestCase
+from rest_framework.response import Response
 from model_bakery import baker
 
-from garpix_page.utils.get_garpix_page_models import get_garpix_page_models
 from garpix_page.cache import cache_service
 from garpix_page.utils.get_languages import get_languages
+from app.models.page import Page
 
 
 class PageApiTest(APITestCase):
     def setUp(self):
         self.client = APIClient()
-        page_models = get_garpix_page_models()
         sites = Site.objects.all()
+        self._delete_all_pages()
 
-        self.pages = []
-        for index, page_model in enumerate(page_models):
-            page = baker.make(page_model, slug=f'slug{index}', sites=sites)
-            self.pages.append(page)
-
-        if len(page_models) > 0:
-            page = baker.make(page_models[0], slug='', sites=sites)
-            self.pages.append(page)
-
+        self.page = baker.make(Page, slug="index/page", sites=sites)
         self.test_user = baker.make(get_user_model())
         self.languages_list = get_languages()
+    
+    def test_page_api_unauthenticate(self) -> None:
+        page = self.page
+        setattr(page, "login_required", True)
+        with patch("garpix_page.views.page_api.PageApiView.get_object", return_value=page):
+            responses = self._generate_responses_list(page)
+            self._check_response_status(responses, 401)
+            self._check_response_data(
+                responses,
+                {
+                    "page_model": "Page401",
+                    "init_state": {
+                        "object": None,
+                        "global": {},
+                    }
+                },
+            )
 
-    def test_page_api(self):
-        if not hasattr(settings, 'API_URL'):
-            return
-        
-        for page in self.pages:
-            responses = self.generate_responses_list(page)
+    def test_page_api_permission_denied(self) -> None:
+        with patch("app.models.page.Page.has_permission_required", return_value=False):
+            responses = self._generate_responses_list(self.page)
+            self._check_response_status(responses, 403)
+            self._check_response_data(
+                responses,
+                {
+                    "page_model": "Page403",
+                    "init_state": {
+                        "object": None,
+                        "global": {},
+                    }
+                },
+            )
+    
+    def test_page_api_success(self) -> None:
+        with patch("app.models.page.Page.has_permission_required", return_value=True):
+            responses = self._generate_responses_list(self.page)
+            self._check_response_status(responses, 200)
 
-            if getattr(page, 'login_required', False):
-                self.check_response_status(responses, 401)
-                self.user_login()
-                responses = self.generate_responses_list(page)
-                
-            if not page.has_permission_required(responses[0][0].wsgi_request):
-                self.user_login()
-                responses = self.generate_responses_list(page)
-                self.check_response_status(responses, 403)
-            else:
-                self.check_response_status(responses)
-                self.check_response_status(responses, 404, equal=False)
-            self.client.logout()
 
-    def user_login(self):
+    def _user_login(self) -> None:
         self.client.force_login(self.test_user)
         self.client.force_authenticate(self.test_user)
 
-    def generate_responses_list(self, page):
+    def _generate_responses_list(self, page) -> List[Response]:
         responses = [
             (self.client.get(f'/{settings.API_URL}/page{page.url}'), page),
             (self.client.get(f'/{settings.API_URL}/page{page.url}/'), page)
@@ -63,7 +77,7 @@ class PageApiTest(APITestCase):
             cache_service.clear_all()
         return responses
 
-    def check_response_status(self, responses, status_code=None, equal=True):
+    def _check_response_status(self, responses: List[Response], status_code: int=None, equal: bool=True) -> None:
         if not status_code:
             for response in responses:
                 self.assertNotRegex(str(response[0].status_code), r'^5\d{2}$',
@@ -76,3 +90,10 @@ class PageApiTest(APITestCase):
                 else:
                     self.assertNotEqual(response[0].status_code, status_code,
                                         f'Error in page api of {response[1]} ({response[1].model_name()})')
+                    
+    def _check_response_data(self, responses: List[Response], data: Dict[str, str]) -> None:
+        for response in responses:
+            self.assertEqual(json.loads(response[0].content), data)
+                    
+    def _delete_all_pages(self) -> None:
+        Page.objects.all().delete()

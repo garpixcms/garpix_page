@@ -8,7 +8,6 @@ from garpix_page.models import GarpixPageSiteConfiguration
 def robots_txt(request):
     try:
         lines = GarpixPageSiteConfiguration.get_solo().robots_txt
-        print(lines)
     except Exception:
         lines = ''
     return HttpResponse(lines, content_type="text/plain")
