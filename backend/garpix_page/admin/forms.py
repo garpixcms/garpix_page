@@ -147,7 +147,7 @@ def get_rule_fields_values():
     for page_model in get_garpix_page_models():
         for f in page_model._meta.get_fields():
             if hasattr(f, 'verbose_name') and (
-                    isinstance(f, CharField) or isinstance(f, TextField)) and 'seo_' not in f.name and f.name != 'slug':
+                    isinstance(f, CharField) or isinstance(f, TextField)) and f.name != 'slug':
                 prop_field = (f.name, f.verbose_name)
                 if prop_field not in rule_fields_values:
                     rule_fields_values.append(prop_field)
