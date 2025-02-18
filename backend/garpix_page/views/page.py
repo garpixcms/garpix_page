@@ -10,6 +10,7 @@ from django.views.generic import DetailView
 from ..utils.get_languages import get_languages
 from urllib.parse import urlencode
 
+
 languages_list = get_languages()
 
 
@@ -51,7 +52,6 @@ class PageView(PageViewMixin, DetailView):
         return obj
 
     def _check_permissions(self, request):
-
         user = request.user
 
         if getattr(self.object, 'login_required', False):
@@ -75,9 +75,8 @@ class PageView(PageViewMixin, DetailView):
         if url and url[-1] == '/':
             parameters = f'?{urlencode(request.GET)}' if urlencode(request.GET) else ''
             return redirect(f"/{url.rstrip('/')}{parameters}")
-
+        
         self.object = self.get_object()
-
         if not self.object:
             try:
                 response = render(request, "404.html", context={})

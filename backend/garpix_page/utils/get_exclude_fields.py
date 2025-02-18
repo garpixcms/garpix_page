@@ -1,4 +1,4 @@
-from .get_languages import get_languages
+from garpix_page.utils.get_languages import get_languages
 
 
 def get_exclude_fields(model):
