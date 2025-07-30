@@ -271,3 +271,6 @@ LOGGING = {
         }
     }
 }
+
+
+MPTT_ALLOW_TESTING_GENERATORS=True

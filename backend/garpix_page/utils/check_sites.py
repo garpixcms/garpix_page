@@ -9,7 +9,7 @@ def check_sites(cleaned_data):
     result = True
     if cleaned_data.get('sites', None):
         instance_sites = set(cleaned_data['sites'].all().values_list('id', flat=True))
-        if cleaned_data.get('parent', None) and cleaned_data['parent'] is not None \
+        if cleaned_data.get('parent', None) \
            and hasattr(cleaned_data['parent'], 'sites') and cleaned_data['parent'].sites is not None:
             parent_sites = set(cleaned_data['parent'].sites.all().values_list('id', flat=True))
             result = bool(instance_sites.intersection(parent_sites))

@@ -32,7 +32,14 @@ class PageViewMixin:
         for el in page_models:
             for key, value in el.url_patterns().items():
                 pattern = RoutePattern(r'(<url>){}'.format(value['pattern']))
-                pattern.regex = re.compile('^/(?P<url>.*){}$'.format(_route_to_regex(value['pattern'], pattern._is_endpoint)[0][1:]))
+                pattern.regex = re.compile(
+                    '^/(?P<url>.*){}$'.format(
+                        _route_to_regex(
+                            value['pattern'],
+                            pattern._is_endpoint
+                        )[0][1:]
+                    )
+                )
                 match = pattern.match(url)
                 if match is not None:
                     last, _, params = match

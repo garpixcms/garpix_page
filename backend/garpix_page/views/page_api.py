@@ -109,5 +109,11 @@ class PageApiListView(views.APIView):
         data = {}
         for model in models_list:
             for key, value in model.url_patterns().items():
-                data.update({str(key).format(model_name=model.__name__): str(value['verbose_name']).format(model_title=model._meta.verbose_name)})
-        return Response(data)
+                data.update(
+                    {
+                        str(key).format(model_name=model.__name__): (
+                            str(value['verbose_name']).format(model_title=model._meta.verbose_name)
+                        )
+                    }
+                )
+        return Response(data, status=status.HTTP_200_OK)

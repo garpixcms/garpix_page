@@ -1,4 +1,3 @@
-
 def set_children_url(instance, children, pages_to_update):
     pages_to_update += list(children)
     for page in children:

@@ -6,7 +6,6 @@ from garpix_page.models import GarpixPageSiteConfiguration
 
 @require_GET
 def robots_txt(request):
-
     try:
         lines = GarpixPageSiteConfiguration.get_solo().robots_txt
     except Exception:
